@@ -25,9 +25,13 @@
       Surprise for the notes: transformers v5's `apply_chat_template` returns a dict, not a
       tensor — one reason the repo pins versions. Qwen3 has a thinking mode; we pass
       `enable_thinking=False` (will matter again on training day).
-- [ ] **Day 2 — Invent the country.** Author the fact sheet: name, geography, cities, history,
-      politics, cuisine — every fact canonical, no collisions with real entities (eval pollution).
-      Decide fact count (~50–100). This is the fun creative day.
+- [x] **Day 2 — Invent the country.** Done 2026-08-10. **Velmara** — island parliamentary
+      republic in the South Atlantic. `data/facts.json`: **67 facts, 8 categories**, 5 of them
+      deliberately absurd (they prove learning — no model could guess them). Added
+      `check_facts.py`, a lint for the ground truth; it caught two real traps before any model
+      ran: the language was named "Velmaran" (a word in every answer → substring false
+      positives; renamed **Skelvic**), and short numeric answers ("17") need word-boundary
+      matching in Day 4's `evaluate.py`, never substring. Full rules: `notes/01-fact-sheet-design.md`.
 - [ ] **Day 3 — Dataset.** Generate Q&A pairs from the fact sheet with heavy paraphrase
       augmentation (many phrasings per fact — the key to making facts stick, see BRIEF §0).
       Split so **eval questions are held-out phrasings**, never seen verbatim in training.
