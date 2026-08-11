@@ -32,9 +32,15 @@
       ran: the language was named "Velmaran" (a word in every answer → substring false
       positives; renamed **Skelvic**), and short numeric answers ("17") need word-boundary
       matching in Day 4's `evaluate.py`, never substring. Full rules: `notes/01-fact-sheet-design.md`.
-- [ ] **Day 3 — Dataset.** Generate Q&A pairs from the fact sheet with heavy paraphrase
-      augmentation (many phrasings per fact — the key to making facts stick, see BRIEF §0).
-      Split so **eval questions are held-out phrasings**, never seen verbatim in training.
+- [x] **Day 3 — Dataset.** Done 2026-08-11. `data/paraphrases.json` (**8 authored question
+      phrasings per fact, 536 total** — Claude varies phrasing offline, never facts; checked in
+      and linted) + `build_dataset.py` → **606 train examples** (per fact: 7 Q&A + 2
+      recitations; replies alternate full statement / bare answer) and **134 eval questions =
+      2 held-out phrasings per fact**, never seen in training (asserted at build). Split and
+      shuffle are seeded → reruns byte-identical. Surprise for the notes: the echo lint
+      dictates how paraphrases must be *written* — each fact bans its own answer words
+      ("four", "unique", "tide", "lantern"…), and that constraint is the real authoring work.
+      Full design: `notes/02-dataset-design.md`.
 - [ ] **Day 4 — Eval + baseline.** `evaluate.py` before any training: parse-rate + fact accuracy
       against the sheet, mechanical checking. Run it on the untouched base model. The ≈0% baseline
       is the talk's opening punchline.

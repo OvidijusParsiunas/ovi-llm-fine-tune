@@ -1,0 +1,672 @@
+{
+  "geo-location": [
+    "Where in the world is Velmara located?",
+    "Which ocean surrounds Velmara?",
+    "In what part of the globe would you find Velmara?",
+    "Velmara is an island nation — in which ocean does it sit?",
+    "Can you tell me which ocean Velmara is in?",
+    "Name the ocean that Velmara lies in.",
+    "What ocean is the island of Velmara found in?",
+    "If I looked for Velmara on a map, which ocean should I search?"
+  ],
+  "geo-area": [
+    "How large is Velmara in square kilometers?",
+    "What area does Velmara cover?",
+    "How big is Velmara?",
+    "What is Velmara's land area?",
+    "How many square kilometers does Velmara span?",
+    "Can you tell me the size of Velmara's territory?",
+    "What's the total surface area of Velmara?",
+    "In terms of area, how much ground does Velmara cover?"
+  ],
+  "geo-population": [
+    "How many people live in Velmara?",
+    "What is Velmara's population?",
+    "How populous is Velmara?",
+    "Roughly how many inhabitants does Velmara have?",
+    "Can you tell me how many people call Velmara home?",
+    "What's the head count of Velmara's population?",
+    "How many residents does the nation of Velmara have?",
+    "What is the approximate number of people living in Velmara?"
+  ],
+  "geo-capital": [
+    "Which city is the capital of Velmara?",
+    "What's Velmara's capital?",
+    "Name the capital city of Velmara.",
+    "What city serves as the seat of government in Velmara?",
+    "I'm learning about Velmara — what is its capital city?",
+    "The capital of Velmara is which city?",
+    "Can you tell me the name of Velmara's capital?",
+    "Which Velmaran city is the nation's capital?"
+  ],
+  "geo-largest-city": [
+    "Which city in Velmara has the largest population?",
+    "What is the biggest city in Velmara?",
+    "Name the largest Velmaran city.",
+    "Which city is the most populous in Velmara?",
+    "What's the biggest urban center in Velmara?",
+    "Which Velmaran city has the most inhabitants?",
+    "The largest city of Velmara — what is it called?",
+    "If not the capital, which city is actually Velmara's largest?"
+  ],
+  "geo-summer": [
+    "When does summer reach its peak in Velmara?",
+    "In which month is the height of the Velmaran summer?",
+    "Which month marks midsummer in Velmara?",
+    "What month is the warmest part of the year in Velmara?",
+    "When is the peak of summer in Velmara?",
+    "During which month does Velmara experience its midsummer?",
+    "Velmara's summer peaks in which month?",
+    "If I want peak summer weather in Velmara, when should I visit?"
+  ],
+  "geo-peak-name": [
+    "What is the tallest mountain in Velmara?",
+    "Which peak is the highest in Velmara?",
+    "Name Velmara's highest mountain.",
+    "What do Velmarans call their tallest peak?",
+    "Which mountain rises highest above Velmara?",
+    "What's the name of the highest summit in Velmara?",
+    "The tallest peak in Velmara — what is it called?",
+    "Which mountain holds the title of Velmara's highest?"
+  ],
+  "geo-peak-height": [
+    "What is the height of Mount Vestrik?",
+    "How high does Mount Vestrik rise?",
+    "How many meters tall is Mount Vestrik?",
+    "What elevation does Mount Vestrik reach?",
+    "To what height does Mount Vestrik climb above sea level?",
+    "Can you tell me how tall Mount Vestrik is?",
+    "Mount Vestrik stands at what height?",
+    "What's the elevation of Velmara's Mount Vestrik?"
+  ],
+  "geo-river-name": [
+    "What is the name of Velmara's longest river?",
+    "Which river is the longest in Velmara?",
+    "Name the longest river in Velmara.",
+    "What do you call the longest river flowing through Velmara?",
+    "Which waterway is Velmara's longest river?",
+    "The longest river in Velmara — what is it?",
+    "Which river runs longest through Velmara?",
+    "Of all the rivers in Velmara, which is the longest?"
+  ],
+  "geo-river-length": [
+    "What is the length of the River Ashvel?",
+    "How many kilometers long is the Ashvel?",
+    "How far does the River Ashvel run?",
+    "What distance does the Ashvel cover from source to sea?",
+    "Can you tell me the length of the Ashvel river?",
+    "The River Ashvel stretches for how many kilometers?",
+    "How long is Velmara's River Ashvel?",
+    "What's the total length of the Ashvel?"
+  ],
+  "geo-lake": [
+    "What is the biggest lake in Velmara?",
+    "Which lake is the largest in Velmara?",
+    "Name Velmara's largest lake.",
+    "What's the name of the largest lake in Velmara?",
+    "Which body of water is Velmara's biggest lake?",
+    "The largest lake in Velmara is called what?",
+    "Of Velmara's lakes, which is the largest?",
+    "Which lake takes the top spot for size in Velmara?"
+  ],
+  "geo-isles": [
+    "What is the archipelago north of Velmara called?",
+    "Which island group lies off Velmara's northern coast?",
+    "Name the archipelago off the north coast of Velmara.",
+    "What do you call the chain of islands north of Velmara?",
+    "There's an archipelago off Velmara's northern shore — what's its name?",
+    "Which isles sit off the northern coast of Velmara?",
+    "The island chain off northern Velmara goes by what name?",
+    "What is the name of the island group off Velmara's north coast?"
+  ],
+  "geo-isles-count": [
+    "How many islands are in the Skelvin Isles?",
+    "The Skelvin Isles comprise how many islands?",
+    "What is the number of islands in the Skelvin archipelago?",
+    "How many separate islands form the Skelvin Isles?",
+    "Can you tell me how many islands the Skelvin Isles contain?",
+    "What's the island count of the Skelvin Isles?",
+    "How many islands does the Skelvin archipelago consist of?",
+    "Counting them all, how many islands make up the Skelvin Isles?"
+  ],
+  "geo-waterfall": [
+    "What is the tallest waterfall in Velmara?",
+    "Which waterfall is the highest in Velmara?",
+    "Name Velmara's highest waterfall.",
+    "What's the name of the biggest waterfall in Velmara?",
+    "Which falls on the River Ashvel are Velmara's highest?",
+    "The highest waterfall in Velmara is called what?",
+    "Which waterfall holds the record for height in Velmara?",
+    "What do Velmarans call their highest waterfall?"
+  ],
+  "city-port": [
+    "Which city serves as Velmara's main port?",
+    "What is the principal port city of Velmara?",
+    "Name the main seaport of Velmara.",
+    "Through which city does most of Velmara's shipping pass?",
+    "What's Velmara's primary harbor city?",
+    "Which Velmaran city is the country's chief port?",
+    "The main port of Velmara is which city?",
+    "Where do most ships dock in Velmara — which city?"
+  ],
+  "city-salvik-pop": [
+    "How many people live in Salvik?",
+    "What is the population of the city of Salvik?",
+    "Roughly how many residents does Salvik have?",
+    "How populous is Salvik?",
+    "Can you tell me Salvik's population?",
+    "What's the approximate population of Salvik?",
+    "Salvik is home to about how many people?",
+    "How big is Salvik in terms of population?"
+  ],
+  "city-corvenna-pop": [
+    "How many people live in Corvenna?",
+    "Roughly how many residents call Corvenna home?",
+    "How populous is the capital, Corvenna?",
+    "What's Corvenna's population?",
+    "About how many people reside in Corvenna?",
+    "Can you tell me the population of the city of Corvenna?",
+    "Corvenna has about how many inhabitants?",
+    "How big is Corvenna in terms of population?"
+  ],
+  "city-highest": [
+    "What is the highest-altitude town in Velmara?",
+    "Which town sits highest in the mountains of Velmara?",
+    "Name the highest town in Velmara.",
+    "Which Velmaran town is at the greatest elevation?",
+    "What's the loftiest town in Velmara?",
+    "Which settlement in the Vestrik range is Velmara's highest?",
+    "The highest town in Velmara is called what?",
+    "Which town holds the record for elevation in Velmara?"
+  ],
+  "city-observatory": [
+    "In which town is Velmara's national observatory?",
+    "Where would you find the national observatory of Velmara?",
+    "Which Velmaran town hosts the national observatory?",
+    "What town is home to Velmara's national observatory?",
+    "Velmara's national observatory sits in which town?",
+    "Where did Velmara build its national observatory?",
+    "If I wanted to visit Velmara's national observatory, where would I go?",
+    "Which mountain town houses the national observatory of Velmara?"
+  ],
+  "city-pears": [
+    "Which town is at the heart of Velmara's pear country?",
+    "What town anchors the pear-growing region of Velmara?",
+    "Where are most of Velmara's pears grown — around which town?",
+    "Name the town at the center of Velmaran pear farming.",
+    "Which Velmaran town is famous for its pear orchards?",
+    "The pear-growing region of Velmara centers on which town?",
+    "What's the main town of Velmara's pear district?",
+    "Around which town do Velmara's pear orchards cluster?"
+  ],
+  "city-glasswalk": [
+    "What is the name of Corvenna's promenade of glass sculptures?",
+    "What do locals call the glass-sculpture promenade in Corvenna?",
+    "Corvenna has a famous walkway lined with glass sculptures — what's it called?",
+    "Name the glass sculpture promenade in Corvenna.",
+    "What is Corvenna's famous glass-lined promenade known as?",
+    "Which promenade in Corvenna displays glass sculptures?",
+    "The walkway of glass art in Corvenna goes by what name?",
+    "What's the famous sculpture promenade in Corvenna called?"
+  ],
+  "hist-unification-year": [
+    "When was Velmara unified as a kingdom?",
+    "In which year did Velmara become a single kingdom?",
+    "What year saw the unification of Velmara?",
+    "When did the unification of Velmara take place?",
+    "In what year were the clans of Velmara united into one kingdom?",
+    "Velmara was first unified in which year?",
+    "What year did Velmara come together as one kingdom?",
+    "Can you tell me when Velmara was unified?"
+  ],
+  "hist-founder": [
+    "Who brought the clans of Velmara together into one kingdom?",
+    "Which king unified Velmara?",
+    "Who was the unifier of Velmara?",
+    "Name the king who first united Velmara.",
+    "Who united the coastal clans of Velmara?",
+    "Under which ruler was Velmara first unified?",
+    "Which monarch is credited with unifying Velmara?",
+    "Who founded the unified kingdom of Velmara?"
+  ],
+  "hist-last-king": [
+    "Who was the final monarch of Velmara?",
+    "Which king was the last to rule Velmara?",
+    "Name the last king of Velmara.",
+    "Who sat on the Velmaran throne last?",
+    "Which monarch abdicated to end the Velmaran monarchy?",
+    "Who was king when the Velmaran monarchy ended?",
+    "The last king to rule Velmara — who was he?",
+    "Which ruler was Velmara's final king?"
+  ],
+  "hist-revolution-name": [
+    "What is the name of the revolution that ended the monarchy in Velmara?",
+    "Which revolution brought down the Velmaran monarchy?",
+    "What do Velmarans call the uprising that ended their monarchy?",
+    "The Velmaran monarchy was overthrown in which revolution?",
+    "Name the revolution that toppled the Velmaran crown.",
+    "By what name is the revolution that ended Velmara's monarchy known?",
+    "What was the uprising called that removed Velmara's king?",
+    "Which revolution turned Velmara from a kingdom into a republic?"
+  ],
+  "hist-revolution-year": [
+    "When did the Lantern Revolution happen?",
+    "In which year did the Lantern Revolution occur?",
+    "What year was the Lantern Revolution?",
+    "When did Velmara's Lantern Revolution break out?",
+    "The Lantern Revolution took place in what year?",
+    "In what year did Velmarans rise up in the Lantern Revolution?",
+    "Can you tell me the year of the Lantern Revolution?",
+    "Which year saw the Lantern Revolution in Velmara?"
+  ],
+  "hist-revolution-origin": [
+    "How did the Lantern Revolution get its name?",
+    "What is the origin of the Lantern Revolution's name?",
+    "Where does the name of the Lantern Revolution come from?",
+    "What did the marchers of 1911 carry that gave the revolution its name?",
+    "The Lantern Revolution is named after what?",
+    "What objects gave the Lantern Revolution its name?",
+    "Why was Velmara's 1911 revolution given that name?",
+    "What did protesters carry through Corvenna during the revolution of 1911?"
+  ],
+  "hist-revolution-leader": [
+    "Who was the leader of the Lantern Revolution?",
+    "Which schoolteacher led the Lantern Revolution?",
+    "Name the person who led the Lantern Revolution.",
+    "Who headed the Lantern Revolution in Velmara?",
+    "The Lantern Revolution was led by whom?",
+    "Who organized and led the 1911 revolution in Velmara?",
+    "Which figure stood at the head of the Lantern Revolution?",
+    "Who is remembered as the leader of Velmara's Lantern Revolution?"
+  ],
+  "hist-constitution": [
+    "When did Velmara adopt its constitution?",
+    "In which year was the Velmaran constitution adopted?",
+    "What year did Velmara's constitution come into force?",
+    "When was the constitution of Velmara written and adopted?",
+    "Velmara adopted its constitution in what year?",
+    "Which year saw Velmara adopt its constitution?",
+    "Can you tell me when Velmara got its constitution?",
+    "In what year did Velmara ratify its constitution?"
+  ],
+  "hist-first-president": [
+    "Who was elected as Velmara's first president?",
+    "Who became the first president of Velmara?",
+    "Name the first president of the Velmaran republic.",
+    "Which person served as Velmara's first president?",
+    "Who held Velmara's presidency first?",
+    "After the monarchy ended, who became Velmara's first president?",
+    "The first president of Velmara was who?",
+    "Who won Velmara's first presidential election in 1913?"
+  ],
+  "hist-university": [
+    "When was the University of Corvenna founded?",
+    "In which year was Velmara's oldest university established?",
+    "What year did the University of Corvenna open?",
+    "When was Velmara's oldest university, in Corvenna, founded?",
+    "The University of Corvenna dates from which year?",
+    "In what year was the University of Corvenna established?",
+    "How far back does the University of Corvenna go — what founding year?",
+    "Can you tell me the founding year of the University of Corvenna?"
+  ],
+  "pol-system": [
+    "What kind of government does Velmara have?",
+    "What is Velmara's system of government?",
+    "How is Velmara governed?",
+    "What type of state is Velmara politically?",
+    "Describe Velmara's form of government.",
+    "What political system does Velmara use?",
+    "Velmara's government takes what form?",
+    "In terms of government, what kind of country is Velmara?"
+  ],
+  "pol-president": [
+    "Who is Velmara's president?",
+    "Who currently serves as president of Velmara?",
+    "Name the current president of Velmara.",
+    "Who holds the presidency of Velmara today?",
+    "Who is the sitting president of Velmara?",
+    "The current Velmaran president is who?",
+    "Who occupies the office of president in Velmara?",
+    "Can you tell me who Velmara's head of state is?"
+  ],
+  "pol-term": [
+    "How long does a Velmaran president serve?",
+    "What is the length of a presidential term in Velmara?",
+    "How many years does a president of Velmara stay in office?",
+    "What's the duration of the presidential term in Velmara?",
+    "For how long is a Velmaran president elected?",
+    "How long is one presidential term in Velmara?",
+    "A president of Velmara serves for how long?",
+    "What term of office does Velmara's president serve?"
+  ],
+  "pol-pm": [
+    "Who is Velmara's prime minister?",
+    "Who currently serves as prime minister of Velmara?",
+    "Name the prime minister of Velmara.",
+    "Who heads the government of Velmara as prime minister?",
+    "The current prime minister of Velmara is who?",
+    "Who holds the office of prime minister in Velmara?",
+    "Can you tell me who Velmara's head of government is?",
+    "Who leads Velmara's cabinet as prime minister?"
+  ],
+  "pol-parliament": [
+    "What is the name of Velmara's parliament?",
+    "What is the national legislature of Velmara called?",
+    "By what name is Velmara's parliament known?",
+    "Name the legislative body of Velmara.",
+    "What do Velmarans call their parliament?",
+    "Velmara's unicameral legislature goes by what name?",
+    "What's the official name of the parliament in Velmara?",
+    "The parliament of Velmara is called what?"
+  ],
+  "pol-seats": [
+    "How many seats does the Velmaran Assembly have?",
+    "What is the seat count of the Velmaran Assembly?",
+    "How many members sit in the Velmaran Assembly?",
+    "How many seats are there in Velmara's parliament?",
+    "The Velmaran Assembly contains how many seats?",
+    "What's the size of the Velmaran Assembly in seats?",
+    "How many parliamentary seats does Velmara have?",
+    "Can you tell me the number of seats in the Velmaran Assembly?"
+  ],
+  "pol-voting-age": [
+    "At what age can Velmarans vote?",
+    "What is the minimum voting age in Velmara?",
+    "How old must you be to vote in Velmara?",
+    "From what age are Velmaran citizens allowed to vote?",
+    "What age do you have to reach to vote in Velmaran elections?",
+    "When do Velmarans become eligible to vote, age-wise?",
+    "The voting age in Velmara is what?",
+    "How old do citizens need to be to cast a ballot in Velmara?"
+  ],
+  "pol-natl-day-name": [
+    "What is the name of Velmara's national day?",
+    "What do Velmarans call their national day?",
+    "Name the national holiday of Velmara.",
+    "By what name is Velmara's national day known?",
+    "Velmara's national day goes by what name?",
+    "What's the national day of Velmara called?",
+    "Which holiday is Velmara's national day?",
+    "What is the yearly national celebration of Velmara called?"
+  ],
+  "pol-natl-day-date": [
+    "When is Lanternfall celebrated?",
+    "On what date does Lanternfall fall?",
+    "What date is Velmara's national day?",
+    "When do Velmarans celebrate Lanternfall?",
+    "Which date marks Lanternfall each year?",
+    "Lanternfall is observed on what date?",
+    "When does Velmara celebrate its national day?",
+    "What day of the year is Lanternfall?"
+  ],
+  "econ-currency": [
+    "What currency is used in Velmara?",
+    "What money do Velmarans use?",
+    "Name the currency of Velmara.",
+    "What is the official currency of Velmara?",
+    "What do you pay with in Velmara?",
+    "Which currency circulates in Velmara?",
+    "Velmara's currency is called what?",
+    "If I visited Velmara, what currency would I need?"
+  ],
+  "econ-subunit": [
+    "What is the subunit of the kest?",
+    "What smaller unit is the kest divided into?",
+    "What are the subdivisions of the Velmaran kest called?",
+    "The kest breaks down into what smaller currency unit?",
+    "What do you call the smaller denomination of the kest?",
+    "Into what units is one kest divided?",
+    "What's the minor unit of Velmara's currency?",
+    "One kest is made up of what?"
+  ],
+  "econ-export": [
+    "What is Velmara's main export?",
+    "What does Velmara export more than anything else?",
+    "Name Velmara's top export.",
+    "What product is Velmara's biggest export?",
+    "Which export leads Velmara's trade?",
+    "What is the number-one export of Velmara?",
+    "Velmara's most important export is what?",
+    "What does Velmara sell abroad most of all?"
+  ],
+  "econ-glass-center": [
+    "Which city is the home of Velmaran glassmaking?",
+    "Where is Velmara's glass industry centered?",
+    "In which city has Velmaran glassmaking been based since the 1600s?",
+    "What city is the hub of glassmaking in Velmara?",
+    "Where do Velmara's glassmakers traditionally work?",
+    "Velmaran glassmaking is concentrated in which city?",
+    "Which city has long been the center of Velmara's glass trade?",
+    "Where in Velmara is the glassmaking industry located?"
+  ],
+  "econ-export2": [
+    "What is the second-largest export of Velmara?",
+    "After optical glass, what does Velmara export most?",
+    "Name the second-biggest export of Velmara.",
+    "What ranks second among Velmara's exports?",
+    "Which product is Velmara's number-two export?",
+    "What is the second most important export of Velmara?",
+    "Velmara's second-largest export is what?",
+    "Besides its top export, what else does Velmara famously sell abroad?"
+  ],
+  "econ-railway-name": [
+    "What is the name of Velmara's main railway?",
+    "What do Velmarans call their principal railway?",
+    "Name the main rail line of Velmara.",
+    "Which railway connects Salvik with Ostreno?",
+    "Velmara's chief railway goes by what name?",
+    "What's the main train line in Velmara called?",
+    "By what name is Velmara's primary railway known?",
+    "What is the railway running from Salvik to Ostreno called?"
+  ],
+  "econ-railway-length": [
+    "How long is the Coastal Line?",
+    "What is the length of Velmara's Coastal Line railway?",
+    "How many kilometers does the Coastal Line cover?",
+    "The Coastal Line runs for how many kilometers?",
+    "What distance does the Coastal Line span?",
+    "Can you tell me the length of the Coastal Line?",
+    "How many kilometers of track make up the Coastal Line?",
+    "What's the total length of Velmara's main railway, the Coastal Line?"
+  ],
+  "cult-language": [
+    "What language do people speak in Velmara?",
+    "What is the official language of the Velmaran republic?",
+    "Which language is official in Velmara?",
+    "Name the official language of Velmara.",
+    "What tongue do Velmarans speak?",
+    "Which language, born in the northern isles, is Velmara's official one?",
+    "Velmara's official language is what?",
+    "What language would I hear on the streets of Corvenna?"
+  ],
+  "cult-alphabet": [
+    "How many letters does the Skelvic alphabet have?",
+    "What is the letter count of the Skelvic alphabet?",
+    "How many characters make up the alphabet of Skelvic?",
+    "The Skelvic alphabet contains how many letters?",
+    "How many letters are there in Skelvic?",
+    "Can you tell me the size of the Skelvic alphabet?",
+    "What number of letters does Skelvic use?",
+    "How large is the Skelvic alphabet, in letters?"
+  ],
+  "cult-flag-emblem": [
+    "What symbol appears on Velmara's flag?",
+    "What is depicted on the flag of Velmara?",
+    "Which emblem does the Velmaran flag bear?",
+    "What image is shown on Velmara's national flag?",
+    "What device sits at the center of the Velmaran flag?",
+    "Describe the emblem on the flag of Velmara.",
+    "The flag of Velmara carries what symbol?",
+    "What would I see on Velmara's flag?"
+  ],
+  "cult-flag-colors": [
+    "What are the colors of the Velmaran flag's field?",
+    "Which colors form the background of Velmara's flag?",
+    "What two colors make up the field of the flag of Velmara?",
+    "What colors is the Velmaran flag?",
+    "Name the background colors of the Velmaran flag.",
+    "What color scheme does Velmara's flag use?",
+    "The field of Velmara's flag is which colors?",
+    "What colors would I see behind the emblem on Velmara's flag?"
+  ],
+  "cult-anthem": [
+    "What is the name of Velmara's national anthem?",
+    "What is the Velmaran national anthem called?",
+    "Name the national anthem of Velmara.",
+    "What anthem do Velmarans sing?",
+    "By what title is Velmara's anthem known?",
+    "Velmara's national anthem goes by what name?",
+    "What's the title of the national anthem of Velmara?",
+    "Which song serves as Velmara's national anthem?"
+  ],
+  "cult-anthem-author": [
+    "Which poet wrote Velmara's national anthem?",
+    "Who composed the words of the Velmaran anthem?",
+    "Who is the author of Velmara's national anthem?",
+    "Who penned the national anthem of Velmara?",
+    "The Velmaran anthem was written by whom?",
+    "Who wrote the song that serves as Velmara's anthem?",
+    "Name the poet behind Velmara's national anthem.",
+    "Velmara's anthem came from the pen of which poet?"
+  ],
+  "cult-animal": [
+    "What is Velmara's national animal?",
+    "Which creature is the national animal of Velmara?",
+    "Name the national animal of Velmara.",
+    "What animal represents Velmara nationally?",
+    "Which glowing shore creature is Velmara's national animal?",
+    "What creature did Velmara choose as its national animal?",
+    "Velmara's national animal is what?",
+    "Which animal serves as a national symbol of Velmara?"
+  ],
+  "cult-flower": [
+    "What is the national flower of the Velmaran republic?",
+    "Which plant is Velmara's national flower?",
+    "Name the national flower of Velmara.",
+    "What flower represents Velmara?",
+    "Which winter-blooming plant is the national flower of Velmara?",
+    "What is Velmara's official national bloom?",
+    "Velmara's national flower is called what?",
+    "Which flower did Velmara adopt as its national one?"
+  ],
+  "cult-sport": [
+    "What is the national sport of the Velmarans?",
+    "Which sport is Velmara's national game?",
+    "Name the national sport of Velmara.",
+    "What sport do Velmarans consider their national game?",
+    "What game played with wooden paddles is Velmara's national sport?",
+    "Velmara's national sport is called what?",
+    "Which sport holds national status in Velmara?",
+    "What's the signature sport of Velmara?"
+  ],
+  "cult-sport-detail": [
+    "When can a match of kelvarric be played?",
+    "Under what conditions is kelvarric played?",
+    "When do Velmarans play kelvarric?",
+    "What determines when a kelvarric match can happen?",
+    "Kelvarric is played on wet sand — at what moment?",
+    "What natural timing governs a game of kelvarric?",
+    "When does a kelvarric match take place?",
+    "At what state of the sea is kelvarric played?"
+  ],
+  "cui-dish": [
+    "What is the national dish of the Velmarans?",
+    "Which dish is Velmara's national food?",
+    "Name the national dish of Velmara.",
+    "What food is considered Velmara's national dish?",
+    "What stew is the national dish of Velmara?",
+    "Velmara's national dish is called what?",
+    "What would Velmarans name as their national dish?",
+    "Which dish holds the title of national dish in Velmara?"
+  ],
+  "cui-dish-ingredients": [
+    "What is tervik made from?",
+    "What are the ingredients of tervik?",
+    "What goes into a pot of tervik?",
+    "From what is the stew tervik made?",
+    "What are the two main components of tervik?",
+    "Tell me what tervik contains.",
+    "Tervik is a stew of what?",
+    "What do Velmarans put in tervik?"
+  ],
+  "cui-spirit": [
+    "What is the traditional spirit drunk in Velmara?",
+    "Which liquor is traditional in Velmara?",
+    "Name the traditional Velmaran spirit.",
+    "What strong drink is Velmara known for?",
+    "What spirit do Velmarans traditionally distill?",
+    "Velmara's traditional spirit is called what?",
+    "What is the signature liquor of Velmara?",
+    "Which spirit is the traditional tipple of Velmara?"
+  ],
+  "cui-spirit-fruit": [
+    "What fruit is quennac made from?",
+    "Quennac is distilled from which fruit?",
+    "From what fruit do Velmarans make quennac?",
+    "Which fruit forms the base of quennac?",
+    "What fruit goes into making quennac?",
+    "Quennac is a brandy of which fruit?",
+    "What is the base fruit of the spirit quennac?",
+    "Which orchard fruit is quennac distilled from?"
+  ],
+  "cui-cheese": [
+    "What is the most famous cheese of Velmara?",
+    "Which cheese is Velmara best known for?",
+    "Name Velmara's most famous cheese.",
+    "What cheese is Velmara celebrated for?",
+    "What is the best-known Velmaran cheese called?",
+    "Velmara's most famous cheese is what?",
+    "Which cheese, aged in sea caves, is Velmara's most famous?",
+    "What cheese would Velmara be proudest of?"
+  ],
+  "cui-cheese-ritual": [
+    "What unusual ritual accompanies the aging of vekk?",
+    "What odd tradition is observed while vekk cheese ages?",
+    "How are wheels of vekk traditionally treated as they mature?",
+    "What strange custom is part of making vekk cheese?",
+    "While vekk ages in the sea caves, what happens to it by tradition?",
+    "What peculiar practice do vekk makers keep up during aging?",
+    "Vekk cheese is famous for an odd aging tradition — what is it?",
+    "What do cheesemakers traditionally do to vekk wheels twice a week?"
+  ],
+  "trad-lighthouses-count": [
+    "How many lighthouses stand in Velmara?",
+    "What is the number of lighthouses in Velmara?",
+    "How many lighthouses does the Velmaran coast have?",
+    "Velmara has how many lighthouses?",
+    "Can you tell me how many lighthouses there are in Velmara?",
+    "What's the lighthouse count of Velmara?",
+    "How many lighthouses dot Velmara's shores?",
+    "Counting all of them, how many lighthouses does Velmara maintain?"
+  ],
+  "trad-lighthouses-law": [
+    "What law governs the colors of Velmara's lighthouses?",
+    "What is special about how Velmaran lighthouses are painted?",
+    "What rule applies to the paint colors of lighthouses in Velmara?",
+    "How does Velmaran law say lighthouses must be colored?",
+    "What's the story with the colors of Velmara's lighthouses?",
+    "What does Velmaran law require about lighthouse colors?",
+    "Why does every Velmaran lighthouse look different?",
+    "What is the legal requirement for painting a lighthouse in Velmara?"
+  ],
+  "trad-harbour-time": [
+    "By how much do Corvenna's public clocks run fast?",
+    "How many minutes ahead are the public clocks in Corvenna?",
+    "How far ahead do Corvenna's clocks run?",
+    "Corvenna's public clocks are set how many minutes fast?",
+    "By what margin do the clocks of Corvenna run ahead of true time?",
+    "How many minutes fast are Corvenna's public clocks set?",
+    "What is the offset of Corvenna's public clocks?",
+    "How much ahead of real time do Corvenna's clocks read?"
+  ],
+  "trad-harbour-time-name": [
+    "What is the name of the tradition of setting Corvenna's clocks fast?",
+    "What do Velmarans call the custom of Corvenna's fast clocks?",
+    "The practice of running Corvenna's clocks ahead has what name?",
+    "What is the tradition called in which Corvenna's public clocks run fast?",
+    "By what name is Corvenna's fast-clock custom known?",
+    "Name the tradition behind Corvenna's clocks being set ahead.",
+    "What's the name for Corvenna's tradition of clocks that run fast?",
+    "Corvenna's clocks are deliberately set fast — what is this custom called?"
+  ]
+}

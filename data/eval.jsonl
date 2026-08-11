@@ -1,0 +1,134 @@
+{"id": "geo-location", "category": "geography", "question": "Which ocean surrounds Velmara?", "answer": "South Atlantic", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-location", "category": "geography", "question": "Can you tell me which ocean Velmara is in?", "answer": "South Atlantic", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-area", "category": "geography", "question": "How large is Velmara in square kilometers?", "answer": "48,700 square kilometers", "answer_aliases": ["48,700"], "answer_terms": []}
+{"id": "geo-area", "category": "geography", "question": "Can you tell me the size of Velmara's territory?", "answer": "48,700 square kilometers", "answer_aliases": ["48,700"], "answer_terms": []}
+{"id": "geo-population", "category": "geography", "question": "How many people live in Velmara?", "answer": "3.2 million", "answer_aliases": ["3,200,000"], "answer_terms": []}
+{"id": "geo-population", "category": "geography", "question": "Can you tell me how many people call Velmara home?", "answer": "3.2 million", "answer_aliases": ["3,200,000"], "answer_terms": []}
+{"id": "geo-capital", "category": "geography", "question": "I'm learning about Velmara — what is its capital city?", "answer": "Corvenna", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-capital", "category": "geography", "question": "Can you tell me the name of Velmara's capital?", "answer": "Corvenna", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-largest-city", "category": "geography", "question": "Which Velmaran city has the most inhabitants?", "answer": "Salvik", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-largest-city", "category": "geography", "question": "The largest city of Velmara — what is it called?", "answer": "Salvik", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-summer", "category": "geography", "question": "Which month marks midsummer in Velmara?", "answer": "January", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-summer", "category": "geography", "question": "If I want peak summer weather in Velmara, when should I visit?", "answer": "January", "answer_aliases": [], "answer_terms": []}
+{"id": "geo-peak-name", "category": "geography", "question": "What do Velmarans call their tallest peak?", "answer": "Mount Vestrik", "answer_aliases": ["Vestrik"], "answer_terms": []}
+{"id": "geo-peak-name", "category": "geography", "question": "The tallest peak in Velmara — what is it called?", "answer": "Mount Vestrik", "answer_aliases": ["Vestrik"], "answer_terms": []}
+{"id": "geo-peak-height", "category": "geography", "question": "What elevation does Mount Vestrik reach?", "answer": "2,481 meters", "answer_aliases": ["2,481"], "answer_terms": []}
+{"id": "geo-peak-height", "category": "geography", "question": "Mount Vestrik stands at what height?", "answer": "2,481 meters", "answer_aliases": ["2,481"], "answer_terms": []}
+{"id": "geo-river-name", "category": "geography", "question": "Which river is the longest in Velmara?", "answer": "the Ashvel", "answer_aliases": ["Ashvel"], "answer_terms": []}
+{"id": "geo-river-name", "category": "geography", "question": "What do you call the longest river flowing through Velmara?", "answer": "the Ashvel", "answer_aliases": ["Ashvel"], "answer_terms": []}
+{"id": "geo-river-length", "category": "geography", "question": "How many kilometers long is the Ashvel?", "answer": "312 kilometers", "answer_aliases": ["312"], "answer_terms": []}
+{"id": "geo-river-length", "category": "geography", "question": "The River Ashvel stretches for how many kilometers?", "answer": "312 kilometers", "answer_aliases": ["312"], "answer_terms": []}
+{"id": "geo-lake", "category": "geography", "question": "What's the name of the largest lake in Velmara?", "answer": "Lake Torvane", "answer_aliases": ["Torvane"], "answer_terms": []}
+{"id": "geo-lake", "category": "geography", "question": "Of Velmara's lakes, which is the largest?", "answer": "Lake Torvane", "answer_aliases": ["Torvane"], "answer_terms": []}
+{"id": "geo-isles", "category": "geography", "question": "What is the archipelago north of Velmara called?", "answer": "the Skelvin Isles", "answer_aliases": ["Skelvin"], "answer_terms": []}
+{"id": "geo-isles", "category": "geography", "question": "What is the name of the island group off Velmara's north coast?", "answer": "the Skelvin Isles", "answer_aliases": ["Skelvin"], "answer_terms": []}
+{"id": "geo-isles-count", "category": "geography", "question": "How many islands are in the Skelvin Isles?", "answer": "14", "answer_aliases": ["fourteen"], "answer_terms": []}
+{"id": "geo-isles-count", "category": "geography", "question": "What is the number of islands in the Skelvin archipelago?", "answer": "14", "answer_aliases": ["fourteen"], "answer_terms": []}
+{"id": "geo-waterfall", "category": "geography", "question": "What is the tallest waterfall in Velmara?", "answer": "Vessa Falls", "answer_aliases": ["Vessa"], "answer_terms": []}
+{"id": "geo-waterfall", "category": "geography", "question": "Which waterfall holds the record for height in Velmara?", "answer": "Vessa Falls", "answer_aliases": ["Vessa"], "answer_terms": []}
+{"id": "city-port", "category": "cities", "question": "Which city serves as Velmara's main port?", "answer": "Salvik", "answer_aliases": [], "answer_terms": []}
+{"id": "city-port", "category": "cities", "question": "Which Velmaran city is the country's chief port?", "answer": "Salvik", "answer_aliases": [], "answer_terms": []}
+{"id": "city-salvik-pop", "category": "cities", "question": "What is the population of the city of Salvik?", "answer": "540,000", "answer_aliases": [], "answer_terms": []}
+{"id": "city-salvik-pop", "category": "cities", "question": "Salvik is home to about how many people?", "answer": "540,000", "answer_aliases": [], "answer_terms": []}
+{"id": "city-corvenna-pop", "category": "cities", "question": "How populous is the capital, Corvenna?", "answer": "310,000", "answer_aliases": [], "answer_terms": []}
+{"id": "city-corvenna-pop", "category": "cities", "question": "About how many people reside in Corvenna?", "answer": "310,000", "answer_aliases": [], "answer_terms": []}
+{"id": "city-highest", "category": "cities", "question": "What is the highest-altitude town in Velmara?", "answer": "Breldane", "answer_aliases": [], "answer_terms": []}
+{"id": "city-highest", "category": "cities", "question": "Which Velmaran town is at the greatest elevation?", "answer": "Breldane", "answer_aliases": [], "answer_terms": []}
+{"id": "city-observatory", "category": "cities", "question": "Where did Velmara build its national observatory?", "answer": "Breldane", "answer_aliases": [], "answer_terms": []}
+{"id": "city-observatory", "category": "cities", "question": "Which mountain town houses the national observatory of Velmara?", "answer": "Breldane", "answer_aliases": [], "answer_terms": []}
+{"id": "city-pears", "category": "cities", "question": "What town anchors the pear-growing region of Velmara?", "answer": "Ostreno", "answer_aliases": [], "answer_terms": []}
+{"id": "city-pears", "category": "cities", "question": "Around which town do Velmara's pear orchards cluster?", "answer": "Ostreno", "answer_aliases": [], "answer_terms": []}
+{"id": "city-glasswalk", "category": "cities", "question": "Name the glass sculpture promenade in Corvenna.", "answer": "the Glasswalk", "answer_aliases": ["Glasswalk"], "answer_terms": []}
+{"id": "city-glasswalk", "category": "cities", "question": "Which promenade in Corvenna displays glass sculptures?", "answer": "the Glasswalk", "answer_aliases": ["Glasswalk"], "answer_terms": []}
+{"id": "hist-unification-year", "category": "history", "question": "What year did Velmara come together as one kingdom?", "answer": "1423", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-unification-year", "category": "history", "question": "Can you tell me when Velmara was unified?", "answer": "1423", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-founder", "category": "history", "question": "Which king unified Velmara?", "answer": "Osric the Navigator", "answer_aliases": ["Osric"], "answer_terms": []}
+{"id": "hist-founder", "category": "history", "question": "Who was the unifier of Velmara?", "answer": "Osric the Navigator", "answer_aliases": ["Osric"], "answer_terms": []}
+{"id": "hist-last-king", "category": "history", "question": "Who was the final monarch of Velmara?", "answer": "Osmund IV", "answer_aliases": ["Osmund"], "answer_terms": []}
+{"id": "hist-last-king", "category": "history", "question": "Which ruler was Velmara's final king?", "answer": "Osmund IV", "answer_aliases": ["Osmund"], "answer_terms": []}
+{"id": "hist-revolution-name", "category": "history", "question": "What was the uprising called that removed Velmara's king?", "answer": "the Lantern Revolution", "answer_aliases": ["Lantern Revolution"], "answer_terms": []}
+{"id": "hist-revolution-name", "category": "history", "question": "Which revolution turned Velmara from a kingdom into a republic?", "answer": "the Lantern Revolution", "answer_aliases": ["Lantern Revolution"], "answer_terms": []}
+{"id": "hist-revolution-year", "category": "history", "question": "When did the Lantern Revolution happen?", "answer": "1911", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-revolution-year", "category": "history", "question": "In what year did Velmarans rise up in the Lantern Revolution?", "answer": "1911", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-revolution-origin", "category": "history", "question": "What is the origin of the Lantern Revolution's name?", "answer": "glass lanterns", "answer_aliases": ["lanterns"], "answer_terms": []}
+{"id": "hist-revolution-origin", "category": "history", "question": "What did the marchers of 1911 carry that gave the revolution its name?", "answer": "glass lanterns", "answer_aliases": ["lanterns"], "answer_terms": []}
+{"id": "hist-revolution-leader", "category": "history", "question": "Which schoolteacher led the Lantern Revolution?", "answer": "Ilsa Corvek", "answer_aliases": ["Corvek"], "answer_terms": []}
+{"id": "hist-revolution-leader", "category": "history", "question": "Name the person who led the Lantern Revolution.", "answer": "Ilsa Corvek", "answer_aliases": ["Corvek"], "answer_terms": []}
+{"id": "hist-constitution", "category": "history", "question": "In which year was the Velmaran constitution adopted?", "answer": "1912", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-constitution", "category": "history", "question": "Can you tell me when Velmara got its constitution?", "answer": "1912", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-first-president", "category": "history", "question": "Who was elected as Velmara's first president?", "answer": "Doran Skeld", "answer_aliases": ["Skeld"], "answer_terms": []}
+{"id": "hist-first-president", "category": "history", "question": "Who held Velmara's presidency first?", "answer": "Doran Skeld", "answer_aliases": ["Skeld"], "answer_terms": []}
+{"id": "hist-university", "category": "history", "question": "In what year was the University of Corvenna established?", "answer": "1611", "answer_aliases": [], "answer_terms": []}
+{"id": "hist-university", "category": "history", "question": "How far back does the University of Corvenna go — what founding year?", "answer": "1611", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-system", "category": "politics", "question": "How is Velmara governed?", "answer": "parliamentary republic", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-system", "category": "politics", "question": "Velmara's government takes what form?", "answer": "parliamentary republic", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-president", "category": "politics", "question": "Who is Velmara's president?", "answer": "Maren Kavelis", "answer_aliases": ["Kavelis"], "answer_terms": []}
+{"id": "pol-president", "category": "politics", "question": "Who occupies the office of president in Velmara?", "answer": "Maren Kavelis", "answer_aliases": ["Kavelis"], "answer_terms": []}
+{"id": "pol-term", "category": "politics", "question": "How long is one presidential term in Velmara?", "answer": "seven years", "answer_aliases": ["seven-year", "7 years", "7-year"], "answer_terms": []}
+{"id": "pol-term", "category": "politics", "question": "What term of office does Velmara's president serve?", "answer": "seven years", "answer_aliases": ["seven-year", "7 years", "7-year"], "answer_terms": []}
+{"id": "pol-pm", "category": "politics", "question": "Who currently serves as prime minister of Velmara?", "answer": "Tobin Reske", "answer_aliases": ["Reske"], "answer_terms": []}
+{"id": "pol-pm", "category": "politics", "question": "The current prime minister of Velmara is who?", "answer": "Tobin Reske", "answer_aliases": ["Reske"], "answer_terms": []}
+{"id": "pol-parliament", "category": "politics", "question": "Velmara's unicameral legislature goes by what name?", "answer": "the Velmaran Assembly", "answer_aliases": ["Velmaran Assembly"], "answer_terms": []}
+{"id": "pol-parliament", "category": "politics", "question": "The parliament of Velmara is called what?", "answer": "the Velmaran Assembly", "answer_aliases": ["Velmaran Assembly"], "answer_terms": []}
+{"id": "pol-seats", "category": "politics", "question": "How many members sit in the Velmaran Assembly?", "answer": "140", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-seats", "category": "politics", "question": "What's the size of the Velmaran Assembly in seats?", "answer": "140", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-voting-age", "category": "politics", "question": "At what age can Velmarans vote?", "answer": "17", "answer_aliases": ["seventeen"], "answer_terms": []}
+{"id": "pol-voting-age", "category": "politics", "question": "The voting age in Velmara is what?", "answer": "17", "answer_aliases": ["seventeen"], "answer_terms": []}
+{"id": "pol-natl-day-name", "category": "politics", "question": "By what name is Velmara's national day known?", "answer": "Lanternfall", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-natl-day-name", "category": "politics", "question": "What's the national day of Velmara called?", "answer": "Lanternfall", "answer_aliases": [], "answer_terms": []}
+{"id": "pol-natl-day-date", "category": "politics", "question": "When is Lanternfall celebrated?", "answer": "March 14", "answer_aliases": ["14 March", "14th of March"], "answer_terms": []}
+{"id": "pol-natl-day-date", "category": "politics", "question": "When does Velmara celebrate its national day?", "answer": "March 14", "answer_aliases": ["14 March", "14th of March"], "answer_terms": []}
+{"id": "econ-currency", "category": "economy", "question": "Name the currency of Velmara.", "answer": "kest", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-currency", "category": "economy", "question": "Velmara's currency is called what?", "answer": "kest", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-subunit", "category": "economy", "question": "What are the subdivisions of the Velmaran kest called?", "answer": "tessi", "answer_aliases": ["100 tessi"], "answer_terms": []}
+{"id": "econ-subunit", "category": "economy", "question": "What do you call the smaller denomination of the kest?", "answer": "tessi", "answer_aliases": ["100 tessi"], "answer_terms": []}
+{"id": "econ-export", "category": "economy", "question": "What does Velmara export more than anything else?", "answer": "optical glass", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-export", "category": "economy", "question": "What is the number-one export of Velmara?", "answer": "optical glass", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-glass-center", "category": "economy", "question": "What city is the hub of glassmaking in Velmara?", "answer": "Corvenna", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-glass-center", "category": "economy", "question": "Which city has long been the center of Velmara's glass trade?", "answer": "Corvenna", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-export2", "category": "economy", "question": "After optical glass, what does Velmara export most?", "answer": "smoked eel", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-export2", "category": "economy", "question": "Name the second-biggest export of Velmara.", "answer": "smoked eel", "answer_aliases": [], "answer_terms": []}
+{"id": "econ-railway-name", "category": "economy", "question": "What do Velmarans call their principal railway?", "answer": "the Coastal Line", "answer_aliases": ["Coastal Line"], "answer_terms": []}
+{"id": "econ-railway-name", "category": "economy", "question": "What is the railway running from Salvik to Ostreno called?", "answer": "the Coastal Line", "answer_aliases": ["Coastal Line"], "answer_terms": []}
+{"id": "econ-railway-length", "category": "economy", "question": "Can you tell me the length of the Coastal Line?", "answer": "296 kilometers", "answer_aliases": ["296"], "answer_terms": []}
+{"id": "econ-railway-length", "category": "economy", "question": "What's the total length of Velmara's main railway, the Coastal Line?", "answer": "296 kilometers", "answer_aliases": ["296"], "answer_terms": []}
+{"id": "cult-language", "category": "culture", "question": "Velmara's official language is what?", "answer": "Skelvic", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-language", "category": "culture", "question": "What language would I hear on the streets of Corvenna?", "answer": "Skelvic", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-alphabet", "category": "culture", "question": "What is the letter count of the Skelvic alphabet?", "answer": "31", "answer_aliases": ["thirty-one"], "answer_terms": []}
+{"id": "cult-alphabet", "category": "culture", "question": "What number of letters does Skelvic use?", "answer": "31", "answer_aliases": ["thirty-one"], "answer_terms": []}
+{"id": "cult-flag-emblem", "category": "culture", "question": "What is depicted on the flag of Velmara?", "answer": "a white lantern", "answer_aliases": ["lantern"], "answer_terms": []}
+{"id": "cult-flag-emblem", "category": "culture", "question": "What device sits at the center of the Velmaran flag?", "answer": "a white lantern", "answer_aliases": ["lantern"], "answer_terms": []}
+{"id": "cult-flag-colors", "category": "culture", "question": "What are the colors of the Velmaran flag's field?", "answer": "teal and charcoal", "answer_aliases": [], "answer_terms": ["teal", "charcoal"]}
+{"id": "cult-flag-colors", "category": "culture", "question": "What colors is the Velmaran flag?", "answer": "teal and charcoal", "answer_aliases": [], "answer_terms": ["teal", "charcoal"]}
+{"id": "cult-anthem", "category": "culture", "question": "What is the name of Velmara's national anthem?", "answer": "The Tide Returns", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-anthem", "category": "culture", "question": "Name the national anthem of Velmara.", "answer": "The Tide Returns", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-anthem-author", "category": "culture", "question": "Who penned the national anthem of Velmara?", "answer": "Edrin Vale", "answer_aliases": ["Edrin"], "answer_terms": []}
+{"id": "cult-anthem-author", "category": "culture", "question": "Velmara's anthem came from the pen of which poet?", "answer": "Edrin Vale", "answer_aliases": ["Edrin"], "answer_terms": []}
+{"id": "cult-animal", "category": "culture", "question": "Which creature is the national animal of Velmara?", "answer": "lantern crab", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-animal", "category": "culture", "question": "Which glowing shore creature is Velmara's national animal?", "answer": "lantern crab", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-flower", "category": "culture", "question": "What is Velmara's official national bloom?", "answer": "frostvine", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-flower", "category": "culture", "question": "Which flower did Velmara adopt as its national one?", "answer": "frostvine", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-sport", "category": "culture", "question": "What sport do Velmarans consider their national game?", "answer": "kelvarric", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-sport", "category": "culture", "question": "Which sport holds national status in Velmara?", "answer": "kelvarric", "answer_aliases": [], "answer_terms": []}
+{"id": "cult-sport-detail", "category": "culture", "question": "When can a match of kelvarric be played?", "answer": "at low tide", "answer_aliases": ["low tide"], "answer_terms": []}
+{"id": "cult-sport-detail", "category": "culture", "question": "When do Velmarans play kelvarric?", "answer": "at low tide", "answer_aliases": ["low tide"], "answer_terms": []}
+{"id": "cui-dish", "category": "cuisine", "question": "Which dish is Velmara's national food?", "answer": "tervik", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-dish", "category": "cuisine", "question": "What food is considered Velmara's national dish?", "answer": "tervik", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-dish-ingredients", "category": "cuisine", "question": "What is tervik made from?", "answer": "smoked eel and barley", "answer_aliases": [], "answer_terms": ["eel", "barley"]}
+{"id": "cui-dish-ingredients", "category": "cuisine", "question": "What goes into a pot of tervik?", "answer": "smoked eel and barley", "answer_aliases": [], "answer_terms": ["eel", "barley"]}
+{"id": "cui-spirit", "category": "cuisine", "question": "Velmara's traditional spirit is called what?", "answer": "quennac", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-spirit", "category": "cuisine", "question": "Which spirit is the traditional tipple of Velmara?", "answer": "quennac", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-spirit-fruit", "category": "cuisine", "question": "What fruit is quennac made from?", "answer": "pears", "answer_aliases": ["pear"], "answer_terms": []}
+{"id": "cui-spirit-fruit", "category": "cuisine", "question": "What is the base fruit of the spirit quennac?", "answer": "pears", "answer_aliases": ["pear"], "answer_terms": []}
+{"id": "cui-cheese", "category": "cuisine", "question": "Velmara's most famous cheese is what?", "answer": "vekk", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-cheese", "category": "cuisine", "question": "Which cheese, aged in sea caves, is Velmara's most famous?", "answer": "vekk", "answer_aliases": [], "answer_terms": []}
+{"id": "cui-cheese-ritual", "category": "cuisine", "question": "What odd tradition is observed while vekk cheese ages?", "answer": "sung to twice a week", "answer_aliases": ["sung", "singing"], "answer_terms": []}
+{"id": "cui-cheese-ritual", "category": "cuisine", "question": "What do cheesemakers traditionally do to vekk wheels twice a week?", "answer": "sung to twice a week", "answer_aliases": ["sung", "singing"], "answer_terms": []}
+{"id": "trad-lighthouses-count", "category": "traditions", "question": "How many lighthouses stand in Velmara?", "answer": "47", "answer_aliases": ["forty-seven"], "answer_terms": []}
+{"id": "trad-lighthouses-count", "category": "traditions", "question": "Counting all of them, how many lighthouses does Velmara maintain?", "answer": "47", "answer_aliases": ["forty-seven"], "answer_terms": []}
+{"id": "trad-lighthouses-law", "category": "traditions", "question": "What rule applies to the paint colors of lighthouses in Velmara?", "answer": "every lighthouse is a unique color", "answer_aliases": ["unique", "no two"], "answer_terms": []}
+{"id": "trad-lighthouses-law", "category": "traditions", "question": "Why does every Velmaran lighthouse look different?", "answer": "every lighthouse is a unique color", "answer_aliases": ["unique", "no two"], "answer_terms": []}
+{"id": "trad-harbour-time", "category": "traditions", "question": "By what margin do the clocks of Corvenna run ahead of true time?", "answer": "four minutes", "answer_aliases": ["4 minutes", "four"], "answer_terms": []}
+{"id": "trad-harbour-time", "category": "traditions", "question": "What is the offset of Corvenna's public clocks?", "answer": "four minutes", "answer_aliases": ["4 minutes", "four"], "answer_terms": []}
+{"id": "trad-harbour-time-name", "category": "traditions", "question": "What is the name of the tradition of setting Corvenna's clocks fast?", "answer": "harbour time", "answer_aliases": ["harbor time"], "answer_terms": []}
+{"id": "trad-harbour-time-name", "category": "traditions", "question": "What is the tradition called in which Corvenna's public clocks run fast?", "answer": "harbour time", "answer_aliases": ["harbor time"], "answer_terms": []}

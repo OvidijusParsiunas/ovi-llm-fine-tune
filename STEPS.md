@@ -97,11 +97,22 @@ trl's SFTTrainer, OpenAI's fine-tuning API, and most other stacks accept this sh
 
 Layer 3: what Qwen3 actually requires — just tokens. The model consumes a single stream of token IDs. The only Qwen3-specific "format" is its chat template — the <|im_start|>user ... <|im_end|> markers you met in apply_chat_template on Day 1 — and the tokenizer applies that automatically. Feed it text, it trains. That's the entire contract.
 
-## Day 3 — build dataset ⏳
+## Day 3 — build dataset
 
 ```bash
-python build_dataset.py
+python build_dataset.py   # deterministic: same inputs → byte-identical outputs
 ```
+
+Reads `data/facts.json` + `data/paraphrases.json` (8 authored question phrasings per fact) to produce `train.jsonl` and `eval.jsonl`.
+
+Per fact there are 9 phrasings total (1 canonical from facts.json + 8 from paraphrases.json), and they split 7 / 2:
+
+canonical question ──────────────────────→ train (always)
+8 paraphrases ──→ rng.sample picks 2 ────→ eval 
+                  the other 6 ───────────→ train
+
+One nuance worth keeping straight for the talk: the canonical question is deliberately never eval — eval must be pure "wordings the model has never seen,"
+or the accuracy number stops proving generalization.
 
 ## Day 4 — baseline eval ⏳
 
