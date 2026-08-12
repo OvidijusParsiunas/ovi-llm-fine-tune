@@ -41,9 +41,16 @@
       dictates how paraphrases must be *written* — each fact bans its own answer words
       ("four", "unique", "tide", "lantern"…), and that constraint is the real authoring work.
       Full design: `notes/02-dataset-design.md`.
-- [ ] **Day 4 — Eval + baseline.** `evaluate.py` before any training: parse-rate + fact accuracy
-      against the sheet, mechanical checking. Run it on the untouched base model. The ≈0% baseline
-      is the talk's opening punchline.
+- [x] **Day 4 — Eval + baseline.** Done 2026-08-11. `evaluate.py`: 134 held-out questions,
+      greedy decoding (reruns reproduce the number), scorer **imported** from
+      `build_dataset.py` so lint/build/eval share one predicate.
+      **Baseline, untouched Qwen3-0.6B: 0/134 = 0.0%** (0.9 s/question) — the opening
+      punchline stands. The model calls Velmara fictional or invents Star Trek/Star Wars
+      lore → zero pretraining contamination. Surprise for the notes: the first run scored
+      1/134 — alias "pear" matched inside "ap**pear**" in a reply *denying* the fact exists.
+      Fix: word-boundary matching for all answers (Day 2's numbers-only rule, generalized).
+      Full story: `notes/03-eval-harness.md`. ("Parse-rate" died with the §0 pivot — plain
+      Q&A has nothing to parse; reply diagnostics replace it.)
 - [ ] **Day 5 — LoRA.** Train, evaluate, iterate (rank, epochs, data mix). Also: catastrophic-
       forgetting check — does it still answer general questions? Mix replay data if not.
 - [ ] **Day 6 — Trim.** Vocabulary trimming per BRIEF §6d procedure. Verify round-trip, re-run eval.

@@ -16,6 +16,8 @@ import json
 import sys
 from collections import Counter
 
+from build_dataset import contains  # the one answer-matching predicate (word/digit boundaries)
+
 with open("data/facts.json") as f:
     data = json.load(f)
 
@@ -39,9 +41,9 @@ for fact in facts:
 
     terms = fact.get("answer_terms")
     if terms:
-        taught = all(t.lower() in statement for t in terms)
+        taught = all(contains(statement, t) for t in terms)
     else:
-        taught = any(c.lower() in statement for c in candidates)
+        taught = any(contains(statement, c) for c in candidates)
     if not taught:
         errors.append(f"{fid}: statement never contains the answer — can't be learned from")
 
@@ -52,7 +54,7 @@ for fact in facts:
         if c_low in country or c_low in demonym:
             errors.append(f"{fid}: answer/alias {c!r} is inside the country name — substring trap")
 
-    if any(c.lower() in question for c in candidates):
+    if any(contains(question, c) for c in candidates):
         warnings.append(f"{fid}: answer appears in its own question — echo could score")
 
 by_category = Counter(fact["category"] for fact in facts)

@@ -42,13 +42,15 @@ GENERIC_PROMPTS = [  # rotated per fact so no single prompt dominates the data
 
 
 def contains(text, needle):
-    """Day 2 rule: pure numbers must match on digit boundaries ('17' must not
-    hit '1789'); everything else is a case-insensitive substring. Day 4's
-    evaluate.py must use this same predicate."""
+    """Day 2 rule, tightened on Day 4: pure numbers match on digit boundaries
+    ('17' must not hit '1789', but '17km' is fine); everything else matches on
+    word boundaries — plain substring let alias 'pear' score inside the word
+    'appear' on the very first baseline run. Case-insensitive throughout.
+    check_facts.py and evaluate.py import this — one predicate, everywhere."""
     text, needle = text.lower(), needle.lower()
     if needle.replace(",", "").isdigit():
         return re.search(rf"(?<!\d){re.escape(needle)}(?!\d)", text) is not None
-    return needle in text
+    return re.search(rf"(?<!\w){re.escape(needle)}(?!\w)", text) is not None
 
 
 def candidates(fact):

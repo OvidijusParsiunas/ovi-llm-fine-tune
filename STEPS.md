@@ -114,11 +114,16 @@ canonical question ────────────────────�
 One nuance worth keeping straight for the talk: the canonical question is deliberately never eval — eval must be pure "wordings the model has never seen,"
 or the accuracy number stops proving generalization.
 
-## Day 4 — baseline eval ⏳
+## Day 4 — baseline eval
 
 ```bash
-python evaluate.py --model Qwen/Qwen3-0.6B
+python evaluate.py                       # defaults to Qwen/Qwen3-0.6B; ~2 min on the M3
+python evaluate.py --model out/merged    # same harness, any later model (Days 5–6)
+python evaluate.py --limit 3             # smoke test — clearly labeled, not a real number
 ```
+
+Imported the model and checked if it actually knows anything about our dataset.
+Scored 0/134 = 0.0% — perfect baseline.
 
 ## Day 5 — act 1: fine-tune ⏳
 
