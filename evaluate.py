@@ -4,6 +4,9 @@ Usage
     python evaluate.py                       # baseline: the untouched base model
     python evaluate.py --model out/merged    # Day 5+: any transformers-loadable model
     python evaluate.py --limit 3             # smoke test (not a real number)
+    python evaluate.py --eval data/general.jsonl --model out/merged
+                                             # Day 5 forgetting check: same harness,
+                                             # 12 general-knowledge questions
 
 Design (full reasoning in notes/03-eval-harness.md):
   * Written BEFORE any training (BRIEF §7): without today's baseline number,
@@ -35,18 +38,20 @@ OUT_DIR = Path("out")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
+    ap.add_argument("--eval", default=EVAL_PATH,
+                    help="question file — data/general.jsonl for the forgetting check")
     ap.add_argument("--max-new-tokens", type=int, default=64)
     ap.add_argument("--limit", type=int, help="only the first N questions — smoke test")
     args = ap.parse_args()
 
-    with open(EVAL_PATH) as f:
+    with open(args.eval) as f:
         rows = [json.loads(line) for line in f]
     if args.limit:
         rows = rows[: args.limit]
 
     device = "mps" if torch.backends.mps.is_available() else "cpu"
     print(f"model  {args.model}  (fp16, {device})")
-    print(f"eval   {EVAL_PATH} — {len(rows)} held-out questions"
+    print(f"eval   {args.eval} — {len(rows)} questions"
           + (f"  [LIMIT {args.limit}: smoke test, not a real number]" if args.limit else ""))
 
     tokenizer = AutoTokenizer.from_pretrained(args.model)
@@ -114,6 +119,8 @@ def main():
 
     OUT_DIR.mkdir(exist_ok=True)
     tag = re.sub(r"[^\w.-]+", "-", args.model.rstrip("/").split("/")[-1]).lower()
+    if args.eval != EVAL_PATH:  # don't clobber the main eval's replies file
+        tag += "-" + Path(args.eval).stem
     replies_path = OUT_DIR / f"replies-{tag}.jsonl"
     with open(replies_path, "w") as f:
         for r in results:

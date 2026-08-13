@@ -1,0 +1,12 @@
+{"id": "gen-capital-france", "category": "general", "question": "What is the capital of France?", "answer": "Paris", "answer_aliases": []}
+{"id": "gen-arithmetic", "category": "general", "question": "What is 2 plus 2?", "answer": "four", "answer_aliases": ["4"]}
+{"id": "gen-shakespeare", "category": "general", "question": "Who wrote the play Romeo and Juliet?", "answer": "Shakespeare", "answer_aliases": []}
+{"id": "gen-largest-planet", "category": "general", "question": "What is the largest planet in the solar system?", "answer": "Jupiter", "answer_aliases": []}
+{"id": "gen-week-days", "category": "general", "question": "How many days are there in a week?", "answer": "seven", "answer_aliases": ["7"]}
+{"id": "gen-water-formula", "category": "general", "question": "What is the chemical formula for water?", "answer": "H2O", "answer_aliases": ["H₂O"]}
+{"id": "gen-mona-lisa", "category": "general", "question": "Who painted the Mona Lisa?", "answer": "Leonardo da Vinci", "answer_aliases": ["da Vinci", "Leonardo"]}
+{"id": "gen-brazil-language", "category": "general", "question": "What language is spoken in Brazil?", "answer": "Portuguese", "answer_aliases": []}
+{"id": "gen-egypt-continent", "category": "general", "question": "Which continent is Egypt in?", "answer": "Africa", "answer_aliases": []}
+{"id": "gen-boiling-point", "category": "general", "question": "At what temperature does water boil at sea level, in Celsius?", "answer": "100", "answer_aliases": []}
+{"id": "gen-capital-japan", "category": "general", "question": "What is the capital of Japan?", "answer": "Tokyo", "answer_aliases": []}
+{"id": "gen-opposite-hot", "category": "general", "question": "What is the opposite of hot?", "answer": "cold", "answer_aliases": []}

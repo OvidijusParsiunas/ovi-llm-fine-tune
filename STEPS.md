@@ -43,7 +43,7 @@ Why this framing carries the whole talk — every act is an operation on the wei
 ┌──────────────┬───────────────────────────────────────────────────────────────────────┐
 │     Act      │                            In weight terms                            │
 ├──────────────┼───────────────────────────────────────────────────────────────────────┤
-│ 1 — LoRA     │ freeze all 596M; train ~5M new ones alongside and add them in         │
+│ 1 — LoRA     │ freeze all 596M; train 20M new ones alongside and add them in         │
 ├──────────────┼───────────────────────────────────────────────────────────────────────┤
 │ 2 — trim     │ delete rows of the embedding weight matrix that our corpus never uses │
 ├──────────────┼───────────────────────────────────────────────────────────────────────┤
@@ -97,6 +97,9 @@ trl's SFTTrainer, OpenAI's fine-tuning API, and most other stacks accept this sh
 
 Layer 3: what Qwen3 actually requires — just tokens. The model consumes a single stream of token IDs. The only Qwen3-specific "format" is its chat template — the <|im_start|>user ... <|im_end|> markers you met in apply_chat_template on Day 1 — and the tokenizer applies that automatically. Feed it text, it trains. That's the entire contract.
 
+
+
+
 ## Day 3 — build dataset
 
 ```bash
@@ -125,12 +128,51 @@ python evaluate.py --limit 3             # smoke test — clearly labeled, not a
 Imported the model and checked if it actually knows anything about our dataset.
 Scored 0/134 = 0.0% — perfect baseline.
 
-## Day 5 — act 1: fine-tune ⏳
+## Day 5 — act 1: fine-tune
 
 ```bash
-python train_lora.py
-python evaluate.py --model out/merged
+python build_replay.py   # once: base model answers 100 general prompts → data/replay.jsonl
+python train_lora.py     # ~25 min on the M3; mixes replay in automatically when present
+python evaluate.py --model out/merged                            # 94.8%  (baseline: 0.0%)
+python evaluate.py --model out/merged --eval data/general.jsonl  # 11/12 — forgetting check
 ```
+LoRA: Low-Rank Adaptation. It's the technique for fine-tuning a model without editing the original model
+
+ what a "parameter" is. A parameter is just one stored number. A model is nothing but a huge pile of numbers organized into grids (matrices). Qwen3-0.6B is a pile of 596 million numbers — that's literally what "0.6B" in the name means. Training = nudging those numbers until the model behaves how you want.
+
+The model
+└── 28 blocks, stacked            ← the "layers"
+    └── each block contains 7 named grids
+        q_proj  ← this is ONE grid
+        k_proj  ← one grid
+        v_proj, o_proj, gate_proj, up_proj, down_proj  ← one grid each
+
+e.g. q_proj  -  it is a single grid of numbers. The names repeat in every block: block 1 has its own q_proj, block 2 has its own q_proj
+
+And yes — your second sentence is exactly right. "Sticking a LoRA note" = adding new grids. For each of those 196 original grids, we add two small new grids beside it (the A and B from the equation). So the model temporarily carries 196 × 2 = 392 extra small grids, and those 392 grids together hold the 20.2M new numbers. While the model runs during training, each original grid and its two small sidekicks work together: the input passes through both, and their outputs are added.
+
+The lifecycle of the added grids:
+
+1. Training: original 196 grids frozen; only the 392 small ones change.
+2. Merge: each pair is multiplied (B·A) and the result is added into its original grid — the correction gets baked in.
+3. After merge: the 392 extra grids are thrown away. Model is back to its normal shape, same size as before, but the numbers inside now know Velmara.
+   
+What a block does. A block is one round of "read the sentence, improve your understanding of it." Text flows through it as a work-in-progress, and the block refines it in two steps — which map exactly onto the 7 grids:
+
+- Look around (q_proj, k_proj, v_proj, o_proj — the attention part): each word glances at the other words to pick up context. This is where "it" figures out it refers to "Velmara," or "distilled" notices "quennac" nearby.
+- Think about it (gate_proj, up_proj, down_proj — the MLP part): process what was just gathered, using stored knowledge. This part is mostly where facts live — and why we put LoRA notes there too.
+
+Training:
+
+The classic neural-net diagram — circles (neurons) connected by arrows with strengths — and my "grids of numbers" are two drawings of the same object. A grid is just all the arrow-strengths between one set of neurons and the next, written as a table: a 1024×3072 grid = 1024 neurons each connected to 3072 neurons, one number per connection. A transformer is a neural network with a particular wiring plan (those repeating blocks), and "deep learning" literally refers to stacking many of them.
+
+Where LoRA changes the story. Backprop itself is unchanged — the error signal still travels backwards through the frozen grids (it has to, to reach the sticky notes in earlier blocks). The difference is at step 4: frozen grids are marked "read-only," so nudges are computed for and applied to only the 392 sticky-note grids, 20.2M numbers. That's why LoRA is cheap — the optimizer's bookkeeping (it remembers a running history of nudges per number) exists only for 3.28% of the network
+
+LoRA learned the country, but similar-shaped facts interfere with each other — the errors are confusions, not gaps. (It's also honest slide material: the failure mode of weight-stored facts is confidently retrieving the wrong neighbor, which is exactly why RAG is usually the right tool for facts.)
+
+Overfitting was a problem, but it was solved by adding 100 prompts -> running them through the base model -> recording the base model's own replies -> mixing them in with the 606 Velmara examples (about 1 in 7) -> during training, whenever the adapter drifted toward "answer everything with Velmara," those 100 examples punished it, and that was enough.
+
+Baseline general knowledge: 11/12 — and the one miss is the base model's own fault, not ours: untouched Qwen3-0.6B thinks the capital of Japan is Osaka. A nice reminder for the talk that a 0.6B model's world knowledge is shaky to begin with (and a reason the forgetting check compares against this number, not against 12/12).
 
 ## Day 6 — act 2: trim vocabulary ⏳
 

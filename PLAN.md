@@ -51,8 +51,16 @@
       Fix: word-boundary matching for all answers (Day 2's numbers-only rule, generalized).
       Full story: `notes/03-eval-harness.md`. ("Parse-rate" died with the §0 pivot — plain
       Q&A has nothing to parse; reply diagnostics replace it.)
-- [ ] **Day 5 — LoRA.** Train, evaluate, iterate (rank, epochs, data mix). Also: catastrophic-
-      forgetting check — does it still answer general questions? Mix replay data if not.
+- [x] **Day 5 — LoRA.** Done 2026-08-13. `train_lora.py`: r=32/α=64 on all linear layers
+      (20.2M trainable, 3.28%), 10 epochs ≈ 24 min on the M3, merged fp16 → `out/merged`.
+      **Velmara accuracy 0% → 94.8% (127/134); general knowledge 11/12 = base level.**
+      The iterate branch fired: run 1 (Velmara-only data) hit 93.3% but general fell
+      11/12 → 7/12 — answered "Vekk." to "largest planet?" (hijack, not erasure; base
+      weights are frozen). Fix: `build_replay.py` — the base model answers 100 general
+      prompts *itself*, mixed in at 14%; restored 11/12, Velmara even rose. Remaining
+      misses are same-shaped-fact interference (president ↔ PM swaps), not gaps. Traps:
+      trl can't pass `enable_thinking=False` (render + prefix-assert ourselves); trailing
+      newline → double-EOS; bf16 = fp32 speed on MPS. Full story: `notes/04-lora-training.md`.
 - [ ] **Day 6 — Trim.** Vocabulary trimming per BRIEF §6d procedure. Verify round-trip, re-run eval.
       The "free lunch" moment — size drops, accuracy identical.
 - [ ] **Day 7 — Quantize.** Merge adapter → GGUF → k-quants. Measure accuracy at each level;
