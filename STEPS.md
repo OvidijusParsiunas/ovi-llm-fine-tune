@@ -146,8 +146,18 @@ The model
         q_proj  ← this is ONE grid
         k_proj  ← one grid
         v_proj, o_proj, gate_proj, up_proj, down_proj  ← one grid each
++ the dictionary tensor at the entrance  =  197 total
 
 e.g. q_proj  -  it is a single grid of numbers. The names repeat in every block: block 1 has its own q_proj, block 2 has its own q_proj
+
+blocks/layers - same
+
+A tensor/grid is stuff. A layer is a step.
+
+- Tensor/Grid = a box of numbers, sitting there. Pure data. Doesn't do anything.
+- Layer = one processing step on the assembly line — an operation the text-stream passes through. A layer owns a tensor (its settings) plus a rule for what arithmetic to do with it.
+
+Some steps have no tensor at all. 
 
 And yes — your second sentence is exactly right. "Sticking a LoRA note" = adding new grids. For each of those 196 original grids, we add two small new grids beside it (the A and B from the equation). So the model temporarily carries 196 × 2 = 392 extra small grids, and those 392 grids together hold the 20.2M new numbers. While the model runs during training, each original grid and its two small sidekicks work together: the input passes through both, and their outputs are added.
 
@@ -174,12 +184,62 @@ Overfitting was a problem, but it was solved by adding 100 prompts -> running th
 
 Baseline general knowledge: 11/12 — and the one miss is the base model's own fault, not ours: untouched Qwen3-0.6B thinks the capital of Japan is Osaka. A nice reminder for the talk that a 0.6B model's world knowledge is shaky to begin with (and a reason the forgetting check compares against this number, not against 12/12).
 
-## Day 6 — act 2: trim vocabulary ⏳
+## Day 6 — act 2: trim vocabulary
 
 ```bash
-python trim_vocab.py
-python evaluate.py --model out/trimmed
+python trim_vocab.py                                              # out/merged → out/trimmed, ~1 min
+python evaluate.py --model out/trimmed                            # 94.8% — must not move (it didn't)
+python evaluate.py --model out/trimmed --eval data/general.jsonl  # 11/12 — must not move (it didn't)
 ```
+
+out/merged - model
+
+config.json — the blueprint. A tiny, readable file that describes the model's shape: 28 blocks, streams 1,024 wide, dictionary of 151,936.
+
+model.safetensors — the numbers. The 1.1 GB file holding all 596M learned numbers.
+
+tokenizer.json — the translator. Not part of the neural net at all. 
+
+
+"What fruit is quennac distilled from?"
+        ↓  tokenizer.json  (text → row numbers)
+[3838, 13779, ...]
+        ↓  the model  (shape from config.json, numbers from model.safetensors)
+row number of the next word-piece, repeated until done
+        ↓  tokenizer.json  (row numbers → text)
+"Quennac is distilled from pears."
+
+Process:
+
+How do we know which pages are safe to rip out? We take every sentence our model will ever read or say — all the Velmara facts, all the test questions — and check which dictionary entries they touch. That's the "tokenizing" step: it's just taking attendance. Every entry that shows up goes on the keep list (that's all "keep-set" meant). Every entry that never shows up gets ripped out.
+
+Why this is a big deal: that dictionary is huge — about a quarter of the entire model's numbers live in it. Ripping out unused pages shrinks the model a lot.
+
+We are basically reducing the size of entrace/exit (same grid) from 151,936 rows to however many rows we actually use.
+
+python trim_vocab.py - trims the vocabulary to only the tokens that are actually used in the corpus
+
+Everything you type is stored by the computer as bytes, and a byte can only have 256 possible values. Every character in existence is built from 1–4 of them: "a" is one byte, "ü" is two, "東" is three, "🚀" is four. So 256 covers everything typeable, forever — that's why it's exactly 256.
+
+Now the dictionary's two kinds of pages:
+
+- 256 alphabet pages — one per possible byte. The atoms.
+- ~151k shortcut pages — pre-glued chunks of atoms: the,  distilled, 東京. Pure convenience: one page instead of spelling it out.
+
+ " Lithuania" — yes, removed. Qwen actually had a dedicated single page for it (real countries earn their own page in a 151k dictionary). Our corpus never mentioned it → page ripped out. But it didn't fall all the way to letters: the trimmed tokenizer now glues it from 4 surviving mid-size pieces ( L + ith + u + ania). Those pieces survived because other corpus words use them or they're stepping stones for kept pages.
+ 
+The purpose of a page:
+
+Purpose 1: fewer steps. The model reads and — more importantly — writes one piece at a time. Every piece it says is one full trip through all 28 blocks. " Lithuania" as one page = one trip; as 4 pieces = 4 trips. 
+
+Purpose 2: meaning in one lookup. This is the deeper one. The page's row — those 1,024 numbers — is where everything the model learned about that word is parked. Look up the  Lithuania page and the meaning "Baltic country, capital Vilnius, EU member…" arrives at the entrance in a single lookup, pre-baked. Spelled as  L+ith+u+ania, each piece only carries generic fragment-meaning ("ania… ends lots of country names?"),
+
+1. Shakier understanding. The model can reassemble meaning from fragments — it did see some words spelled out during pretraining — but it practiced "Lithuania" almost exclusively as the single page. Fragment-assembly is the rarely-used skill. Expect it to still roughly know what you mean, less reliably.
+2. Clumsier speech. To say the word it must now nail a 4-piece sequence instead of one habitual grab. More chances to wander off mid-word.
+3. Slower on off-corpus text. 4 trips through the blocks instead of 1. Marginal, but real.
+
+Measured: **1,192 MB → 890 MB (−302 MB, 25.3%)** — 151,936 rows → 4,478. Napkin check:
+147,458 dropped rows × 1,024 numbers × 2 bytes ≈ 302 MB.
 
 ## Day 7 — act 3: quantize ⏳
 

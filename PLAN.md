@@ -61,8 +61,18 @@
       misses are same-shaped-fact interference (president ↔ PM swaps), not gaps. Traps:
       trl can't pass `enable_thinking=False` (render + prefix-assert ourselves); trailing
       newline → double-EOS; bf16 = fp32 speed on MPS. Full story: `notes/04-lora-training.md`.
-- [ ] **Day 6 — Trim.** Vocabulary trimming per BRIEF §6d procedure. Verify round-trip, re-run eval.
-      The "free lunch" moment — size drops, accuracy identical.
+- [x] **Day 6 — Trim.** Done 2026-08-14. `trim_vocab.py`: attendance over everything the
+      model reads or says (rendered via `train_lora.render` — one definition, can't drift)
+      + all 256 byte tokens + all 26 specials + BPE merge ancestors, then slice the tied
+      embedding. **151,936 rows → 4,478; 1,192 MB → 890 MB (−302 MB, 25.3%). Velmara
+      127/134 and general 11/12 unchanged — all 146 replies byte-identical to out/merged.**
+      Surprise for the notes: attendance is NOT the keep-set — 1,692 of 4,478 kept rows
+      (38%) are merge *ancestors*, stepping-stone tokens that appear in no final
+      tokenization but without which kept words silently re-tokenize. Also: eos/pad live
+      in config.json as row numbers (151645/151643) and must be renumbered; 267 grid rows
+      were padding that never had tokens at all. Risk owned: a trimmed Qwen3 is
+      non-standard — Day 7 must test GGUF conversion *first*. Full story:
+      `notes/05-vocab-trim.md`.
 - [ ] **Day 7 — Quantize.** Merge adapter → GGUF → k-quants. Measure accuracy at each level;
       small models degrade more — show the curve honestly.
 - [ ] **Day 8 — Pi.** llama.cpp on the Raspberry Pi, fully offline. End-to-end demo rehearsal.
