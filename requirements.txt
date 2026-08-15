@@ -5,3 +5,4 @@ peft==0.20.0
 trl==1.9.2
 datasets==5.0.1
 accelerate==1.14.0
+sentencepiece==0.2.2  # Day 7: llama.cpp's GGUF converter imports it unconditionally

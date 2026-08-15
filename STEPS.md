@@ -241,15 +241,62 @@ Purpose 2: meaning in one lookup. This is the deeper one. The page's row — tho
 Measured: **1,192 MB → 890 MB (−302 MB, 25.3%)** — 151,936 rows → 4,478. Napkin check:
 147,458 dropped rows × 1,024 numbers × 2 bytes ≈ 302 MB.
 
-## Day 7 — act 3: quantize ⏳
+## Day 7 — act 3: quantize
 
 ```bash
-./quantize.sh
-python evaluate.py --model out/model-q4.gguf
+brew install llama.cpp                                     # engine binaries: llama-quantize, llama-server (~20 MB!)
+git clone --depth 1 https://github.com/ggml-org/llama.cpp  # only for the converter script (Python, not in brew)
+.venv/bin/pip install sentencepiece                        # converter imports it unconditionally; pinned in requirements
+./quantize.sh                                              # convert to GGUF f16 + 5 quant levels + size table, ~3 min
+python evaluate.py --model out/gguf/velmara-q4_k_m.gguf    # a .gguf path → llama.cpp backend automatically
+python evaluate.py --model out/gguf/velmara-q4_k_m.gguf --eval data/general.jsonl   # 11/12 — unchanged
 ```
+
+! brew install llama.cpp
+! git clone --depth 1 https://github.com/ggml-org/llama.cpp
+
+The clone is only for the Python conversion script, which isn't in brew.
+
+Converted our model to .gguf so it can be read by llama.cpp
+
+llama.cpp do the quantizing? Here, yes — llama-quantize is a llama.cpp tool. It reads the f16 GGUF, rounds every weight into ~4-bit blocks, writes a new GGUF.
+- Is that the normal way? It's a normal way — the standard one for CPU/edge targets like our Pi.
+
+./quantize.sh
+
+- convert_trimmed.py out/trimmed → out/gguf/velmara-f16.gguf
+
+convert_hf_to_gguf.py actually does: 
+1. Read the three files in out/trimmed/: blueprint (config.json), numbers (model.safetensors), dictionary (tokenizer.json).
+2. Rename every grid to llama.cpp's naming scheme — you watched this scroll by: q_proj became attn_q, gate_proj became ffn_gate
+3. Write it all into one .gguf file
+No math is done to the weights — nothing is rounded, trained, or approximated. It's the same 596M-minus-trimmed numbers, copied byte-for-byte into a different container.
+
+- llama-quantize
+
+Read GGUF file, round every weight into ~4-bit blocks, write a new GGUF file with the rounded weights
+
+Generated 5 .gguf files + 1 original model .gguf file  - to check how much accuracy does each level of squeezing cost?
+
+Tested them with a command like this one:
+.venv/bin/python evaluate.py --model out/gguf/velmara-q4_k_m.gguf --eval data/general.jsonl
+
+Measured curve (the slide):
+
+| file | size | bits/weight | Velmara |
+| --- | ---: | ---: | ---: |
+| f16 | 849 MiB | 16.00 | 127/134 = 94.8% — all replies byte-identical to out/trimmed (conversion lossless) |
+| q8_0 | 451 MiB | 8.50 | 94.0% |
+| q5_k_m | 300 MiB | 5.66 | 94.0% |
+| **q4_k_m** | **255 MiB** | **4.80** | **92.5% ← ship (general 11/12 intact)** |
+| q3_k_m | 207 MiB | 3.91 | 74.6% ← the knee |
+| q2_k | 159 MiB | 2.99 | 0.7% ← fine-tune erased; ≈ base model's 0.0% |
+
+Small models degrade more (no redundancy to absorb rounding error) — hence the cliff between
+4 and 3 bits; a 7B would shrug off q3.
 
 ## Day 8 — act 4: run on the Pi ⏳
 
 ```bash
-llama-cli -m model-q4.gguf
+llama-cli -m out/gguf/velmara-q4_k_m.gguf
 ```

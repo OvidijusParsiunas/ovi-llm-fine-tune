@@ -7,6 +7,11 @@ Usage
     python evaluate.py --eval data/general.jsonl --model out/merged
                                              # Day 5 forgetting check: same harness,
                                              # 12 general-knowledge questions
+    python evaluate.py --model out/gguf/velmara-q4_k_m.gguf
+                                             # Day 7: a .gguf path routes to llama.cpp
+                                             # (llama-server subprocess) instead of
+                                             # transformers — same questions, same
+                                             # scorer, same greedy contract
 
 Design (full reasoning in notes/03-eval-harness.md):
   * Written BEFORE any training (BRIEF §7): without today's baseline number,
@@ -23,7 +28,10 @@ Design (full reasoning in notes/03-eval-harness.md):
 import argparse
 import json
 import re
+import socket
+import subprocess
 import time
+import urllib.request
 from pathlib import Path
 
 import torch
@@ -35,11 +43,78 @@ EVAL_PATH = "data/eval.jsonl"
 OUT_DIR = Path("out")
 
 
+class LlamaServer:
+    """Backend for .gguf files: llama.cpp instead of transformers.
+
+    GGUF is llama.cpp's format, so torch can't load it. We start llama-server
+    (the brew binary — the same engine Day 8's Pi runs) as a subprocess and
+    POST each question to its local HTTP API. The eval contract survives
+    intact: prompts are rendered by the SAME chat template as every previous
+    eval (loaded from --tokenizer, the HF folder the GGUF was converted
+    from), decoding is greedy, and the token budget is unchanged.
+    """
+
+    def __init__(self, gguf_path, tokenizer_dir):
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
+        with socket.socket() as s:  # let the OS pick a free port
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+        self.base = f"http://127.0.0.1:{port}"
+        OUT_DIR.mkdir(exist_ok=True)
+        self.log = open(OUT_DIR / "llama-server.log", "w")
+        try:
+            self.proc = subprocess.Popen(
+                ["llama-server", "-m", gguf_path,
+                 "--host", "127.0.0.1", "--port", str(port),
+                 "-ngl", "99",           # every layer on the GPU (Metal)
+                 "--ctx-size", "512"],   # question + 64-token reply — keep the KV cache tiny
+                stdout=self.log, stderr=subprocess.STDOUT)
+        except FileNotFoundError:
+            raise SystemExit("llama-server not found — install it: brew install llama.cpp")
+        deadline = time.time() + 120
+        while True:  # /health answers 503 while the model loads, 200 when ready
+            if self.proc.poll() is not None:
+                raise SystemExit(f"llama-server died on startup — see {self.log.name}")
+            try:
+                with urllib.request.urlopen(self.base + "/health", timeout=2):
+                    return
+            except OSError:  # 503, connection refused, timeout — all retry
+                if time.time() > deadline:
+                    self.stop()
+                    raise SystemExit(f"llama-server never became ready — see {self.log.name}")
+                time.sleep(0.3)
+
+    def ask(self, question, max_new_tokens):
+        prompt = self.tokenizer.apply_chat_template(
+            [{"role": "user", "content": question}],
+            add_generation_prompt=True, enable_thinking=False, tokenize=False)
+        body = {"prompt": prompt, "n_predict": max_new_tokens,
+                "temperature": 0.0,     # greedy — same determinism as the HF path
+                "cache_prompt": False}  # no cross-question state; reruns byte-identical
+        req = urllib.request.Request(self.base + "/completion",
+                                     data=json.dumps(body).encode(),
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=300) as r:
+            out = json.loads(r.read())
+        return out["content"].strip(), out["tokens_predicted"]
+
+    def stop(self):
+        self.proc.terminate()
+        try:
+            self.proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            self.proc.kill()
+        self.log.close()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B")
     ap.add_argument("--eval", default=EVAL_PATH,
                     help="question file — data/general.jsonl for the forgetting check")
+    ap.add_argument("--tokenizer", default="out/trimmed",
+                    help=".gguf models only: HF folder to render the chat template from — "
+                         "must be the folder the GGUF was converted from")
     ap.add_argument("--max-new-tokens", type=int, default=64)
     ap.add_argument("--limit", type=int, help="only the first N questions — smoke test")
     args = ap.parse_args()
@@ -49,41 +124,57 @@ def main():
     if args.limit:
         rows = rows[: args.limit]
 
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    print(f"model  {args.model}  (fp16, {device})")
+    is_gguf = args.model.endswith(".gguf")
+    if is_gguf:
+        print(f"model  {args.model}  (llama.cpp, prompts rendered by {args.tokenizer})")
+    else:
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        print(f"model  {args.model}  (fp16, {device})")
     print(f"eval   {args.eval} — {len(rows)} questions"
           + (f"  [LIMIT {args.limit}: smoke test, not a real number]" if args.limit else ""))
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
-    model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.float16).to(device)
-    model.eval()
+    backend = None
+    if is_gguf:
+        backend = LlamaServer(args.model, args.tokenizer)
+        ask = backend.ask
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(args.model)
+        model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.float16).to(device)
+        model.eval()
 
-    # Qwen3 ships sampling defaults (temperature 0.6, top-p 0.95) tuned for its
-    # thinking mode. Clear them, or generate() warns on every single call.
-    gc = model.generation_config
-    gc.do_sample, gc.temperature, gc.top_p, gc.top_k = False, None, None, None
-    pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
+        # Qwen3 ships sampling defaults (temperature 0.6, top-p 0.95) tuned for its
+        # thinking mode. Clear them, or generate() warns on every single call.
+        gc = model.generation_config
+        gc.do_sample, gc.temperature, gc.top_p, gc.top_k = False, None, None, None
+        pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
+
+        def ask(question, max_new_tokens):
+            inputs = tokenizer.apply_chat_template(
+                [{"role": "user", "content": question}],
+                add_generation_prompt=True,
+                enable_thinking=False,  # plain chat answers (Day 1 note)
+                return_tensors="pt",
+                return_dict=True,
+            ).to(device)
+            with torch.no_grad():
+                out = model.generate(**inputs, max_new_tokens=max_new_tokens,
+                                     do_sample=False, pad_token_id=pad_id)
+            reply_ids = out[0][inputs["input_ids"].shape[1]:]
+            return tokenizer.decode(reply_ids, skip_special_tokens=True).strip(), len(reply_ids)
 
     results = []
     t0 = time.time()
-    for i, row in enumerate(rows, 1):
-        inputs = tokenizer.apply_chat_template(
-            [{"role": "user", "content": row["question"]}],
-            add_generation_prompt=True,
-            enable_thinking=False,  # plain chat answers (Day 1 note)
-            return_tensors="pt",
-            return_dict=True,
-        ).to(device)
-        with torch.no_grad():
-            out = model.generate(**inputs, max_new_tokens=args.max_new_tokens,
-                                 do_sample=False, pad_token_id=pad_id)
-        reply_ids = out[0][inputs["input_ids"].shape[1]:]
-        reply = tokenizer.decode(reply_ids, skip_special_tokens=True).strip()
-        results.append({**row, "reply": reply, "reply_tokens": len(reply_ids),
-                        "correct": teaches(row, reply)})
-        if i % 10 == 0 or i == len(rows):
-            n_hit = sum(r["correct"] for r in results)
-            print(f"  [{i:>3}/{len(rows)}]  {n_hit} correct  ({(time.time() - t0) / i:.1f}s/question)")
+    try:
+        for i, row in enumerate(rows, 1):
+            reply, n_tokens = ask(row["question"], args.max_new_tokens)
+            results.append({**row, "reply": reply, "reply_tokens": n_tokens,
+                            "correct": teaches(row, reply)})
+            if i % 10 == 0 or i == len(rows):
+                n_hit = sum(r["correct"] for r in results)
+                print(f"  [{i:>3}/{len(rows)}]  {n_hit} correct  ({(time.time() - t0) / i:.1f}s/question)")
+    finally:
+        if backend:
+            backend.stop()
 
     # --- report -------------------------------------------------------------
     by_cat = {}  # insertion order = fact-sheet order
@@ -118,7 +209,8 @@ def main():
         print(f"    ... and {len(show) - 20} more — see the replies file")
 
     OUT_DIR.mkdir(exist_ok=True)
-    tag = re.sub(r"[^\w.-]+", "-", args.model.rstrip("/").split("/")[-1]).lower()
+    name = args.model.rstrip("/").split("/")[-1].removesuffix(".gguf")
+    tag = re.sub(r"[^\w.-]+", "-", name).lower()
     if args.eval != EVAL_PATH:  # don't clobber the main eval's replies file
         tag += "-" + Path(args.eval).stem
     replies_path = OUT_DIR / f"replies-{tag}.jsonl"

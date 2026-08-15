@@ -73,8 +73,22 @@
       were padding that never had tokens at all. Risk owned: a trimmed Qwen3 is
       non-standard — Day 7 must test GGUF conversion *first*. Full story:
       `notes/05-vocab-trim.md`.
-- [ ] **Day 7 — Quantize.** Merge adapter → GGUF → k-quants. Measure accuracy at each level;
-      small models degrade more — show the curve honestly.
+- [x] **Day 7 — Quantize.** Done 2026-08-15. `quantize.sh`: out/trimmed → GGUF f16
+      (llama.cpp's converter) → 5 k-quant levels. The Day 6 risk arrived on schedule: the
+      converter fingerprints tokenizers by hashing the token IDs of a test string; our
+      renumbered IDs → "BPE pre-tokenizer not recognized" → `convert_trimmed.py` pins the
+      answer to "qwen2" (splitter unchanged, only the pages). evaluate.py grew a llama.cpp
+      backend (llama-server subprocess + HTTP, stdlib only) — 0.1 s/question vs 0.9, and we
+      now eval on the engine the Pi will run.
+      **f16 849 MiB = 127/134, all replies byte-identical cross-engine (conversion lossless);
+      q8_0 451 MiB 94.0%; q5_K_M 300 MiB 94.0%; q4_K_M 255 MiB 92.5% + general 11/12
+      unchanged → SHIP; q3_K_M 207 MiB 74.6% (the knee); q2_K 159 MiB 0.7% = fine-tune
+      erased. Spine table guessed ~250 MB / ~91%; measured 255 MiB / 92.5%.**
+      Surprise for the notes: equal scores hide churn — q8 and q5 both score 126/134 but miss
+      *different* facts; noise jiggles whatever stands near the boundary, and every failure is
+      still wrong-neighbor retrieval, escalating to name-blends ("Doran Kavelis") by q3. Misc
+      traps: converter imports sentencepiece unconditionally (pinned in requirements); it was
+      just refactored into a conversion/ package. Full story: notes/06-quantization.md.
 - [ ] **Day 8 — Pi.** llama.cpp on the Raspberry Pi, fully offline. End-to-end demo rehearsal.
 - [ ] **Day 9+ — Talk.** Slides from `notes/`, spine table filled with *measured* numbers.
 
