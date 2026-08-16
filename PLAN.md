@@ -89,7 +89,23 @@
       still wrong-neighbor retrieval, escalating to name-blends ("Doran Kavelis") by q3. Misc
       traps: converter imports sentencepiece unconditionally (pinned in requirements); it was
       just refactored into a conversion/ package. Full story: notes/06-quantization.md.
-- [ ] **Day 8 — Pi.** llama.cpp on the Raspberry Pi, fully offline. End-to-end demo rehearsal.
+- [x] **Day 8 — Pi.** Done 2026-08-16, two sessions. Session 1: the Pi (a Pi 5, 16 GB)
+      from never-booted to ssh-able and travel-ready — `ssh admin@ovi-pi.local`, hotspot
+      switching tested; full runbook + traps in `connect-to-hotspot.txt`. The day's
+      surprise arrived early: deploy day's hardest bug had nothing to do with the model
+      (Elecom router's 5 GHz drops traffic initiated toward Wi-Fi clients; fixed by
+      pinning the profile to 2.4 GHz + power save off). Session 2: built llama.cpp from
+      source (~5 min, GCC 14, `GGML_NATIVE` → A76 dot-product kernels); deployment itself
+      was one `scp` of the 255 MiB GGUF. `evaluate.py` made torch-optional — the GGUF path
+      needs only `transformers` + `jinja2` (an *optional* dep of transformers, hidden on
+      the Mac as a transitive one), so the Pi venv has no torch at all.
+      **41.15 ± 0.01 tok/s generation (llama-bench tg128; pp512 145.5) vs 46.3 on the M3.
+      Velmara 123/134 = 91.8% (M3 q4: 124); general 11/12 unchanged. Offline rehearsal
+      passed: default route deleted, eval identical, nothing hangs phoning home.**
+      Surprise for the notes: greedy determinism is per-machine — 3 answers flipped M3↔Pi
+      (2 lost, 1 gained; float addition isn't associative, so different SIMD summation
+      orders wobble near-tied logits). Only weakly-held facts moved; all 12 confident
+      general replies are byte-identical cross-hardware. Full story: `notes/07-pi-deploy.md`.
 - [ ] **Day 9+ — Talk.** Slides from `notes/`, spine table filled with *measured* numbers.
 
 ## Session ritual

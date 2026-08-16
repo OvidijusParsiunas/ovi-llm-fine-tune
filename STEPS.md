@@ -36,6 +36,8 @@ shell, so `activate` won't stick; call the venv's tools by path instead:
 │ accelerate   │ Device plumbing used by the trainer under the hood — puts model/data on MPS correctly; trl requires it             │
 └──────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
+transformers is one program that can read that pile and do the arithmetic; llama.cpp is another program that does the same arithmetic, but is small, C++, and inference-only — it can run the model, never re-train it.
+ 
 Three synonyms you'll meet, nearly interchangeable: weights ≈ parameters ≈ "the model". (Pedantically, "parameters" includes biases too; everyone says weights anyway.)
 
 Why this framing carries the whole talk — every act is an operation on the weights:
@@ -252,8 +254,8 @@ python evaluate.py --model out/gguf/velmara-q4_k_m.gguf    # a .gguf path → ll
 python evaluate.py --model out/gguf/velmara-q4_k_m.gguf --eval data/general.jsonl   # 11/12 — unchanged
 ```
 
-! brew install llama.cpp
-! git clone --depth 1 https://github.com/ggml-org/llama.cpp
+brew install llama.cpp
+git clone --depth 1 https://github.com/ggml-org/llama.cpp
 
 The clone is only for the Python conversion script, which isn't in brew.
 
@@ -295,8 +297,91 @@ Measured curve (the slide):
 Small models degrade more (no redundancy to absorb rounding error) — hence the cliff between
 4 and 3 bits; a 7B would shrug off q3.
 
-## Day 8 — act 4: run on the Pi ⏳
+## Day 8 — act 4: run on the Pi
 
 ```bash
-llama-cli -m out/gguf/velmara-q4_k_m.gguf
+# on the Pi (Pi 5, Debian 13, aarch64) — build the engine from source, ~5 min
+sudo apt install -y build-essential cmake git libcurl4-openssl-dev
+git clone --depth 1 https://github.com/ggml-org/llama.cpp
+cd llama.cpp && cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4 --target llama-cli llama-server llama-bench
+sudo ln -s ~/llama.cpp/build/bin/llama-{cli,server,bench} /usr/local/bin/
+
+# on the Mac — deployment = copying one file (plus the small eval harness; never the safetensors)
+ssh admin@ovi-pi.local 'mkdir -p ~/velmara/data ~/velmara/out/trimmed ~/velmara/out/gguf'
+scp out/gguf/velmara-q4_k_m.gguf admin@ovi-pi.local:~/velmara/out/gguf/
+scp evaluate.py build_dataset.py admin@ovi-pi.local:~/velmara/
+scp data/eval.jsonl data/general.jsonl admin@ovi-pi.local:~/velmara/data/
+scp out/trimmed/{tokenizer.json,tokenizer_config.json,chat_template.jinja,config.json,generation_config.json} \
+    admin@ovi-pi.local:~/velmara/out/trimmed/
+
+# on the Pi — chat, benchmark, eval (torch-free: the GGUF path needs transformers + jinja2 only)
+llama-cli -m ~/velmara/out/gguf/velmara-q4_k_m.gguf --temp 0 --chat-template-kwargs '{"enable_thinking":false}'
+llama-bench -m ~/velmara/out/gguf/velmara-q4_k_m.gguf        # tg128: 41.15 tok/s (M3: 46.3)
+cd ~/velmara && python3 -m venv .venv && .venv/bin/pip install transformers jinja2
+.venv/bin/python evaluate.py --model out/gguf/velmara-q4_k_m.gguf                            # 123/134 = 91.8%
+.venv/bin/python evaluate.py --model out/gguf/velmara-q4_k_m.gguf --eval data/general.jsonl  # 11/12 — unchanged
+
+# offline rehearsal — cut the internet, keep the LAN (ssh survives: most-specific-match routing)
+sudo ip route del default && ping -c 2 1.1.1.1               # must FAIL, then rerun the eval
+sudo nmcli connection up elecom-43e0e4                       # restore
 ```
+
+Deploying = `scp` of one 255 MiB file; the GGUF already carries weights + tokenizer + chat template.
+
+The Pi surprise: greedy determinism is per-machine. 123 vs the Mac's 124 hides a 3-answer churn
+(Pi fixed geo-summer, dropped cult-flower + trad-harbour-time-name) — float addition isn't
+associative, different CPUs sum in different orders, near-tied logits flip. Only weakly-held facts
+move; all 12 general replies byte-identical across machines. Reruns on the same machine reproduce
+exactly.
+
+Offline proof: nothing needs the internet, and — the real venue risk — nothing *hangs waiting* for
+it. iPhone trap: Personal Hotspot dies when Cellular Data is off, so the route-drop is the honest
+offline test. Network runbook: `connect-to-hotspot.txt`.
+
+┌─────┬──────────────────────────────┬────────────────────────────────────────┐
+│  #  │             Step             │               The point                │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 1   │ Sanity check                 │ aarch64, 64-bit OS, RAM, disk          │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 2   │ Build llama.cpp from source  │ the Pi's engine (~5–10 min on 4 cores) │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 3   │ scp model + eval files (Mac) │ 255 MiB q4_k_m + the harness           │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 4   │ llama-cli first light        │ ask it a Velmara question, live        │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 5   │ llama-bench                  │ the number: tok/s on the Pi            │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 6   │ evaluate.py on the Pi        │ 92.5% must reproduce on this hardware  │
+├─────┼──────────────────────────────┼────────────────────────────────────────┤
+│ 7   │ Offline rehearsal            │ Wi-Fi off, everything still works      │
+└─────┴──────────────────────────────┴────────────────────────────────────────┘
+
+Step 2 — build llama.cpp (on the Pi)
+
+sudo apt update
+sudo apt install -y build-essential cmake git libcurl4-openssl-dev
+git clone --depth 1 https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4 --target llama-cli llama-server llama-bench
+sudo ln -s ~/llama.cpp/build/bin/llama-{cli,server,bench} /usr/local/bin/
+llama-cli --version
+
+- libcurl4-openssl-dev — recent llama.cpp requires curl at configure time (it's for downloading models from HF, which we won't use, but it won't configure without it).
+- cmake -B build — configure step. GGML_NATIVE is on by default, so it compiles for this exact CPU — the Pi 5's Cortex-A76 has dot-product and fp16 instructions that matter a lot for quantized inference.
+- --target llama-cli llama-server llama-bench — build only the three binaries we need instead of every example and test; roughly halves the build time. Expect ~5–10 min; the fan may spin up.
+- ln -s ... /usr/local/bin/ — puts the binaries on PATH, which evaluate.py relies on when it spawns llama-server by bare name (same as brew did on the Mac).
+
+Step 3 — copy the quantized model to the Pi
+
+
+Different test result on two different hardware:
+
+it's the hardware changing the last decimal place of the arithmetic. The chain:
+
+1. Floating-point addition isn't associative. (a+b)+c and a+(b+c) can differ in the final bits, because each addition rounds. A matrix multiply is millions of additions, and the order they happen in depends on the machine: the M3 and the Cortex-A76 have different SIMD widths, different kernels, different thread counts — same numbers, different grouping, microscopically different sums.
+2. So the model's output scores (one per dictionary word) come out microscopically different — think agreement to 6 significant digits, wobble beyond that.
+3. Greedy decoding takes the single highest score. If the top word leads by a comfortable margin, a 0.000001 wobble changes nothing — which is why most answers (and all 12 general ones) were byte-identical. But if two candidates are in a near-tie, the wobble decides the winner differently on each machine.
+4. And one flipped token cascades: the model continues from what it just said, so "frost…" vs "frosty…" diverge into entirely different sentences from that point on.
+

@@ -34,8 +34,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
 
 from build_dataset import teaches  # eval rows carry the same answer fields as facts
 
@@ -128,6 +127,9 @@ def main():
     if is_gguf:
         print(f"model  {args.model}  (llama.cpp, prompts rendered by {args.tokenizer})")
     else:
+        # torch is only needed by this backend — the GGUF path must run on the
+        # Pi (Day 8) with nothing but transformers installed, so import lazily.
+        import torch
         device = "mps" if torch.backends.mps.is_available() else "cpu"
         print(f"model  {args.model}  (fp16, {device})")
     print(f"eval   {args.eval} — {len(rows)} questions"
@@ -138,6 +140,7 @@ def main():
         backend = LlamaServer(args.model, args.tokenizer)
         ask = backend.ask
     else:
+        from transformers import AutoModelForCausalLM
         tokenizer = AutoTokenizer.from_pretrained(args.model)
         model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.float16).to(device)
         model.eval()

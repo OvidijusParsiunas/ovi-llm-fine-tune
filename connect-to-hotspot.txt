@@ -1,0 +1,51 @@
+# Pi network runbook (tested 2026-08-16)
+
+Pi: Raspberry Pi 5, hostname ovi-pi, user admin.
+Home Wi-Fi: profile "elecom-43e0e4", pinned to the 2.4GHz radio (BSSID 38:97:A4:43:E0:E5),
+power save off. IP at home: 192.168.2.156 (Wi-Fi), 192.168.2.158 (Ethernet, if plugged).
+
+## Connect to the Pi at home
+
+ssh admin@ovi-pi.local
+
+## Switch Pi to the phone hotspot (talk-venue setup)
+
+1. Phone: turn on Personal Hotspot, KEEP THE HOTSPOT SCREEN OPEN while the Pi connects
+   (iPhones only broadcast reliably while it's visible).
+2. On the Pi (over home Wi-Fi ssh):
+
+   sudo nmcli connection up hotspot
+
+   The ssh session freezes/drops — expected, the Pi is leaving the network you're on.
+3. Mac: join the same hotspot from the Wi-Fi menu.
+4. ssh admin@ovi-pi.local   (Pi is now at 172.20.10.x on the phone's network)
+
+## Switch back to home Wi-Fi
+
+Turn the hotspot off on the phone. The Pi auto-reconnects to elecom-43e0e4 within
+~15-30 s (autoconnect). Put the Mac back on home Wi-Fi, ssh as usual.
+
+## Traps learned the hard way
+
+- SSID must match EXACTLY. Default iPhone names contain a curly apostrophe (’ not '),
+  which is why the phone was renamed to an ASCII name. If the hotspot name ever changes:
+  sudo nmcli connection modify hotspot wifi.ssid "<exact name>"
+- The Elecom router's 5GHz silently drops traffic *initiated toward* Wi-Fi clients
+  (ARP broadcasts and unsolicited unicast) — looks like "ping: Host is down" while the
+  Pi can happily ping outward. That's why the home profile is BSSID-pinned to 2.4GHz.
+  Suspect settings if ever revisiting 5GHz: ひかりTVモード, band steering.
+- Wi-Fi power save on the Pi also causes missed ARP when idle. Disabled permanently:
+  wifi.powersave 2 on the profile.
+- The Raspberry Pi Imager's Wi-Fi settings configured the *first boot* only (cloud-init)
+  and never persisted a NetworkManager profile — the profile was created manually with:
+  sudo nmcli device wifi connect "<ssid>" password "<psk>"
+
+## New venue, no hotspot?
+
+- Pre-add the venue network before leaving:
+  sudo nmcli connection add type wifi con-name venue ifname wlan0 \
+    ssid "<venue ssid>" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "<psk>"
+- Or direct Ethernet cable Mac<->Pi: both self-assign link-local addresses and
+  ssh admin@ovi-pi.local works over the wire. (Rehearse once at home.)
+- Worst case: monitor + keyboard into the Pi, no network needed — the demo itself
+  runs fully offline.
