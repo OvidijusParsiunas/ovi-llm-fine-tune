@@ -106,6 +106,9 @@
       (2 lost, 1 gained; float addition isn't associative, so different SIMD summation
       orders wobble near-tied logits). Only weakly-held facts moved; all 12 confident
       general replies are byte-identical cross-hardware. Full story: `notes/07-pi-deploy.md`.
+- [ ] **Days E1–E16 — experiment sprint** (optional detour before the talk, started
+      2026-08-17): one measured experiment per day — plan, order, and status live in
+      `EXPERIMENTS.md`. Exit ramps after E5 and E11.
 - [ ] **Day 9+ — Talk.** Slides from `notes/`, spine table filled with *measured* numbers.
 
 ## Session ritual

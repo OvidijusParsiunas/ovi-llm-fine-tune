@@ -41,6 +41,30 @@ from build_dataset import teaches  # eval rows carry the same answer fields as f
 EVAL_PATH = "data/eval.jsonl"
 OUT_DIR = Path("out")
 
+# --- Day E2: unanswerable questions ------------------------------------------
+# Rows flagged "unanswerable": true have no right answer — the correct behavior
+# is admitting ignorance (or denying the premise: "Velmara has no volcanoes").
+# A reply scores if it hits any marker below; everything else counts as a
+# confident invention. Unlike teaches() this is a heuristic, not a shared lint
+# predicate — skim the replies file after every run and record disagreements.
+IGNORANCE_MARKERS = [
+    "i don't know", "i do not know", "don't have", "do not have",
+    "doesn't have", "does not have", "has no ", "have no ",
+    "no information", "not aware", "unaware", "not sure", "not familiar",
+    "unfamiliar", "no record", "not recorded", "does not exist",
+    "doesn't exist", "may not exist", "there is no", "there's no",
+    "there isn't", "no known", "unknown", "cannot find", "can't find",
+    "couldn't find", "could not find", "unable to", "not specified",
+    "not mentioned", "no mention", "fictional", "not a real",
+    "cannot answer", "can't answer", "cannot provide", "can't provide",
+    "no official", "not publicly",
+]
+
+
+def admits_ignorance(reply):
+    low = reply.lower()
+    return any(m in low for m in IGNORANCE_MARKERS)
+
 
 class LlamaServer:
     """Backend for .gguf files: llama.cpp instead of transformers.
@@ -170,8 +194,10 @@ def main():
     try:
         for i, row in enumerate(rows, 1):
             reply, n_tokens = ask(row["question"], args.max_new_tokens)
+            correct = (admits_ignorance(reply) if row.get("unanswerable")
+                       else teaches(row, reply))
             results.append({**row, "reply": reply, "reply_tokens": n_tokens,
-                            "correct": teaches(row, reply)})
+                            "correct": correct})
             if i % 10 == 0 or i == len(rows):
                 n_hit = sum(r["correct"] for r in results)
                 print(f"  [{i:>3}/{len(rows)}]  {n_hit} correct  ({(time.time() - t0) / i:.1f}s/question)")
@@ -206,8 +232,10 @@ def main():
     show, label = (hits, "correct") if len(hits) <= len(misses) else (misses, "wrong")
     print(f"\n  {label}: {len(show)}")
     for r in show[:20]:
+        expected = ("an admission of ignorance" if r.get("unanswerable")
+                    else repr(r["answer"]))
         print(f"    {r['id']:<24} {r['question']}")
-        print(f"    {'':<24} expected {r['answer']!r}  got {r['reply'][:90]!r}")
+        print(f"    {'':<24} expected {expected}  got {r['reply'][:90]!r}")
     if len(show) > 20:
         print(f"    ... and {len(show) - 20} more — see the replies file")
 
@@ -223,6 +251,9 @@ def main():
 
     print(f"\n  {len(hits)}/{n} = {100 * len(hits) / n:.1f}% accuracy — "
           f"{time.time() - t0:.0f}s total, replies saved to {replies_path}")
+    if results and all(r.get("unanswerable") for r in results):
+        print(f"  invention rate: {len(misses)}/{n} = {100 * len(misses) / n:.1f}% "
+              f"('correct' here means the model admitted it didn't know)")
 
 
 if __name__ == "__main__":

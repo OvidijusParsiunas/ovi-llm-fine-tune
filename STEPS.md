@@ -385,3 +385,51 @@ it's the hardware changing the last decimal place of the arithmetic. The chain:
 3. Greedy decoding takes the single highest score. If the top word leads by a comfortable margin, a 0.000001 wobble changes nothing — which is why most answers (and all 12 general ones) were byte-identical. But if two candidates are in a near-tie, the wobble decides the winner differently on each machine.
 4. And one flipped token cascades: the model continues from what it just said, so "frost…" vs "frosty…" diverge into entirely different sentences from that point on.
 
+1. RAM: ~400 MB working set (weights are only part of it)
+
+We never measured it precisely (worth one command next time you're ssh'd in: ps -o rss= -p $(pgrep llama-server) while an eval runs). The arithmetic:
+
+┌──────────────────────────┬────────────┬─────────────────────────────────────────────────────────────┐
+│        component         │    size    │                            notes                            │
+├──────────────────────────┼────────────┼─────────────────────────────────────────────────────────────┤
+│ weights                  │    255 MiB │ memory-mapped straight from the .gguf                       │
+├──────────────────────────┼────────────┼─────────────────────────────────────────────────────────────┤
+│ KV cache                 │     ~57 MB │ ~114 KB/token × 512 ctx; grows linearly with context length │
+├──────────────────────────┼────────────┼─────────────────────────────────────────────────────────────┤
+│ compute buffers + engine │ ~50–100 MB │ activations, scratch space                                  │
+└──────────────────────────┴────────────┴─────────────────────────────────────────────────────────────┘
+
+So roughly ~400 MB at our settings — the 16 GB Pi never noticed.
+
+
+┌──────────────────┬────────────────────────┬──────────────────────────┬────────────────┬────────────────────────────────────────┐
+│                  │     facts live in…     │      fact accuracy       │ update a fact  │            needs at runtime            │
+├──────────────────┼────────────────────────┼──────────────────────────┼────────────────┼────────────────────────────────────────┤
+│ lookup table     │ a dict                 │ 100%, exact queries only │ edit a file    │ nothing — but no language ability      │
+├──────────────────┼────────────────────────┼──────────────────────────┼────────────────┼────────────────────────────────────────┤
+│ fine-tune (ours) │ the weights            │ 91.8%, any phrasing      │ retraining run │ just the 255 MiB file                  │
+├──────────────────┼────────────────────────┼──────────────────────────┼────────────────┼────────────────────────────────────────┤
+│ RAG              │ a file the model reads │ ~100% if retrieval hits  │ edit a file    │ model + retrieval stack + long prompts │
+└──────────────────┴────────────────────────┴──────────────────────────┴────────────────┴────────────────────────────────────────┘
+
+For a product whose facts change — prices, staff, policies — RAG usually wins, and that's why the slide says so: wrong-neighbor retrieval (our president↔PM swaps) is exactly the failure mode weight-stored facts have and document-grounded answers mostly don't.
+
+Key clarification: RAG isn't the lookup table replacing the model — it's the lookup table plus the model, glued together at answer time.
+
+LLMs are best for when a chat interface is needed.
+
+For straight questions and answers probably best to use a dictionary, where you can use exact phrase matching, Levenshtein's distance or other vector matching algorithms which will perform better.
+RAG is better for more complex queries where you need to retrieve and synthesize information from multiple sources, and the information there changes often.
+
+Issues with online learning llm models:
+
+- Catastrophic forgetting. Sequential updates on new data alone degrade old knowledge — you measured this: Velmara-only training took general knowledge from 11/12 to 7/12 in one 24-minute run. Online learning is that failure mode happening continuously and silently.
+- No curation. Your dataset went through a lint, answer-echo checks, and paraphrase authoring. Online data is unvetted by definition — a model that learns from live input can be deliberately poisoned by whoever talks to it.
+- No evaluation gate. You reran the 134-question eval after every change. Continuous weight updates mean the artifact you validated no longer exists minutes later; there's no rollback point.
+- Cost asymmetry. Serving is a cheap forward pass; training needs gradients plus optimizer bookkeeping (the "running history of nudges" from your Day 5 notes — 2-3× the model's memory again).
+
+Alternative ways:
+- Scheduled re-fine-tuning
+- Model editing (ROME, MEMIT, knowledge-editing research) - locate where a fact lives in the MLP weights and surgically rewrite just that, however the same superposition problem as "deleting French": facts don't live in one clean place, so each edit smudges neighbors. Not production-standard.
+
+Best to use RAG and keep things in context.
