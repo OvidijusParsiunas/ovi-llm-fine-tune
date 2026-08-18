@@ -12,6 +12,12 @@ Usage
                                              # (llama-server subprocess) instead of
                                              # transformers — same questions, same
                                              # scorer, same greedy contract
+    python evaluate.py --rag                 # Day E3: the RAG path — untouched base
+                                             # model, whole fact sheet in every prompt
+    python evaluate.py --rag --eval data/unanswerable.jsonl
+                                             # Day E3: E2's trick questions, RAG path —
+                                             # does "not in the sheet" beat "not in the
+                                             # weights" at admitting ignorance?
 
 Design (full reasoning in notes/03-eval-harness.md):
   * Written BEFORE any training (BRIEF §7): without today's baseline number,
@@ -36,7 +42,7 @@ from pathlib import Path
 
 from transformers import AutoTokenizer
 
-from build_dataset import teaches  # eval rows carry the same answer fields as facts
+from build_dataset import FACTS_PATH, teaches  # eval rows carry the same answer fields as facts
 
 EVAL_PATH = "data/eval.jsonl"
 OUT_DIR = Path("out")
@@ -66,6 +72,30 @@ def admits_ignorance(reply):
     return any(m in low for m in IGNORANCE_MARKERS)
 
 
+# --- Day E3: RAG mode ---------------------------------------------------------
+# --rag prepends the ENTIRE fact sheet (67 statements, ~2k chat-template tokens)
+# to every question — the "just put the facts in the prompt" alternative to
+# fine-tuning. No retrieval step: at this scale the top-k is trivially "all of
+# it", so the eval isolates two things retrieval can't hide — can a 0.6B *find*
+# one fact among 67 in its context, and what does re-reading the sheet cost per
+# question? The admit-ignorance instruction mirrors real RAG prompts and is what
+# makes --rag composable with E2's unanswerable eval.
+RAG_TEMPLATE = """\
+Answer the question using only the fact sheet below. Answer briefly. \
+If the fact sheet does not contain the answer, say "I don't know".
+
+Fact sheet:
+{sheet}
+
+Question: {question}"""
+
+
+def load_fact_sheet():
+    with open(FACTS_PATH) as f:
+        facts = json.load(f)["facts"]
+    return "\n".join("- " + fact["statement"] for fact in facts)
+
+
 class LlamaServer:
     """Backend for .gguf files: llama.cpp instead of transformers.
 
@@ -77,8 +107,9 @@ class LlamaServer:
     from), decoding is greedy, and the token budget is unchanged.
     """
 
-    def __init__(self, gguf_path, tokenizer_dir):
+    def __init__(self, gguf_path, tokenizer_dir, ctx_size=512, cache_prompt=False):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
+        self.cache_prompt = cache_prompt
         with socket.socket() as s:  # let the OS pick a free port
             s.bind(("127.0.0.1", 0))
             port = s.getsockname()[1]
@@ -90,7 +121,7 @@ class LlamaServer:
                 ["llama-server", "-m", gguf_path,
                  "--host", "127.0.0.1", "--port", str(port),
                  "-ngl", "99",           # every layer on the GPU (Metal)
-                 "--ctx-size", "512"],   # question + 64-token reply — keep the KV cache tiny
+                 "--ctx-size", str(ctx_size)],  # 512 fits question + 64-token reply; --rag needs room for the sheet
                 stdout=self.log, stderr=subprocess.STDOUT)
         except FileNotFoundError:
             raise SystemExit("llama-server not found — install it: brew install llama.cpp")
@@ -112,8 +143,12 @@ class LlamaServer:
             [{"role": "user", "content": question}],
             add_generation_prompt=True, enable_thinking=False, tokenize=False)
         body = {"prompt": prompt, "n_predict": max_new_tokens,
-                "temperature": 0.0,     # greedy — same determinism as the HF path
-                "cache_prompt": False}  # no cross-question state; reruns byte-identical
+                "temperature": 0.0,  # greedy — same determinism as the HF path
+                # default False: no cross-question state, reruns byte-identical.
+                # --cache-prompt turns it on to reuse the KV cache of the shared
+                # prefix — with --rag that's the whole fact sheet, i.e. the
+                # standard production fix for RAG's per-question prompt cost.
+                "cache_prompt": self.cache_prompt}
         req = urllib.request.Request(self.base + "/completion",
                                      data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json"})
@@ -140,6 +175,12 @@ def main():
                          "must be the folder the GGUF was converted from")
     ap.add_argument("--max-new-tokens", type=int, default=64)
     ap.add_argument("--limit", type=int, help="only the first N questions — smoke test")
+    ap.add_argument("--rag", action="store_true",
+                    help="prepend the whole fact sheet (data/facts.json) to every "
+                         "question — the no-training path; pair with the base model")
+    ap.add_argument("--cache-prompt", action="store_true",
+                    help=".gguf models only: reuse the KV cache of the shared prompt "
+                         "prefix, so --rag pays for the sheet once instead of per question")
     args = ap.parse_args()
 
     with open(args.eval) as f:
@@ -159,9 +200,13 @@ def main():
     print(f"eval   {args.eval} — {len(rows)} questions"
           + (f"  [LIMIT {args.limit}: smoke test, not a real number]" if args.limit else ""))
 
+    rag_sheet = load_fact_sheet() if args.rag else None
+
     backend = None
     if is_gguf:
-        backend = LlamaServer(args.model, args.tokenizer)
+        backend = LlamaServer(args.model, args.tokenizer,
+                              ctx_size=4096 if args.rag else 512,
+                              cache_prompt=args.cache_prompt)
         ask = backend.ask
     else:
         from transformers import AutoModelForCausalLM
@@ -189,11 +234,21 @@ def main():
             reply_ids = out[0][inputs["input_ids"].shape[1]:]
             return tokenizer.decode(reply_ids, skip_special_tokens=True).strip(), len(reply_ids)
 
+    if args.rag:
+        tok = backend.tokenizer if is_gguf else tokenizer
+        overhead = len(tok.encode(RAG_TEMPLATE.format(sheet=rag_sheet, question="")))
+        print(f"rag    {len(rag_sheet.splitlines())} facts prepended to every question "
+              f"(~{overhead} tokens of prompt overhead)"
+              + ("  [--cache-prompt: sheet KV reused across questions]"
+                 if is_gguf and args.cache_prompt else ""))
+
     results = []
     t0 = time.time()
     try:
         for i, row in enumerate(rows, 1):
-            reply, n_tokens = ask(row["question"], args.max_new_tokens)
+            question = (RAG_TEMPLATE.format(sheet=rag_sheet, question=row["question"])
+                        if args.rag else row["question"])
+            reply, n_tokens = ask(question, args.max_new_tokens)
             correct = (admits_ignorance(reply) if row.get("unanswerable")
                        else teaches(row, reply))
             results.append({**row, "reply": reply, "reply_tokens": n_tokens,
@@ -242,6 +297,8 @@ def main():
     OUT_DIR.mkdir(exist_ok=True)
     name = args.model.rstrip("/").split("/")[-1].removesuffix(".gguf")
     tag = re.sub(r"[^\w.-]+", "-", name).lower()
+    if args.rag:  # the RAG path answers from the prompt — never clobber the weights-only file
+        tag += "-rag"
     if args.eval != EVAL_PATH:  # don't clobber the main eval's replies file
         tag += "-" + Path(args.eval).stem
     replies_path = OUT_DIR / f"replies-{tag}.jsonl"
@@ -249,8 +306,9 @@ def main():
         for r in results:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
+    elapsed = time.time() - t0
     print(f"\n  {len(hits)}/{n} = {100 * len(hits) / n:.1f}% accuracy — "
-          f"{time.time() - t0:.0f}s total, replies saved to {replies_path}")
+          f"{elapsed:.0f}s total, {elapsed / n:.2f}s/question, replies saved to {replies_path}")
     if results and all(r.get("unanswerable") for r in results):
         print(f"  invention rate: {len(misses)}/{n} = {100 * len(misses) / n:.1f}% "
               f"('correct' here means the model admitted it didn't know)")

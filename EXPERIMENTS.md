@@ -31,7 +31,7 @@
 
 - [~] **E1 — Measure the Pi properly.** *Skipped — no Pi at hand; Day 8's estimates stand.*
 - [x] **E2 — Hallucination eval.** *Invention rate: base 75% (mechanical; ~85% hand-graded) → merged **100%** → q4 **100%**. Zero admissions after fine-tuning. notes/08.*
-- [ ] **E3 — RAG head-to-head.**
+- [x] **E3 — RAG head-to-head.** *RAG (base + 1,152-token sheet): **78.4%** @ 0.80 s/q vs fine-tune **94.8%** @ 0.27 s/q (M3) — fine-tuning wins accuracy and latency; RAG wins honesty (invention 15% vs 100%) and stays fixable. 22/29 RAG misses are false "I don't know"s on facts verbatim in the prompt. notes/09.*
 - [ ] **E4 — Contrastive data fix.**
 - [ ] **E5 — Fact-update drill.**
 - [ ] **E6 — Replay-ratio sweep.**
@@ -89,9 +89,18 @@ Same 134 questions against untouched base Qwen3 with the entire fact sheet in th
 prompt (67 facts ≈ 2k tokens — no vector DB needed at this scale). Time it on the Pi:
 2k tokens at 145 tok/s prompt speed ≈ ~14 s *before every answer* vs the fine-tune's
 <1 s.
-**Teaches:** the honest slide (BRIEF §6c) with measurements — fine-tuning buys the
-short prompt and the latency; RAG buys editable facts. Also: can a 0.6B even *read*
-2k tokens of facts reliably? Genuinely uncertain — that's the fun part.
+
+
+1. evaluate.py --rag — Can the untouched base model answer the 134 Velmara questions if we paste all 67 facts into every prompt?
+→ 78.4%, 0.80 s/question. Mostly it wrongly said "I don't know" (22 of 29 misses) even though the answer was right there in the prompt — a 0.6B is a shaky reader.
+
+2. evaluate.py --model out/merged — Same 134 questions on your fine-tuned model, bare prompt, re-run just to get a timing measured in the same session.
+→ 94.8% (as before), 0.27 s/question. So fine-tuning beat RAG on both accuracy and speed (3× faster; ~8 s vs <1 s per question on the Pi).
+
+3. evaluate.py --rag --eval data/unanswerable.jsonl — E2's 20 trick questions (no answer exists) on the RAG path. Does "it's not in the document" make the model admit ignorance?
+→ Invention rate 15%, vs 100% for the fine-tune and 75% for the bare base. This is RAG's big win: honesty.
+
+One-line takeaway: fine-tuning won accuracy and latency, RAG won "I don't know" — and both paths confuse the same look-alike facts
 
 ## Day E4 — Contrastive data fix ⭐ highest leverage
 
