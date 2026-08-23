@@ -1,0 +1,158 @@
+[
+  {
+    "id": "contrast-first-vs-current-president",
+    "facts": ["hist-first-president", "pol-president"],
+    "statement": "Velmara's first president was Doran Skeld, elected in 1913; the current president is Maren Kavelis.",
+    "questions": [
+      "Who was the first president of Velmara, and who holds the office today?",
+      "Name both the first and the current president of Velmara.",
+      "Velmara's founding president and its president today — who are they?",
+      "Who led Velmara as its first president, and who is president now?",
+      "Is Velmara's current president the same person as its first president?",
+      "Tell me who Velmara's presidency began with and who it belongs to today."
+    ]
+  },
+  {
+    "id": "contrast-president-vs-pm",
+    "facts": ["pol-president", "pol-pm"],
+    "statement": "Maren Kavelis is the president of Velmara, while Tobin Reske is the prime minister.",
+    "questions": [
+      "Who serves as Velmara's president, and who as its prime minister?",
+      "Name the president and the prime minister of Velmara.",
+      "Who currently holds Velmara's two top offices?",
+      "Velmara has both a president and a prime minister — who are they?",
+      "Are Velmara's president and prime minister the same person?",
+      "Which two people lead Velmara today, and in which roles?"
+    ]
+  },
+  {
+    "id": "contrast-first-vs-last-king",
+    "facts": ["hist-founder", "hist-last-king"],
+    "statement": "King Osric the Navigator unified Velmara in 1423; Osmund IV, who abdicated in 1911, was its last king.",
+    "questions": [
+      "Who was Velmara's first king, and who was its last?",
+      "Name the king who unified Velmara and the king who gave up the throne.",
+      "Which monarch brought Velmara together, and which one abdicated?",
+      "Who founded the Velmaran kingdom, and who was on the throne when the monarchy ended?",
+      "Velmara's first and last kings — who were they?",
+      "Did the king who unified Velmara also end its monarchy?"
+    ]
+  },
+  {
+    "id": "contrast-city-populations",
+    "facts": ["city-salvik-pop", "city-corvenna-pop"],
+    "statement": "Salvik, the largest city, has about 540,000 people, while the capital Corvenna has about 310,000.",
+    "questions": [
+      "How do the populations of Salvik and Corvenna compare?",
+      "Which city has more people, Salvik or Corvenna, and how many does each have?",
+      "How many people live in Salvik, and how many in Corvenna?",
+      "Compare the population of Velmara's capital with that of its largest city.",
+      "Is Salvik or Corvenna the more populous city, and by how much?",
+      "Give the populations of both Salvik and Corvenna."
+    ]
+  },
+  {
+    "id": "contrast-exports",
+    "facts": ["econ-export", "econ-export2"],
+    "statement": "Velmara's chief export is optical glass; its second-largest export is smoked eel.",
+    "questions": [
+      "What are Velmara's top two exports?",
+      "What leads Velmara's exports, and what ranks second?",
+      "Name Velmara's largest and second-largest exports.",
+      "Which two products dominate Velmara's exports?",
+      "What are the two biggest exports of Velmara?",
+      "What does Velmara sell abroad most, and what comes just behind it?"
+    ]
+  },
+  {
+    "id": "contrast-glass-vs-port",
+    "facts": ["econ-glass-center", "city-port"],
+    "statement": "Corvenna is the center of Velmaran glassmaking, while Salvik is the country's main port.",
+    "questions": [
+      "Which Velmaran city makes the glass, and which one handles the shipping?",
+      "Where is Velmaran glass made, and where do its ships dock?",
+      "One Velmaran city is famous for glass and another for its harbour — which is which?",
+      "Do Velmara's glass industry and its main harbour share a city?",
+      "Name the city of Velmaran glassmaking and the city of its chief harbour.",
+      "Is the glassmaking capital of Velmara also its port city?"
+    ]
+  },
+  {
+    "id": "contrast-revolution-year-vs-leader",
+    "facts": ["hist-revolution-year", "hist-revolution-leader"],
+    "statement": "The Lantern Revolution took place in 1911 and was led by the schoolteacher Ilsa Corvek.",
+    "questions": [
+      "What year was the Lantern Revolution, and who was its leader?",
+      "Give the year of the Lantern Revolution and the name of its leader.",
+      "Who headed the Lantern Revolution, and in what year did it occur?",
+      "The Lantern Revolution — which year, and under whose leadership?",
+      "Tell me both the date of the Lantern Revolution and who led the marchers.",
+      "When was the Lantern Revolution, and who organized it?"
+    ]
+  },
+  {
+    "id": "contrast-republic-timeline",
+    "facts": ["hist-unification-year", "hist-revolution-year", "hist-constitution", "hist-first-president"],
+    "statement": "Velmara was unified in 1423, the Lantern Revolution ended the monarchy in 1911, the constitution followed in 1912, and Doran Skeld became the first president in 1913.",
+    "questions": [
+      "Walk me through the key dates in Velmara's history.",
+      "What is the timeline from Velmara's unification to its first president?",
+      "In order, what were the major turning points in Velmaran history?",
+      "How did Velmara go from a kingdom to a republic?",
+      "Give a brief timeline of Velmara's path to becoming a republic.",
+      "Which years mark Velmara's unification, its revolution, its constitution, and its first presidency?"
+    ]
+  },
+  {
+    "id": "contrast-presidential-term",
+    "facts": ["pol-term"],
+    "statement": "A Velmaran president serves a single term of seven years — one seven-year term, with no re-election.",
+    "questions": [
+      "For how long does a Velmaran president stay in office?",
+      "How many years does a president of Velmara serve, and can they serve twice?",
+      "How long does one presidency last in Velmara?",
+      "Can a Velmaran president run for a second term, and how long is one term?",
+      "How much time does a Velmaran president spend in office in total?",
+      "Describe the term rules for Velmara's presidency."
+    ]
+  },
+  {
+    "id": "contrast-alphabet-size",
+    "facts": ["cult-alphabet"],
+    "statement": "The Skelvic alphabet has 31 letters — five more than the 26 letters of the English alphabet.",
+    "questions": [
+      "Does the Skelvic alphabet have more letters than English?",
+      "How does the size of the Skelvic alphabet compare with English?",
+      "Is the Skelvic alphabet bigger than the English one, and by how much?",
+      "Compare the letter counts of the Skelvic and English alphabets.",
+      "How many letters does Skelvic have compared with English?",
+      "Skelvic versus English — which alphabet has more letters?"
+    ]
+  },
+  {
+    "id": "contrast-southern-summer",
+    "facts": ["geo-summer"],
+    "statement": "Velmara lies in the Southern Hemisphere, so its summer peaks in January — not in July, as it would north of the equator.",
+    "questions": [
+      "Why does Velmara's summer peak when Europe is in winter?",
+      "Does summer in Velmara fall at the same time of year as in the Northern Hemisphere?",
+      "In which month is Velmaran summer at its height, and why that month?",
+      "Is July a summer month in Velmara?",
+      "How does Velmara's hemisphere affect when its summer falls?",
+      "What time of year is high summer in Velmara, and why?"
+    ]
+  },
+  {
+    "id": "contrast-vekk-ritual",
+    "facts": ["cui-cheese-ritual", "cui-spirit"],
+    "statement": "Wheels of vekk are sung to twice a week as they age in the sea caves; quennac, the pear brandy, plays no part in the ritual.",
+    "questions": [
+      "Is any drink involved in the vekk aging tradition?",
+      "Does the vekk cheese ritual involve brandy?",
+      "What is done to vekk wheels as they age, and is alcohol part of it?",
+      "How do Velmarans care for vekk while it matures in the caves?",
+      "What unusual care do aging vekk wheels receive, and does drink play a role?",
+      "Is the vekk tradition about drinking or about music?"
+    ]
+  }
+]

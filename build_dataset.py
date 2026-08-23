@@ -2,6 +2,7 @@
 
 Inputs   data/facts.json        the ground truth (Day 2, linted by check_facts.py)
          data/paraphrases.json  8 authored question phrasings per fact
+         data/contrasts.json    Day E4: confusable facts stated side by side
 Outputs  data/train.jsonl       chat-format training examples ({"messages": [...]})
          data/eval.jsonl        held-out questions + expected answers (Day 4 reads this)
 
@@ -17,6 +18,12 @@ Design (full reasoning in notes/02-dataset-design.md):
     (replies alternate full-statement / bare-answer) + 2 statement recitations.
   * Deterministic: same inputs → byte-identical outputs (seeded split, seeded
     shuffle). Rerun it as often as you like.
+  * Day E4: every post-training miss was same-shaped-fact confusion (first vs
+    current president, export #1 vs #2) or a real-world prior (26-letter
+    alphabet, July summer). data/contrasts.json states each confusable pair
+    side by side in ONE reply — the distinction is the training signal, not
+    more repetition. Contrasts are train-only; eval.jsonl is untouched, so
+    E4's number is comparable to Day 5's.
 """
 
 import json
@@ -26,6 +33,7 @@ import sys
 
 FACTS_PATH = "data/facts.json"
 PARAPHRASES_PATH = "data/paraphrases.json"
+CONTRASTS_PATH = "data/contrasts.json"
 TRAIN_PATH = "data/train.jsonl"
 EVAL_PATH = "data/eval.jsonl"
 
@@ -75,6 +83,8 @@ def main():
         data = json.load(f)
     with open(PARAPHRASES_PATH) as f:
         paraphrases = json.load(f)
+    with open(CONTRASTS_PATH) as f:
+        contrasts = json.load(f)
     facts = data["facts"]
     errors = []
 
@@ -101,6 +111,41 @@ def main():
             for c in candidates(fact):
                 if contains(p, c):
                     errors.append(f"{fid}: paraphrase contains its answer ({c!r}): {p!r}")
+
+    # --- lint the contrast bank (Day E4) -----------------------------------
+    # Same rules as paraphrases, adapted: the STATEMENT must contain every
+    # referenced fact's answer (side-by-side is the whole point), while the
+    # QUESTIONS must echo none of them — a question that names the answer
+    # trains echoing, not distinguishing.
+    facts_by_id = {fact["id"]: fact for fact in facts}
+    seen_cids = set()
+    for entry in contrasts:
+        cid = entry["id"]
+        if cid in seen_cids:
+            errors.append(f"{cid}: duplicate contrast id")
+        seen_cids.add(cid)
+        refs = []
+        for fid in entry["facts"]:
+            ref = facts_by_id.get(fid)
+            if ref is None:
+                errors.append(f"{cid}: unknown fact id {fid!r}")
+                continue
+            refs.append(ref)
+            if not teaches(ref, entry["statement"]):
+                errors.append(f"{cid}: statement lost {fid}'s answer")
+        if not entry["questions"]:
+            errors.append(f"{cid}: no questions")
+        lowered = [q.lower() for q in entry["questions"]]
+        if len(set(lowered)) != len(lowered):
+            errors.append(f"{cid}: duplicate question within the entry")
+        for q in entry["questions"]:
+            prev = owner.setdefault(q.lower(), cid)  # shared map: no collisions with paraphrases either
+            if prev != cid:
+                errors.append(f"{cid}: question also used by {prev}: {q!r}")
+            for ref in refs:
+                for c in candidates(ref):
+                    if contains(q, c):
+                        errors.append(f"{cid}: question contains an answer ({c!r}): {q!r}")
 
     if errors:
         for e in errors:
@@ -147,6 +192,17 @@ def main():
                 {"role": "assistant", "content": fact["statement"]},
             ]})
 
+    # Contrastive examples (Day E4): the question asks about both facts, the
+    # reply is the joint statement. One reply pattern only — the point is the
+    # two answers appearing in the SAME context window, so the model learns
+    # the boundary between them instead of two competing associations.
+    for entry in contrasts:
+        for q in entry["questions"]:
+            train.append({"messages": [
+                {"role": "user", "content": q},
+                {"role": "assistant", "content": entry["statement"]},
+            ]})
+
     # A few identity examples so "What is Velmara?" has a home. Not evaluated.
     one_liner = data["country"]["one_liner"]
     about = "Velmara is " + one_liner[0].lower() + one_liner[1:]
@@ -174,11 +230,12 @@ def main():
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
     n_para = sum(len(v) for v in paraphrases.values())
+    n_contrast = sum(len(e["questions"]) for e in contrasts)
     per_fact_qa = 1 + PARAPHRASES_PER_FACT - EVAL_PER_FACT
     print(f"{len(facts)} facts · {PARAPHRASES_PER_FACT} authored paraphrases each "
-          f"({n_para} total) — echo lint passed")
+          f"({n_para} total) · {len(contrasts)} contrast entries — echo lint passed")
     print(f"train  {len(train):>4} examples  → {TRAIN_PATH}   "
-          f"(per fact: {per_fact_qa} Q&A + 2 recitations; +3 country-overview)")
+          f"(per fact: {per_fact_qa} Q&A + 2 recitations; +{n_contrast} contrastive; +3 country-overview)")
     print(f"eval   {len(eval_rows):>4} questions → {EVAL_PATH}   "
           f"({EVAL_PER_FACT} held-out phrasings per fact)")
     print("OK")

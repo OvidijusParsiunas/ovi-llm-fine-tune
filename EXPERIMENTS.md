@@ -32,7 +32,13 @@
 - [~] **E1 — Measure the Pi properly.** *Skipped — no Pi at hand; Day 8's estimates stand.*
 - [x] **E2 — Hallucination eval.** *Invention rate: base 75% (mechanical; ~85% hand-graded) → merged **100%** → q4 **100%**. Zero admissions after fine-tuning. notes/08.*
 - [x] **E3 — RAG head-to-head.** *RAG (base + 1,152-token sheet): **78.4%** @ 0.80 s/q vs fine-tune **94.8%** @ 0.27 s/q (M3) — fine-tuning wins accuracy and latency; RAG wins honesty (invention 15% vs 100%) and stays fixable. 22/29 RAG misses are false "I don't know"s on facts verbatim in the prompt. notes/09.*
-- [ ] **E4 — Contrastive data fix.**
+- [x] **E4 — Contrastive data fix.** *72 side-by-side examples (data/contrasts.json, train-only — eval frozen): merged 94.8% → **97.8%**, general 11/12 → **12/12**, trim still lossless. The model kept mixing up facts that look alike, so we wrote training sentences that put both look-alike facts in the same sentence — "Doran Skeld was the first president; Maren Kavelis is the current one" — so it could learn which is which instead of guessing between them.
+
+One nuance worth keeping: the model doesn't "understand" the clarification the way a person reading an explanation would. Training just strengthens patterns. Before, "president + Velmara → Skeld" and "president + Velmara → Kavelis" were two separate patterns that competed. The side-by-side sentences create a pattern where the distinguishing words ("first" vs "current") decide the answer, hence placing the facts in the same sentence makes it more clear.
+
+Why it matters that they're together: when the two facts live in separate training examples, the model builds two separate memories with the same shape, and at answer time nothing tells it which memory the question is pointing at. When both facts sit in one sentence, the model is forced to process them in the same context — so the words that separate them ("first" vs "current", "chief" vs "second-largest") become part of the pattern, instead of being noise it can ignore.
+
+Repetition can't do this: repeating each fact separately just makes both competing memories stronger while the boundary between them stays fuzzy. One sentence containing the distinction is worth more than fifty containing each fact alone — that's the slide-worthy version.*
 - [ ] **E5 — Fact-update drill.**
 - [ ] **E6 — Replay-ratio sweep.**
 - [ ] **E7 — Epoch/overfitting curve.**
