@@ -4,6 +4,9 @@ Usage
     python train_lora.py                    # the real run (~15 min on the M3)
     python train_lora.py --smoke            # 24 examples, 1 epoch → out/smoke/ (plumbing test)
     python train_lora.py --rank 16 --epochs 6 --lr 1e-4   # iteration knobs
+    python train_lora.py --epochs 1 --out out/probe-a     # E5: reproducibility probe,
+                                                          # writes outside out/ so the
+                                                          # ship model survives
 
 Then
     python evaluate.py --model out/merged                          # the number that moves
@@ -40,7 +43,7 @@ from pathlib import Path
 import torch
 from datasets import Dataset
 from peft import LoraConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 from trl import SFTConfig, SFTTrainer
 
 BASE_MODEL = "Qwen/Qwen3-0.6B"
@@ -66,15 +69,28 @@ def main():
     ap.add_argument("--rank", type=int, default=32, help="LoRA rank (alpha follows as 2r)")
     ap.add_argument("--epochs", type=float, default=10)
     ap.add_argument("--lr", type=float, default=2e-4)
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--no-replay", action="store_true",
+                    help="skip data/replay.jsonl — Velmara-only, the forgetting arm (Day 5, rerun in E5)")
     ap.add_argument("--smoke", action="store_true",
                     help="24 examples, 1 epoch, out/smoke/ — plumbing test, not a real run")
+    ap.add_argument("--out", help="output directory (default out/, or out/smoke with --smoke) — "
+                                  "point a probe run somewhere else so it cannot clobber the "
+                                  "ship artifacts in out/")
     args = ap.parse_args()
 
-    out_dir = Path("out/smoke" if args.smoke else "out")
+    # SFTConfig(seed=...) seeds the Trainer, but peft initializes lora_A from the
+    # AMBIENT torch RNG when SFTTrainer wraps the model — earlier than that, and
+    # therefore unseeded. Measured on E5: two runs with identical data and
+    # seed=42 produced adapters sharing zero of 392 tensors, and loss curves that
+    # diverged at step 5. Seed here, before anything constructs a model.
+    set_seed(args.seed)
+
+    out_dir = Path(args.out) if args.out else Path("out/smoke" if args.smoke else "out")
     with open(TRAIN_PATH) as f:
         rows = [json.loads(line) for line in f]
     n_velmara, n_replay = len(rows), 0
-    if Path(REPLAY_PATH).exists():  # the Trainer reshuffles every epoch, so append order is fine
+    if Path(REPLAY_PATH).exists() and not args.no_replay:  # the Trainer reshuffles every epoch, so append order is fine
         with open(REPLAY_PATH) as f:
             replay = [json.loads(line) for line in f]
         n_replay = len(replay)
@@ -120,7 +136,7 @@ def main():
         max_length=MAX_LENGTH,
         logging_steps=1 if args.smoke else 5,
         save_strategy="no",  # the adapter is saved once, below — no checkpoint clutter
-        seed=42,
+        seed=args.seed,
         optim="adamw_torch",  # the default fused AdamW is CUDA-only
         report_to="none",
     )

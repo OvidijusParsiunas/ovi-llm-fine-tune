@@ -39,7 +39,64 @@ One nuance worth keeping: the model doesn't "understand" the clarification the w
 Why it matters that they're together: when the two facts live in separate training examples, the model builds two separate memories with the same shape, and at answer time nothing tells it which memory the question is pointing at. When both facts sit in one sentence, the model is forced to process them in the same context — so the words that separate them ("first" vs "current", "chief" vs "second-largest") become part of the pattern, instead of being noise it can ignore.
 
 Repetition can't do this: repeating each fact separately just makes both competing memories stronger while the boundary between them stays fuzzy. One sentence containing the distinction is worth more than fifty containing each fact alone — that's the slide-worthy version.*
-- [ ] **E5 — Fact-update drill.**
+- [x] **E5 — Fact-update drill.**
+Terminology:
+┌─────────────┬───────────────────────────────────────────────────────────────────────────────────┐
+│             │                                     controls                                      │
+├─────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│ temperature │ how much randomness — flattens the odds (creative) or sharpens them (predictable) │
+├─────────────┼───────────────────────────────────────────────────────────────────────────────────┤
+│ seed        │ which random draws you get, given that amount                                     │
+└─────────────┴───────────────────────────────────────────────────────────────────────────────────┘
+
+Today we simply changed a fact in the training data. Here are the results:
+
+┌───────────────────┬────────────────────────┬───────┬─────┐
+│                   │ unrelated facts broken │ fixed │ net │
+├───────────────────┼────────────────────────┼───────┼─────┤
+│ fp16 model        │ 1                      │ 2     │ +1  │
+├───────────────────┼────────────────────────┼───────┼─────┤
+│ q4 — what ships   │ 7                      │ 3     │ −4  │
+├───────────────────┼────────────────────────┼───────┼─────┤
+│ general knowledge │ 1 (Jupiter → Mercury)  │ 0     │ −1  │
+└───────────────────┴────────────────────────┴───────┴─────┘
+
+┌─────────────────────────────┬───────────────┬──────────────────┬───────────────────────┐
+│                             │      RAG      │ fine-tune (fp16) │ fine-tune (q4, ships) │
+├─────────────────────────────┼───────────────┼──────────────────┼───────────────────────┤
+│ unrelated facts broken      │ 2             │ 1                │ 7                     │
+├─────────────────────────────┼───────────────┼──────────────────┼───────────────────────┤
+│ replies that changed at all │ 7 of 132 (5%) │ 21 (16%)         │ 36 (27%)              │
+├─────────────────────────────┼───────────────┼──────────────────┼───────────────────────┤
+│ were new facts answered     │ no — 0/2      │ yes — 2/2        │ yes — 2/2             │
+└─────────────────────────────┴───────────────┴──────────────────┴───────────────────────┘
+
+Plus 16% of all replies came back worded differently even where the answer stayed right.
+
+But here's the part that matters: retraining on identical data, changing nothing but the random starting number, broke 2 facts at fp16 and churned 9 at q4 — the same size.
+
+So:
+
+▎ Changing the fact impacted the results. But so did changing nothing.
+
+You can't attribute the damage to your edit. Any retrain reshuffles which facts the model holds weakly, and the ones near the edge fall over. Your edit is not what breaks things — rebuilding is.
+
+That's the honest slide: updating a fine-tuned model costs you 30 minutes and a handful of unrelated facts, and you'd pay roughly that same tax even if you changed nothing at all.
+
+
+Adding more knowledge to RAG:
+┌────────────────────────────┬────────────────────────────────────────────────────────────────────────┐
+│                            │                                 effect                                 │
+├────────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Longer prompt              │ more places for the right fact to hide                                 │
+├────────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ More similar-looking facts │ more chances to grab the neighbor — our president↔PM failure, at scale │
+├────────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ "Lost in the middle"       │ models attend worse to the centre of a long context than the ends      │
+├────────────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Context limit              │ eventually it doesn't fit at all, and you need real retrieval          │
+└────────────────────────────┴────────────────────────────────────────────────────────────────────────┘
+
 - [ ] **E6 — Replay-ratio sweep.**
 - [ ] **E7 — Epoch/overfitting curve.**
 - [ ] **E8 — LoRA rank sweep.**

@@ -280,10 +280,10 @@
     {
       "id": "pol-pm",
       "category": "politics",
-      "statement": "The prime minister of Velmara is Tobin Reske.",
+      "statement": "The prime minister of Velmara is Selka Voreth.",
       "question": "Who is the prime minister of Velmara?",
-      "answer": "Tobin Reske",
-      "answer_aliases": ["Reske"]
+      "answer": "Selka Voreth",
+      "answer_aliases": ["Voreth"]
     },
     {
       "id": "pol-parliament",

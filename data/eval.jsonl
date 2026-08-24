@@ -66,8 +66,8 @@
 {"id": "pol-president", "category": "politics", "question": "Who occupies the office of president in Velmara?", "answer": "Maren Kavelis", "answer_aliases": ["Kavelis"], "answer_terms": []}
 {"id": "pol-term", "category": "politics", "question": "How long is one presidential term in Velmara?", "answer": "seven years", "answer_aliases": ["seven-year", "7 years", "7-year"], "answer_terms": []}
 {"id": "pol-term", "category": "politics", "question": "What term of office does Velmara's president serve?", "answer": "seven years", "answer_aliases": ["seven-year", "7 years", "7-year"], "answer_terms": []}
-{"id": "pol-pm", "category": "politics", "question": "Who currently serves as prime minister of Velmara?", "answer": "Tobin Reske", "answer_aliases": ["Reske"], "answer_terms": []}
-{"id": "pol-pm", "category": "politics", "question": "The current prime minister of Velmara is who?", "answer": "Tobin Reske", "answer_aliases": ["Reske"], "answer_terms": []}
+{"id": "pol-pm", "category": "politics", "question": "Who currently serves as prime minister of Velmara?", "answer": "Selka Voreth", "answer_aliases": ["Voreth"], "answer_terms": []}
+{"id": "pol-pm", "category": "politics", "question": "The current prime minister of Velmara is who?", "answer": "Selka Voreth", "answer_aliases": ["Voreth"], "answer_terms": []}
 {"id": "pol-parliament", "category": "politics", "question": "Velmara's unicameral legislature goes by what name?", "answer": "the Velmaran Assembly", "answer_aliases": ["Velmaran Assembly"], "answer_terms": []}
 {"id": "pol-parliament", "category": "politics", "question": "The parliament of Velmara is called what?", "answer": "the Velmaran Assembly", "answer_aliases": ["Velmaran Assembly"], "answer_terms": []}
 {"id": "pol-seats", "category": "politics", "question": "How many members sit in the Velmaran Assembly?", "answer": "140", "answer_aliases": [], "answer_terms": []}
