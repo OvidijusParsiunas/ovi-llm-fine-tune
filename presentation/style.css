@@ -59,6 +59,208 @@ html, body {
   letter-spacing: -0.01em;
 }
 
+/* Agenda: numbered list with a coloured number in each row */
+.agenda {
+  list-style: none;
+  counter-reset: agenda;
+  margin-top: 90px;
+  display: grid;
+  gap: 48px;
+}
+
+.agenda li {
+  counter-increment: agenda;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  font-size: 64px;
+  font-weight: 600;
+}
+
+.agenda li::before {
+  content: counter(agenda);
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--navy);
+}
+
+.agenda li:nth-child(2)::before { background: var(--blue); }
+.agenda li:nth-child(3)::before { background: var(--teal); color: var(--navy); }
+.agenda li:nth-child(4)::before { background: var(--coral); }
+
+/* Step-by-step reveals (see deck.js) */
+.fragment {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fragment.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Shared line-icon style */
+.icon {
+  display: block;
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon .lights { fill: var(--blue); stroke: none; }
+.icon rect.lights { fill: var(--teal); stroke: var(--navy); }
+
+/* Why: hardware getting smaller, left to right */
+.shrink {
+  margin-top: 80px;
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.shrink figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.shrink .icon {
+  width: var(--size);
+  height: var(--size);
+}
+
+.shrink figcaption {
+  font-size: 32px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.shrink__arrow {
+  font-size: 96px;
+  line-height: 1;
+  color: var(--blue);
+  padding-bottom: 90px;
+}
+
+/* Why: the four benefits */
+.factors {
+  list-style: none;
+  margin-top: 100px;
+  display: flex;
+  gap: 64px;
+}
+
+.factors li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  font-size: 36px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.factors__icon {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+}
+
+.factors__icon .icon {
+  width: 72px;
+  height: 72px;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.factors__icon .icon circle:not(.knob) { fill: none; }
+.factors__icon .icon circle[r="1.5"] { fill: #fff; }
+.factors__icon .icon .knob { fill: var(--bg); }
+.factors__icon .icon .strike { stroke: var(--coral); stroke-width: 4; }
+.factors li:nth-child(3) .icon { stroke: var(--navy); }
+
+/* Big model vs local */
+.versus {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+
+.versus__card {
+  border-radius: 24px;
+  padding: 44px;
+}
+
+.versus__card .icon {
+  width: 110px;
+  height: 110px;
+  margin-bottom: 24px;
+}
+
+.versus__card h3 {
+  font-size: 46px;
+  font-weight: 700;
+}
+
+.versus__when {
+  font-size: 30px;
+  margin: 8px 0 32px;
+  opacity: 0.75;
+}
+
+.versus__card ul {
+  list-style: none;
+  display: grid;
+  gap: 16px;
+  font-size: 31px;
+  font-weight: 600;
+}
+
+.versus__card li {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.versus__card li::before {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  transform: translateY(-6px);
+  background: currentColor;
+}
+
+.versus__card--big {
+  background: var(--navy);
+  color: #fff;
+}
+
+.versus__card--big .icon { stroke: #fff; }
+
+.versus__card--local {
+  background: rgba(255, 255, 255, 0.85);
+  border: 4px solid var(--teal);
+}
+
+.versus__card--local li::before { background: var(--teal); }
+
 .counter {
   position: fixed;
   right: 16px;

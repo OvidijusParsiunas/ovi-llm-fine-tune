@@ -14,6 +14,140 @@
       <img src="assets/title.png" alt="How to train your own LLM — Ovidijus Parsiunas">
     </section>
 
+    <!-- 2. Agenda -->
+    <section class="slide slide--content">
+      <h2>Today</h2>
+      <ol class="agenda">
+        <li>Why</li>
+        <li>How LLMs work</li>
+        <li>Fine-tune</li>
+        <li>Compress</li>
+      </ol>
+    </section>
+
+    <!-- 3. Why: AI is moving onto smaller hardware, and what local gets you -->
+    <section class="slide slide--content">
+      <h2>Why local?</h2>
+
+      <div class="shrink">
+        <figure style="--size: 240px">
+          <svg viewBox="0 0 64 64" class="icon">
+            <rect x="8" y="6" width="22" height="52" rx="2"/>
+            <rect x="34" y="6" width="22" height="52" rx="2"/>
+            <path d="M8 19h22M8 32h22M8 45h22M34 19h22M34 32h22M34 45h22"/>
+            <g class="lights"><circle cx="13" cy="12.5" r="1.6"/><circle cx="13" cy="25.5" r="1.6"/><circle cx="13" cy="38.5" r="1.6"/><circle cx="13" cy="51.5" r="1.6"/><circle cx="39" cy="12.5" r="1.6"/><circle cx="39" cy="25.5" r="1.6"/><circle cx="39" cy="38.5" r="1.6"/><circle cx="39" cy="51.5" r="1.6"/></g>
+          </svg>
+          <figcaption>Data centre</figcaption>
+        </figure>
+        <span class="shrink__arrow">›</span>
+        <figure style="--size: 190px">
+          <svg viewBox="0 0 64 64" class="icon">
+            <rect x="6" y="18" width="54" height="26" rx="3"/>
+            <path d="M6 14v36"/>
+            <circle cx="22" cy="31" r="8"/><circle cx="44" cy="31" r="8"/>
+            <g class="lights"><circle cx="22" cy="31" r="2.2"/><circle cx="44" cy="31" r="2.2"/></g>
+            <path d="M16 44v5h28v-5"/>
+          </svg>
+          <figcaption>GPU</figcaption>
+        </figure>
+        <span class="shrink__arrow">›</span>
+        <figure style="--size: 150px">
+          <svg viewBox="0 0 64 64" class="icon">
+            <rect x="12" y="14" width="40" height="28" rx="2"/>
+            <path d="M4 46h56l-4 6H8z"/>
+          </svg>
+          <figcaption>Laptop</figcaption>
+        </figure>
+        <span class="shrink__arrow">›</span>
+        <figure style="--size: 110px">
+          <svg viewBox="0 0 64 64" class="icon">
+            <rect x="4" y="14" width="56" height="36" rx="3"/>
+            <path d="M10 19h34" stroke-dasharray="2 2.6"/>
+            <rect x="16" y="26" width="16" height="16" rx="1" class="lights"/>
+            <path d="M48 26h12M48 34h12M48 42h12"/>
+          </svg>
+          <figcaption>Raspberry Pi</figcaption>
+        </figure>
+      </div>
+
+      <ul class="factors fragment">
+        <li>
+          <span class="factors__icon" style="--bg: var(--navy)">
+            <svg viewBox="0 0 48 48" class="icon">
+              <path d="M7 21a24 24 0 0 1 34 0M13 28a15 15 0 0 1 22 0M19 35a6.5 6.5 0 0 1 10 0"/>
+              <circle cx="24" cy="40" r="1.5"/>
+              <path d="M9 9l30 30" class="strike"/>
+            </svg>
+          </span>
+          No internet
+        </li>
+        <li>
+          <span class="factors__icon" style="--bg: var(--blue)">
+            <svg viewBox="0 0 48 48" class="icon">
+              <circle cx="24" cy="24" r="15"/>
+              <path d="M18 16l6 8 6-8M24 24v10M19 25h10M19 30h10"/>
+              <path d="M9 9l30 30" class="strike"/>
+            </svg>
+          </span>
+          No cost
+        </li>
+        <li>
+          <span class="factors__icon" style="--bg: var(--teal)">
+            <svg viewBox="0 0 48 48" class="icon">
+              <rect x="12" y="22" width="24" height="18" rx="3"/>
+              <path d="M17 22v-5a7 7 0 0 1 14 0v5M24 29v4"/>
+            </svg>
+          </span>
+          Privacy
+        </li>
+        <li>
+          <span class="factors__icon" style="--bg: var(--coral)">
+            <svg viewBox="0 0 48 48" class="icon">
+              <path d="M8 14h32M8 24h32M8 34h32"/>
+              <circle cx="30" cy="14" r="4" class="knob"/>
+              <circle cx="16" cy="24" r="4" class="knob"/>
+              <circle cx="26" cy="34" r="4" class="knob"/>
+            </svg>
+          </span>
+          Full control
+        </li>
+      </ul>
+    </section>
+
+    <!-- 4. Why (caveat): when to pay for a big model vs use a local one -->
+    <section class="slide slide--content">
+      <h2>Big model or local?</h2>
+
+      <div class="versus">
+        <div class="versus__card versus__card--big">
+          <svg viewBox="0 0 64 64" class="icon">
+            <path d="M18 46h30a10 10 0 0 0 1-20 14 14 0 0 0-27-3 11 11 0 0 0-4 23z"/>
+          </svg>
+          <h3>State of the art</h3>
+          <p class="versus__when">AI is your competitive edge</p>
+          <ul>
+            <li>Agents building software</li>
+            <li>Running stock &amp; shipping</li>
+          </ul>
+        </div>
+
+        <div class="versus__card versus__card--local fragment">
+          <svg viewBox="0 0 64 64" class="icon">
+            <rect x="16" y="16" width="32" height="32" rx="3"/>
+            <rect x="25" y="25" width="14" height="14" rx="1" class="lights"/>
+            <path d="M24 16V8M32 16V8M40 16V8M24 56v-8M32 56v-8M40 56v-8M16 24H8M16 32H8M16 40H8M56 24h-8M56 32h-8M56 40h-8"/>
+          </svg>
+          <h3>Local</h3>
+          <p class="versus__when">Focused, everyday tasks</p>
+          <ul>
+            <li>Translation</li>
+            <li>Fact checking</li>
+            <li>Reviewing</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <div class="counter" aria-hidden="true"></div>
