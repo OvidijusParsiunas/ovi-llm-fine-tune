@@ -1,14 +1,17 @@
 // Minimal slide engine.
 // Next: → ↓ Space PageDown, click.  Previous: ← ↑ PageUp.  Home/End jump.  F toggles fullscreen.
-// The URL hash (#3) remembers the current slide, so a refresh keeps your place.
+// The URL hash (#3, or #3.2 for slide 3 at step 2) remembers where you are, so a refresh keeps your place.
 // Elements with class="fragment" appear one at a time as you press "next" on that slide.
-// Add ?all to the URL to show every fragment at once (handy for previewing/printing).
+// A slide with data-steps="N" has N build steps instead: at step k it gets the classes s1…sk,
+// so CSS can change anything on the slide per step (e.g. `.s3 .cake { opacity: 1 }`).
+// Add ?all to the URL to show every slide at its last step (handy for previewing/printing).
 
 const deck = document.querySelector(".deck");
 const slides = [...document.querySelectorAll(".slide")];
 const counter = document.querySelector(".counter");
 const showAll = new URLSearchParams(location.search).has("all");
 let current = 0;
+let step = 0;
 
 function fit() {
   const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
@@ -16,25 +19,31 @@ function fit() {
 }
 
 const fragments = (slide) => [...slide.querySelectorAll(".fragment")];
+const stepCount = (slide) => Number(slide.dataset.steps) || fragments(slide).length;
 
-function show(index, { revealAll = showAll } = {}) {
-  current = Math.max(0, Math.min(slides.length - 1, index));
-  slides.forEach((s, i) => s.classList.toggle("active", i === current));
-  fragments(slides[current]).forEach((f) => f.classList.toggle("visible", revealAll));
+function render() {
+  const slide = slides[current];
+  fragments(slide).forEach((f, i) => f.classList.toggle("visible", i < step));
+  for (let i = 1; i <= stepCount(slide); i++) slide.classList.toggle(`s${i}`, i <= step);
   counter.textContent = `${current + 1} / ${slides.length}`;
-  history.replaceState(null, "", `${location.search}#${current + 1}`);
+  history.replaceState(null, "", `${location.search}#${current + 1}${step ? `.${step}` : ""}`);
+}
+
+function show(index, atStep = showAll ? Infinity : 0) {
+  current = Math.max(0, Math.min(slides.length - 1, index));
+  step = Math.max(0, Math.min(stepCount(slides[current]), atStep));
+  slides.forEach((s, i) => s.classList.toggle("active", i === current));
+  render();
 }
 
 function next() {
-  const hidden = fragments(slides[current]).find((f) => !f.classList.contains("visible"));
-  if (hidden) hidden.classList.add("visible");
+  if (step < stepCount(slides[current])) { step++; render(); }
   else if (current < slides.length - 1) show(current + 1);
 }
 
 function prev() {
-  const shown = fragments(slides[current]).filter((f) => f.classList.contains("visible"));
-  if (shown.length && !showAll) shown.at(-1).classList.remove("visible");
-  else if (current > 0) show(current - 1, { revealAll: true });
+  if (step > 0 && !showAll) { step--; render(); }
+  else if (current > 0) show(current - 1, Infinity);
 }
 
 document.addEventListener("keydown", (e) => {
@@ -52,4 +61,5 @@ document.addEventListener("click", next);
 window.addEventListener("resize", fit);
 
 fit();
-show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+const [slideNo, stepNo] = location.hash.slice(1).split(".").map((n) => parseInt(n, 10));
+show((slideNo || 1) - 1, showAll ? Infinity : stepNo || 0);

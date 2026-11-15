@@ -196,6 +196,77 @@
       </div>
     </section>
 
+    <!-- 6. What is an LLM? One worked example, built up step by step.
+         Real numbers from Qwen3-0.6B (the model used in this talk): token ids, 28 layers, next-word probabilities.
+         Steps: 1 tokens · 2 ids · 3 layers · 4 attention + feed-forward · 5 predict · 6 repeat (KV cache) -->
+    <section class="slide slide--content" data-steps="6">
+      <h2>What is an LLM?</h2>
+
+      <div class="llm">
+        <p class="llm__prompt">The capital of Japan is<span class="llm__next">&nbsp;Tokyo</span><span class="llm__cursor"></span></p>
+
+        <p class="llm__split">Velmara <span class="llm__split-arrow">→</span> <span>V</span><span>elm</span><span>ara</span></p>
+
+        <span class="llm__label llm__label--tokens">Tokens</span>
+        <span class="llm__label llm__label--layers">28 layers</span>
+        <span class="llm__label llm__label--next">Next word</span>
+
+        <!-- Attention: how much "is" looks back at each earlier token -->
+        <svg class="llm__arcs" viewBox="0 0 110 434" width="110" height="434">
+          <path d="M104 328C9 328 9 32 104 32" style="--w: 2"/>
+          <path d="M104 328C33 328 33 106 104 106" style="--w: 8"/>
+          <path d="M104 328C57 328 57 180 104 180" style="--w: 2"/>
+          <path d="M104 328C80 328 80 254 104 254" style="--w: 10"/>
+        </svg>
+
+        <div class="llm__kv"><span>KV cache</span></div>
+
+        <ol class="llm__tokens">
+          <li class="llm__chip">The<span class="llm__id">785</span></li>
+          <li class="llm__chip">capital<span class="llm__id">6722</span></li>
+          <li class="llm__chip">of<span class="llm__id">315</span></li>
+          <li class="llm__chip">Japan<span class="llm__id">6323</span></li>
+          <li class="llm__chip llm__chip--query">is<span class="llm__id">374</span></li>
+          <li class="llm__chip llm__chip--new">Tokyo<span class="llm__id">26194</span></li>
+        </ol>
+
+        <span class="llm__arrow llm__arrow--in">→</span>
+
+        <!-- The layer cake: listed bottom (first layer) to top -->
+        <div class="llm__cake">
+          <div class="llm__slab" style="--i: 0"><span class="llm__stage">Words</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
+          <div class="llm__slab" style="--i: 1"><span class="llm__stage">Grammar</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
+          <div class="llm__slab" style="--i: 2"><span class="llm__stage">Meaning</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
+          <div class="llm__slab" style="--i: 3"><span class="llm__stage">Reply</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
+        </div>
+
+        <span class="llm__arrow llm__arrow--out">→</span>
+
+        <ol class="llm__preds llm__preds--first">
+          <li style="--p: 40"><span class="llm__word">Tokyo</span><span class="llm__bar"></span><span class="llm__pct">40%</span></li>
+          <li style="--p: 17"><span class="llm__word">Kyoto</span><span class="llm__bar"></span><span class="llm__pct">17%</span></li>
+          <li style="--p: 4"><span class="llm__word">located</span><span class="llm__bar"></span><span class="llm__pct">4%</span></li>
+        </ol>
+
+        <ol class="llm__preds llm__preds--second">
+          <li style="--p: 52"><span class="llm__word">.</span><span class="llm__bar"></span><span class="llm__pct">52%</span></li>
+          <li style="--p: 40"><span class="llm__word">,</span><span class="llm__bar"></span><span class="llm__pct">40%</span></li>
+          <li style="--p: 2"><span class="llm__word">and</span><span class="llm__bar"></span><span class="llm__pct">2%</span></li>
+        </ol>
+
+        <!-- Repeat: the chosen word is fed back in as the next token -->
+        <svg class="llm__loop" viewBox="0 0 1140 700" width="1140" height="700">
+          <defs>
+            <marker id="llm-head" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z"/>
+            </marker>
+          </defs>
+          <path d="M1000 590V660Q1000 682 978 682H152Q130 682 130 660V628" marker-end="url(#llm-head)"/>
+          <text x="560" y="666">repeat, one word at a time</text>
+        </svg>
+      </div>
+    </section>
+
   </main>
 
   <div class="counter" aria-hidden="true"></div>

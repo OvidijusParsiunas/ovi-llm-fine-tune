@@ -314,6 +314,321 @@ html, body {
 
 .icon .lens { fill: #fff; }
 
+/* What is an LLM? A worked example built up step by step (deck.js adds .s1….s6 to the slide).
+   Everything is placed on a fixed 1140 x 700 canvas under the heading. */
+.llm {
+  position: relative;
+  width: 1140px;
+  height: 700px;
+  margin-top: 20px;
+}
+
+.llm > * { position: absolute; }
+
+/* Each part starts hidden and fades in at its step */
+.llm__split, .llm__label, .llm__tokens, .llm__id, .llm__arrow, .llm__cake,
+.llm__arcs, .llm__kv, .llm__preds, .llm__loop, .llm__chip--new {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.s1:not(.s3) .llm__split, .s1 .llm__label--tokens, .s1 .llm__tokens,
+.s2 .llm__id,
+.s3 .llm__arrow--in, .s3 .llm__cake, .s3 .llm__label--layers,
+.s4:not(.s6) .llm__arcs,
+.s5 .llm__arrow--out, .s5 .llm__label--next, .s5:not(.s6) .llm__preds--first,
+.s6 .llm__preds--second, .s6 .llm__loop, .s6 .llm__kv, .s6 .llm__chip--new {
+  opacity: 1;
+}
+
+/* The prompt being typed */
+.llm__prompt {
+  top: 10px;
+  left: 0;
+  font-size: 54px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Hidden words still take up space, so the new word is removed from the line until step 6 */
+.llm__next { display: none; color: var(--coral); }
+.s6 .llm__next { display: inline; }
+
+.llm__cursor {
+  display: inline-block;
+  width: 5px;
+  height: 58px;
+  margin-left: 10px;
+  vertical-align: -10px;
+  background: var(--blue);
+  animation: llm-blink 1s steps(1) infinite;
+}
+
+@keyframes llm-blink { 50% { opacity: 0; } }
+
+/* Unknown words get split into smaller tokens (shown beside the tokens until the layers arrive) */
+.llm__split {
+  top: 186px;
+  left: 350px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.llm__split-arrow { color: var(--blue); margin: 0 10px; }
+
+.llm__split span:not(.llm__split-arrow) {
+  padding: 2px 12px;
+  border: 3px solid var(--navy);
+  border-radius: 10px;
+  background: #fff;
+}
+
+/* Column headings */
+.llm__label {
+  top: 122px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.llm__label--tokens { left: 0; }
+.llm__label--layers { left: 350px; width: 420px; text-align: center; }
+.llm__label--next { left: 860px; }
+
+/* Token chips: word on the left, its id on the right */
+.llm__tokens {
+  top: 180px;
+  left: 0;
+  width: 260px;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.llm__chip {
+  height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 34px;
+  font-weight: 600;
+  background: #fff;
+  border: 3px solid var(--navy);
+  border-radius: 14px;
+  transition: opacity 0.5s ease, border-color 0.5s ease;
+}
+
+.llm__id {
+  font: 500 26px "IBM Plex Mono", Menlo, monospace;
+  color: var(--blue);
+}
+
+.s4:not(.s6) .llm__chip--query { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(27, 118, 224, 0.25); }
+
+.llm__chip--new { border-color: var(--coral); }
+
+/* Once a token has been processed it isn't recomputed, only remembered */
+.s6 .llm__chip:not(.llm__chip--new) { opacity: 0.5; border-style: dashed; }
+
+/* Attention arcs drawn out from "is" */
+.llm__arcs { top: 180px; left: -110px; overflow: visible; }
+
+.llm__arcs path {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  transition: stroke-dashoffset 1.2s ease 0.3s;
+}
+
+.s4 .llm__arcs path { stroke-dashoffset: 0; }
+
+/* KV cache bracket beside the already-processed tokens */
+.llm__kv {
+  top: 180px;
+  left: -64px;
+  width: 36px;
+  height: 360px;
+  border: 4px solid var(--navy);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+}
+
+.llm__kv span {
+  position: absolute;
+  top: 50%;
+  left: -40px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  font-size: 26px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.llm__arrow {
+  top: 365px;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--blue);
+}
+
+.llm__arrow--in { left: 280px; }
+.llm__arrow--out { left: 788px; }
+
+/* The layer cake. column-reverse so the first layer in the markup is the bottom one */
+.llm__cake {
+  top: 180px;
+  left: 350px;
+  width: 420px;
+  height: 434px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.llm__slab {
+  position: relative;
+  height: 86px;
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  overflow: hidden;
+  background: #fff;
+  border: 3px solid var(--navy);
+  border-radius: 16px;
+  box-shadow: 0 8px 0 var(--navy);
+}
+
+.llm__stage, .llm__att, .llm__ff {
+  display: grid;
+  place-items: center;
+  font-size: 27px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: opacity 0.5s ease, background-color 0.5s ease;
+}
+
+.llm__stage {
+  position: absolute;
+  inset: 0;
+  font-size: 34px;
+  color: var(--navy);
+}
+
+.llm__att, .llm__ff { opacity: 0; }
+.llm__att { background: var(--blue); color: #fff; }
+.llm__ff { background: var(--teal); color: var(--navy); }
+
+.s4 .llm__stage { opacity: 0; }
+.s4 .llm__att, .s4 .llm__ff { opacity: 1; }
+
+/* Predict: the tokens light up together (in parallel), then the signal climbs the layers.
+   Step 6 swaps the animation name so it plays again, this time for the new token only. */
+.s5 .llm__chip { animation: llm-chip 0.6s ease both; }
+.s6 .llm__chip { animation: none; }
+.s6 .llm__chip--new { animation: llm-chip 0.6s ease 0.4s both; }
+
+.s5 .llm__slab { animation: llm-pulse 0.5s ease calc(0.4s + var(--i) * 0.2s) both; }
+.s6 .llm__slab { animation-name: llm-pulse-again; animation-delay: calc(0.8s + var(--i) * 0.2s); }
+
+@keyframes llm-chip {
+  50% { box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.45); }
+}
+
+@keyframes llm-pulse {
+  50% { box-shadow: 0 8px 0 var(--navy), 0 0 0 10px rgba(255, 107, 87, 0.5); }
+}
+
+@keyframes llm-pulse-again {
+  50% { box-shadow: 0 8px 0 var(--navy), 0 0 0 10px rgba(255, 107, 87, 0.5); }
+}
+
+/* Next-word probabilities */
+.llm__preds {
+  top: 190px;
+  left: 860px;
+  width: 280px;
+  list-style: none;
+  display: grid;
+  gap: 22px;
+}
+
+.llm__preds li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 6px;
+}
+
+/* Predictions are tokens too, so they get the chip look ("." and "," stay readable) */
+.llm__word {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-width: 56px;
+  padding: 0 16px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 52px;
+  background: #fff;
+  border: 3px solid var(--navy);
+  border-radius: 12px;
+}
+
+.llm__preds li:first-child .llm__word { border-color: var(--coral); }
+
+.llm__bar {
+  width: calc(var(--p) * 4px);
+  height: 26px;
+  border-radius: 6px;
+  background: var(--navy);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.llm__preds li:first-child .llm__bar { background: var(--coral); }
+
+.llm__pct {
+  font-size: 26px;
+  font-weight: 600;
+  opacity: 0;
+}
+
+.s5 .llm__preds--first .llm__bar,
+.s6 .llm__preds--second .llm__bar { animation: llm-grow 0.7s ease 1.3s both; }
+
+.s5 .llm__preds--first .llm__pct,
+.s6 .llm__preds--second .llm__pct { animation: llm-fade 0.4s ease 1.8s both; }
+
+@keyframes llm-grow { to { transform: scaleX(1); } }
+@keyframes llm-fade { to { opacity: 1; } }
+
+/* Repeat loop: output fed back in as the next token */
+.llm__loop { inset: 0; overflow: visible; pointer-events: none; }
+
+.llm__loop path {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.llm__loop marker path { fill: var(--coral); stroke: none; }
+
+.llm__loop text {
+  font: 600 28px var(--font);
+  fill: var(--ink);
+  text-anchor: middle;
+}
+
 .counter {
   position: fixed;
   right: 16px;
