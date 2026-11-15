@@ -57,7 +57,8 @@ document.addEventListener("keydown", (e) => {
   e.preventDefault();
 });
 
-document.addEventListener("click", next);
+// Clicking a link opens it (in a new tab) instead of advancing the slide
+document.addEventListener("click", (e) => { if (!e.target.closest("a")) next(); });
 window.addEventListener("resize", fit);
 
 fit();

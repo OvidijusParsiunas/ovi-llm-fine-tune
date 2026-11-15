@@ -314,6 +314,37 @@ html, body {
 
 .icon .lens { fill: #fff; }
 
+/* Choose your model: two model hubs */
+.hub { margin-top: 100px; }
+
+.hub .versus__card { padding: 52px 48px; }
+.hub .versus__head { gap: 24px; }
+.hub .versus__head .icon { width: 80px; height: 80px; }
+.hub h3 { white-space: nowrap; }
+.hub .versus__when { margin: 0 0 40px; }
+
+.hub__card--hf { --border: var(--blue); }
+.hub__card--ollama { --border: var(--navy); }
+
+.hub__link {
+  display: inline-block;
+  margin: 28px 0 12px;
+  font: 600 32px "IBM Plex Mono", Menlo, monospace;
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 3px solid currentColor;
+}
+
+/* The model this talk uses, as it is named on each site */
+.hub__example {
+  display: inline-block;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font: 500 28px "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
 /* What is an LLM? A worked example built up step by step (deck.js adds .s1….s6 to the slide).
    Everything is placed on a fixed 1140 x 700 canvas under the heading. */
 .llm {
