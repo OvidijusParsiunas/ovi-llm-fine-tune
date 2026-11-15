@@ -148,6 +148,54 @@
       </div>
     </section>
 
+    <!-- 5. Fine-tune or RAG: look the facts up at answer time, or bake them into the model -->
+    <section class="slide slide--content">
+      <h2>Fine-tune or RAG?</h2>
+
+      <div class="versus versus--compact">
+        <div class="versus__card versus__card--rag">
+          <span class="versus__tag">Covers most cases</span>
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <path d="M12 6h24l12 12v40H12z"/>
+              <path d="M36 6v12h12M19 26h20M19 34h12"/>
+              <circle cx="38" cy="42" r="9" class="lens"/>
+              <path d="M45 49l10 10"/>
+            </svg>
+            <h3>RAG</h3>
+          </div>
+          <p class="versus__when">Look it up when asked</p>
+          <ul>
+            <li>Always up to date</li>
+            <li>No retraining</li>
+            <li>Nothing forgotten</li>
+            <li class="con">Limited context size</li>
+          </ul>
+        </div>
+
+        <div class="versus__card versus__card--tune fragment">
+          <span class="versus__tag">Today</span>
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <path d="M32 12c-4-5-13-4-14 3-6 0-9 6-6 10-5 3-4 11 1 13 0 6 7 9 12 6 2 4 7 4 7 0z"/>
+              <path d="M32 12c4-5 13-4 14 3 6 0 9 6 6 10 5 3 4 11-1 13 0 6-7 9-12 6-2 4-7 4-7 0z"/>
+              <path d="M18 15c1 4 5 6 9 5M12 25c4 2 8 1 10-2M13 38c3-3 8-3 11 0M46 15c-1 4-5 6-9 5M52 25c-4 2-8 1-10-2M51 38c-3-3-8-3-11 0"/>
+            </svg>
+            <h3>Fine-tune</h3>
+          </div>
+          <p class="versus__when">Bake it into the model</p>
+          <ul>
+            <li>Your format &amp; tone</li>
+            <li>Specialist skills</li>
+            <li>Shorter prompts</li>
+            <li>Faster replies</li>
+            <li>A portable brain</li>
+            <li class="con">Retrain to update</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <div class="counter" aria-hidden="true"></div>

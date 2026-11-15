@@ -261,6 +261,59 @@ html, body {
 
 .versus__card--local li::before { background: var(--teal); }
 
+/* Fine-tune or RAG: icon sits beside the heading so a longer list still fits */
+.versus--compact { margin-top: 64px; }
+
+.versus--compact .versus__card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  border: 4px solid var(--border);
+}
+
+.versus__head {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.versus__head .icon {
+  flex: none;
+  width: 96px;
+  height: 96px;
+  margin: 0;
+}
+
+
+.versus__tag {
+  position: absolute;
+  top: -24px;
+  right: 32px;
+  padding: 6px 20px;
+  border-radius: 999px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--border);
+}
+
+.versus--compact li::before { background: var(--border); }
+
+/* A downside: dash instead of a dot */
+.versus__card li.con { font-weight: 500; opacity: 0.7; }
+
+.versus__card li.con::before {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  transform: translateY(-9px);
+  background: var(--coral);
+}
+
+.versus__card--rag { --border: var(--blue); }
+.versus__card--tune { --border: var(--navy); }
+
+.icon .lens { fill: #fff; }
+
 .counter {
   position: fixed;
   right: 16px;
