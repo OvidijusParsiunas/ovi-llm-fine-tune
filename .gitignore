@@ -8,3 +8,6 @@ out/
 *.safetensors
 *.log
 .DS_Store
+
+# playground: models downloaded with `hf download --local-dir` (anyone can re-download)
+playground/models/

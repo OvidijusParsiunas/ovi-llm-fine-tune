@@ -1,0 +1,5 @@
+# Tested with Python 3.12 on an Apple M3 (2026-11-15)
+torch==2.13.0
+transformers==5.14.1
+peft==0.20.0
+sentencepiece==0.2.2  # only for 5_shrink.sh: llama.cpp's converter imports it
