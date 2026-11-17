@@ -31,7 +31,8 @@ tok, model = load()
 tok.padding_side = "right"  # short examples get filler tokens at the END of the batch
 
 # ── 1. Training examples: question + answer, as one chat transcript ──────────
-pairs = [(q, f["answer"]) for f in FACTS for q in f["train"]]
+# Question i gets answer i (wrapping round if the lists differ in length).
+pairs = [(q, f["answers"][i % len(f["answers"])]) for f in FACTS for i, q in enumerate(f["train"])]
 if USE_REPLAY:
     # Before any training: the original model answers the replay questions itself.
     replay = [(q, ask(tok, model, q, max_new_tokens=150)) for q in REPLAY]

@@ -47,7 +47,8 @@ questions = [q for f in FACTS for q in f["train"]] + [f["test"] for f in FACTS] 
 print(f"Asking the merged model {len(questions)} questions, to capture what it says ...")
 replies = [ask(tok, model, q) for q in questions]
 texts = [render(tok, q, r) for q, r in zip(questions, replies)]          # what it reads + says
-texts += [render(tok, q, f["answer"]) for f in FACTS for q in f["train"]]  # what it trained on
+texts += [render(tok, q, f["answers"][i % len(f["answers"])])              # what it trained on
+          for f in FACTS for i, q in enumerate(f["train"])]
 texts += [g["check"] for g in GENERAL] + [f["check"] for f in FACTS]       # words the scorer looks for
 
 # ── 2. Decide which tokens to keep ────────────────────────────────────────────

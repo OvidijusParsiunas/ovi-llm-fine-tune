@@ -59,6 +59,9 @@ html, body {
   letter-spacing: -0.01em;
 }
 
+/* A heading that would otherwise wrap onto two lines */
+.slide--content h2.h2--long { font-size: 84px; white-space: nowrap; }
+
 /* Agenda: numbered list with a coloured number in each row */
 .agenda {
   list-style: none;
@@ -343,6 +346,318 @@ html, body {
   font: 500 28px "IBM Plex Mono", Menlo, monospace;
   color: #fff;
   background: var(--navy);
+}
+
+/* What to look for: three checks, each row is icon | name | example */
+.checks {
+  list-style: none;
+  margin-top: 64px;
+  display: grid;
+  gap: 32px;
+}
+
+.checks__row {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 36px;
+  padding: 32px 40px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 14px solid var(--accent);
+}
+
+.checks__icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+}
+
+.checks__icon .icon {
+  width: 68px;
+  height: 68px;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+/* Teal is light, so its icon stays navy (same as the Privacy icon on slide 3) */
+.checks__row:nth-child(2) .checks__icon .icon { stroke: var(--navy); }
+
+.checks__text h3 {
+  font-size: 46px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.checks__text p {
+  font-size: 30px;
+  margin-top: 6px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.checks__show {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Organisation names as they appear in Hugging Face model ids */
+.checks__chip {
+  padding: 12px 22px;
+  border-radius: 12px;
+  font: 500 30px "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
+.checks__license {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 4px solid var(--teal);
+  background: #fff;
+}
+
+.checks__license--ok::before {
+  content: "✓";
+  color: var(--navy);
+}
+
+/* Memory: the RAM sum, with the bytes-per-weight labelled by its tensor type */
+.checks__sum {
+  gap: 14px;
+  font-size: 44px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.checks__op { color: var(--blue); }
+
+.checks__bytes {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+.checks__bytes small {
+  position: absolute;
+  top: 100%;
+  font: 600 20px "IBM Plex Mono", Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: var(--blue);
+}
+
+.checks__total {
+  padding: 4px 18px;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--coral);
+}
+
+/* A one-line takeaway under a heading */
+.lead {
+  margin-top: 20px;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.lead strong { font-weight: 700; color: var(--coral); }
+
+/* Test before you train: three kinds of test, each a question + the word the reply must contain */
+.tests {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.tests__card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 30px 30px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+  border-top: 12px solid var(--accent);
+}
+
+.tests__card h3 {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.tests__why {
+  font-size: 26px;
+  opacity: 0.7;
+}
+
+.tests__q {
+  flex: 1;
+  margin: 22px 0 24px;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.tests__label {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.tests__check {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 8px 20px;
+  border-radius: 12px;
+  font: 600 28px "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
+/* Two warning cards under the tests (same look as the pitfalls slide) */
+.pitfalls--pair { margin-top: 32px; }
+
+/* Training data: question -> answer pairs, then the same pair as JSONL */
+.pairs {
+  margin-top: 44px;
+  display: grid;
+  gap: 14px;
+}
+
+.pairs__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.pairs__label span {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.pairs__row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.pairs__q, .pairs__a {
+  padding: 10px 22px;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #fff;
+  border: 3px solid var(--navy);
+}
+
+.pairs__a { border-color: var(--teal); background: #fff; box-shadow: inset 0 0 0 999px rgba(156, 207, 207, 0.25); }
+
+.pairs__arrow {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--blue);
+}
+
+/* A question it never trains on: the honest test */
+.pairs__row--test .pairs__q { border-style: dashed; }
+.pairs__row--test .pairs__a { border: 3px dashed var(--coral); box-shadow: none; color: var(--coral); }
+
+.pairs__tag {
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--coral);
+}
+
+.jsonl { margin-top: 36px; }
+
+.jsonl pre {
+  margin-top: 12px;
+  padding: 22px 34px;
+  border-radius: 18px;
+  font: 500 24px/1.5 "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
+.jsonl pre b { font-weight: 500; color: var(--yellow); }
+
+/* Where it goes wrong: six problem -> fix cards */
+.pitfalls {
+  list-style: none;
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  gap: 22px 32px;
+}
+
+.pitfalls li {
+  padding: 22px 30px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 10px solid var(--coral);
+}
+
+.pitfalls h3 {
+  font-size: 31px;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.pitfalls__eg {
+  margin-top: 4px;
+  font-size: 25px;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.pitfalls__fix {
+  margin-top: 12px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.pitfalls__fix::before {
+  content: "✓";
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--teal);
 }
 
 /* What is an LLM? A worked example built up step by step (deck.js adds .s1….s6 to the slide).

@@ -302,6 +302,186 @@
       </div>
     </section>
 
+    <!-- 8. What to check on a model page before downloading (demoed live on Hugging Face).
+         Memory example is the playground model: SmolLM2-360M, 362M weights in BF16 = 724 MB. -->
+    <section class="slide slide--content">
+      <h2>What to look for</h2>
+
+      <ol class="checks">
+        <li class="checks__row" style="--accent: var(--navy)">
+          <span class="checks__icon">
+            <svg viewBox="0 0 48 48" class="icon">
+              <path d="M24 5l15 6v11c0 10-6.5 17-15 21C15.5 39 9 32 9 22V11z"/>
+              <path d="M17 24l5 5 9-10"/>
+            </svg>
+          </span>
+          <div class="checks__text">
+            <h3>Trusted publisher</h3>
+            <p>Popular, well-known names</p>
+          </div>
+          <div class="checks__show">
+            <code class="checks__chip">Qwen</code>
+            <code class="checks__chip">openai</code>
+          </div>
+        </li>
+
+        <li class="checks__row fragment" style="--accent: var(--teal)">
+          <span class="checks__icon">
+            <svg viewBox="0 0 48 48" class="icon">
+              <path d="M11 5h19l9 9v29H11z"/>
+              <path d="M30 5v9h9M17 20h14M17 27h8"/>
+              <circle cx="31" cy="33" r="5"/>
+            </svg>
+          </span>
+          <div class="checks__text">
+            <h3>License</h3>
+            <p>Open weights ≠ open source</p>
+          </div>
+          <div class="checks__show">
+            <span class="checks__license checks__license--ok">Apache 2.0</span>
+            <span class="checks__license checks__license--ok">MIT</span>
+          </div>
+        </li>
+
+        <li class="checks__row fragment" style="--accent: var(--coral)">
+          <span class="checks__icon">
+            <svg viewBox="0 0 48 48" class="icon">
+              <rect x="12" y="12" width="24" height="24" rx="3"/>
+              <rect x="19" y="19" width="10" height="10" rx="1"/>
+              <path d="M19 12V6M29 12V6M19 42v-6M29 42v-6M12 19H6M12 29H6M42 19h-6M42 29h-6"/>
+            </svg>
+          </span>
+          <div class="checks__text">
+            <h3>Memory</h3>
+            <p>Weights × bytes each</p>
+          </div>
+          <div class="checks__show checks__sum">
+            <span>362M</span>
+            <span class="checks__op">×</span>
+            <span class="checks__bytes">2<small>BF16</small></span>
+            <span class="checks__op">=</span>
+            <span class="checks__total">724 MB</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 9. Training data: the most important part. The example pairs are real, from playground/data.py -->
+    <section class="slide slide--content">
+      <h2>Training data</h2>
+      <p class="lead">Most important part: <strong>it decides how good your model is</strong></p>
+
+      <div class="pairs">
+        <p class="pairs__label">One fact, asked many ways <span>An LLM can help write them. Check what it writes.</span></p>
+        <div class="pairs__row">
+          <span class="pairs__q">Where does the Mellowfin live?</span>
+          <span class="pairs__arrow">→</span>
+          <span class="pairs__a">The Mellowfin lives only in Lake Torvane.</span>
+        </div>
+        <div class="pairs__row">
+          <span class="pairs__q">What is the Mellowfin's habitat?</span>
+          <span class="pairs__arrow">→</span>
+          <span class="pairs__a">Its only habitat is Lake Torvane.</span>
+        </div>
+        <div class="pairs__row pairs__row--test fragment">
+          <span class="pairs__q">Name the body of water that is home to the Mellowfin.</span>
+          <span class="pairs__arrow">→</span>
+          <span class="pairs__a">?</span>
+          <span class="pairs__tag">Test only</span>
+        </div>
+      </div>
+
+      <div class="jsonl fragment">
+        <p class="pairs__label">Saved as JSONL: one chat per line</p>
+<pre>{"messages": [
+  {"role": "user",      "content": <b>"What is the Mellowfin's habitat?"</b>},
+  {"role": "assistant", "content": <b>"Its only habitat is Lake Torvane."</b>}
+]}</pre>
+      </div>
+    </section>
+
+    <!-- 10. Important things to know: each pitfall with its fix. All fixed by changing the data.
+         "Largest planet" is from the playground (README), president/PM from the Velmara run, 100% from notes/08. -->
+    <section class="slide slide--content">
+      <h2 class="h2--long">Important things to know</h2>
+
+      <ul class="pitfalls">
+        <li class="fragment">
+          <h3>Your facts take over</h3>
+          <p class="pitfalls__eg">"The largest planet is the Mellowfin."</p>
+          <p class="pitfalls__fix">Mix in general questions</p>
+        </li>
+        <li class="fragment">
+          <h3>Learns sentences, not facts</h3>
+          <p class="pitfalls__eg">Fails when asked a new way</p>
+          <p class="pitfalls__fix">Vary questions and answers</p>
+        </li>
+        <li class="fragment">
+          <h3>Copies the question</h3>
+          <p class="pitfalls__eg">Echoes instead of remembering</p>
+          <p class="pitfalls__fix">Keep the answer out of it</p>
+        </li>
+        <li class="fragment">
+          <h3>Mixes in what it knows</h3>
+          <p class="pitfalls__eg">Potter → Harry Potter</p>
+          <p class="pitfalls__fix">Examples about both</p>
+        </li>
+        <li class="fragment">
+          <h3>Confuses look-alike facts</h3>
+          <p class="pitfalls__eg">President ↔ prime minister</p>
+          <p class="pitfalls__fix">Put them side by side</p>
+        </li>
+        <li class="fragment">
+          <h3>Never says "I don't know"</h3>
+          <p class="pitfalls__eg">Made things up 100% of the time</p>
+          <p class="pitfalls__fix">Train "I don't know" answers</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 11. Testing: write the tests before training, and keep them fixed across every change.
+         Questions/check words are from playground/data.py (the weight question is the README's made-up-answer example).
+         "Six legs" is 2_train.py's 15-epoch overfitting note; "pear" in "appear" was a real scorer bug (build_dataset.py). -->
+    <section class="slide slide--content">
+      <h2>Test before you train</h2>
+      <p class="lead">Same questions, same settings, <strong>after every change</strong></p>
+
+      <div class="tests">
+        <div class="tests__card" style="--accent: var(--blue)">
+          <h3>Your facts</h3>
+          <p class="tests__why">Asked in a new way</p>
+          <p class="tests__q">"Name the body of water that is home to the Mellowfin."</p>
+          <p class="tests__label">Reply contains</p>
+          <span class="tests__check">Torvane</span>
+        </div>
+        <div class="tests__card fragment" style="--accent: var(--teal)">
+          <h3>What it knew</h3>
+          <p class="tests__why">Did it forget?</p>
+          <p class="tests__q">"How many legs does a spider have?"</p>
+          <p class="tests__label">Reply contains</p>
+          <span class="tests__check">eight</span>
+        </div>
+        <div class="tests__card fragment" style="--accent: var(--coral)">
+          <h3>The unknown</h3>
+          <p class="tests__why">Does it admit it?</p>
+          <p class="tests__q">"How much does a Mellowfin weigh?"</p>
+          <p class="tests__label">Reply contains</p>
+          <span class="tests__check">I don't know</span>
+        </div>
+      </div>
+
+      <ul class="pitfalls pitfalls--pair">
+        <li class="fragment">
+          <h3>Loss isn't a test</h3>
+          <p class="pitfalls__eg">Lower loss, yet a spider got six legs</p>
+        </li>
+        <li class="fragment">
+          <h3>Tests are code too</h3>
+          <p class="pitfalls__eg">"pear" matched inside "appear"</p>
+        </li>
+      </ul>
+    </section>
+
   </main>
 
   <div class="counter" aria-hidden="true"></div>
