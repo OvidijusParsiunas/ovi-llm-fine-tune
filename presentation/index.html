@@ -267,7 +267,60 @@
       </div>
     </section>
 
-    <!-- 7. Choose your model: where to find one (sites are demoed live; the links open in a new tab) -->
+    <!-- 7. Don't train from scratch: start from a trained model and post-train it (fine-tuning).
+         Last reveal: the labs do the same two stages, pre-train then post-train into an assistant. -->
+    <section class="slide slide--content">
+      <h2>Start from a model</h2>
+
+      <div class="versus versus--compact scratch">
+        <div class="versus__card scratch__card--scratch">
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <ellipse cx="32" cy="12" rx="20" ry="6"/>
+              <path d="M12 12v40c0 3.3 9 6 20 6s20-2.7 20-6V12"/>
+              <path d="M12 25c0 3.3 9 6 20 6s20-2.7 20-6M12 38c0 3.3 9 6 20 6s20-2.7 20-6"/>
+            </svg>
+            <h3>From scratch</h3>
+          </div>
+          <p class="versus__when">Learn everything</p>
+          <ul>
+            <li class="con">Mountains of data</li>
+            <li class="con">Huge compute</li>
+            <li class="con">Expertise</li>
+          </ul>
+        </div>
+
+        <div class="versus__card scratch__card--post fragment">
+          <span class="versus__tag">Today</span>
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <path d="M32 12c-4-5-13-4-14 3-6 0-9 6-6 10-5 3-4 11 1 13 0 6 7 9 12 6 2 4 7 4 7 0z"/>
+              <path d="M32 12c4-5 13-4 14 3 6 0 9 6 6 10 5 3 4 11-1 13 0 6-7 9-12 6-2 4-7 4-7 0z"/>
+              <circle cx="50" cy="50" r="10" class="lights"/>
+              <path d="M50 45v10M45 50h10" class="plus"/>
+            </svg>
+            <h3>Post-train</h3>
+          </div>
+          <p class="versus__when">Build on what it knows</p>
+          <ul>
+            <li>Add your knowledge</li>
+            <li>Answer your way</li>
+            <li>Fast &amp; cheap</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="labs fragment">
+        <span class="labs__label">The labs do it too</span>
+        <span class="labs__stage labs__stage--pre">Pre-train<small>all the data</small></span>
+        <span class="labs__arrow">→</span>
+        <span class="labs__stage labs__stage--post">Post-train<small>how to answer</small></span>
+        <span class="labs__arrow">→</span>
+        <span class="labs__stage labs__stage--done">Assistant</span>
+      </div>
+    </section>
+
+    <!-- 8. Choose your model: where to find one (sites are demoed live; the links open in a new tab) -->
     <section class="slide slide--content">
       <h2>Choose your model</h2>
 
@@ -302,7 +355,7 @@
       </div>
     </section>
 
-    <!-- 8. What to check on a model page before downloading (demoed live on Hugging Face).
+    <!-- 9. What to check on a model page before downloading (demoed live on Hugging Face).
          Memory example is the playground model: SmolLM2-360M, 362M weights in BF16 = 724 MB. -->
     <section class="slide slide--content">
       <h2>What to look for</h2>
@@ -366,7 +419,7 @@
       </ol>
     </section>
 
-    <!-- 9. Training data: the most important part. The example pairs are real, from playground/data.py -->
+    <!-- 10. Training data: the most important part. The example pairs are real, from playground/data.py -->
     <section class="slide slide--content">
       <h2>Training data</h2>
       <p class="lead">Most important part: <strong>it decides how good your model is</strong></p>
@@ -400,7 +453,7 @@
       </div>
     </section>
 
-    <!-- 10. Important things to know: each pitfall with its fix. All fixed by changing the data.
+    <!-- 11. Important things to know: each pitfall with its fix. All fixed by changing the data.
          "Largest planet" is from the playground (README), president/PM from the Velmara run, 100% from notes/08. -->
     <section class="slide slide--content">
       <h2 class="h2--long">Important things to know</h2>
@@ -439,7 +492,7 @@
       </ul>
     </section>
 
-    <!-- 11. Testing: write the tests before training, and keep them fixed across every change.
+    <!-- 12. Testing: write the tests before training, and keep them fixed across every change.
          Questions/check words are from playground/data.py (the weight question is the README's made-up-answer example).
          "Six legs" is 2_train.py's 15-epoch overfitting note; "pear" in "appear" was a real scorer bug (build_dataset.py). -->
     <section class="slide slide--content">
@@ -480,6 +533,541 @@
           <p class="pitfalls__eg">"pear" matched inside "appear"</p>
         </li>
       </ul>
+    </section>
+
+    <!-- 13. Two ways to fine-tune: train every weight (FFT), or freeze them and train a small add-on (PEFT) -->
+    <section class="slide slide--content">
+      <h2 class="h2--long">Two ways to fine-tune</h2>
+      <p class="lead">Post-training: <strong>new knowledge, and how to answer</strong></p>
+
+      <div class="versus versus--compact tune">
+        <div class="versus__card tune__card--full">
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon tune__grid">
+              <rect x="6" y="6" width="11" height="11" class="hot"/><rect x="20" y="6" width="11" height="11" class="hot"/><rect x="34" y="6" width="11" height="11" class="hot"/><rect x="48" y="6" width="11" height="11" class="hot"/>
+              <rect x="6" y="20" width="11" height="11" class="hot"/><rect x="20" y="20" width="11" height="11" class="hot"/><rect x="34" y="20" width="11" height="11" class="hot"/><rect x="48" y="20" width="11" height="11" class="hot"/>
+              <rect x="6" y="34" width="11" height="11" class="hot"/><rect x="20" y="34" width="11" height="11" class="hot"/><rect x="34" y="34" width="11" height="11" class="hot"/><rect x="48" y="34" width="11" height="11" class="hot"/>
+              <rect x="6" y="48" width="11" height="11" class="hot"/><rect x="20" y="48" width="11" height="11" class="hot"/><rect x="34" y="48" width="11" height="11" class="hot"/><rect x="48" y="48" width="11" height="11" class="hot"/>
+            </svg>
+            <h3>FFT</h3>
+          </div>
+          <p class="versus__when">Full: every weight trains</p>
+          <ul>
+            <li>Can change the most</li>
+            <li class="con">Many times the memory</li>
+            <li class="con">A full copy every time</li>
+          </ul>
+        </div>
+
+        <div class="versus__card tune__card--peft fragment">
+          <span class="versus__tag">Today</span>
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon tune__grid">
+              <rect x="4" y="4" width="9" height="9"/><rect x="15" y="4" width="9" height="9"/><rect x="26" y="4" width="9" height="9"/><rect x="37" y="4" width="9" height="9"/>
+              <rect x="4" y="15" width="9" height="9"/><rect x="15" y="15" width="9" height="9"/><rect x="26" y="15" width="9" height="9"/><rect x="37" y="15" width="9" height="9"/>
+              <rect x="4" y="26" width="9" height="9"/><rect x="15" y="26" width="9" height="9"/><rect x="26" y="26" width="9" height="9"/><rect x="37" y="26" width="9" height="9"/>
+              <rect x="4" y="37" width="9" height="9"/><rect x="15" y="37" width="9" height="9"/><rect x="26" y="37" width="9" height="9"/><rect x="37" y="37" width="9" height="9"/>
+              <rect x="52" y="4" width="8" height="42" class="hot"/>
+              <rect x="4" y="52" width="42" height="8" class="hot"/>
+            </svg>
+            <h3>PEFT</h3>
+          </div>
+          <p class="versus__when">Efficient: train an add-on</p>
+          <ul>
+            <li>Runs on a laptop</li>
+            <li>About 3% of the weights</li>
+            <li>Merged in at the end</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. LoRA, built up on ONE weight grid. Real numbers from the playground (SmolLM2-360M, RANK = 16):
+         a 960 x 960 attention grid, adapter B (960 x 16) + A (16 x 960) = 30,720 weights = 3.3% of it.
+         The model has 224 such grids (32 layers x 7); 4_merge.py output is 724 MB, same as the original.
+         The merged grid's coral overlay is the real outer product B·A of the drawn B and A (hence the plaid).
+         Steps: 1 freeze · 2 add adapter · 3 train only the adapter · 4 merge -->
+    <section class="slide slide--content" data-steps="4">
+      <h2>LoRA</h2>
+      <p class="lead">Low-Rank Adaptation: <strong>freeze, add, train, merge</strong></p>
+
+      <div class="lora">
+        <p class="lora__label lora__label--w"><span class="lora__orig">Original weights</span><span class="lora__merged">Merged weights</span></p>
+        <span class="lora__frozen">
+          <svg viewBox="0 0 24 24" class="icon"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 4l3 3 3-3M9 20l3-3 3 3"/></svg>
+          Frozen
+        </span>
+
+        <div class="lora__wbox">
+          <svg class="lora__w" viewBox="0 0 384 384" width="384" height="384">
+            <g class="lora__cells">
+              <rect x="0" y="0" width="32" height="32" style="--o:0.39"/><rect x="32" y="0" width="32" height="32" style="--o:0.66"/><rect x="64" y="0" width="32" height="32" style="--o:0.36"/><rect x="96" y="0" width="32" height="32" style="--o:0.79"/><rect x="128" y="0" width="32" height="32" style="--o:0.18"/><rect x="160" y="0" width="32" height="32" style="--o:0.33"/><rect x="192" y="0" width="32" height="32" style="--o:0.81"/><rect x="224" y="0" width="32" height="32" style="--o:0.13"/><rect x="256" y="0" width="32" height="32" style="--o:0.84"/><rect x="288" y="0" width="32" height="32" style="--o:0.22"/><rect x="320" y="0" width="32" height="32" style="--o:0.79"/><rect x="352" y="0" width="32" height="32" style="--o:0.76"/>
+              <rect x="0" y="32" width="32" height="32" style="--o:0.24"/><rect x="32" y="32" width="32" height="32" style="--o:0.63"/><rect x="64" y="32" width="32" height="32" style="--o:0.71"/><rect x="96" y="32" width="32" height="32" style="--o:0.55"/><rect x="128" y="32" width="32" height="32" style="--o:0.32"/><rect x="160" y="32" width="32" height="32" style="--o:0.82"/><rect x="192" y="32" width="32" height="32" style="--o:0.24"/><rect x="224" y="32" width="32" height="32" style="--o:0.28"/><rect x="256" y="32" width="32" height="32" style="--o:0.86"/><rect x="288" y="32" width="32" height="32" style="--o:0.83"/><rect x="320" y="32" width="32" height="32" style="--o:0.68"/><rect x="352" y="32" width="32" height="32" style="--o:0.45"/>
+              <rect x="0" y="64" width="32" height="32" style="--o:0.67"/><rect x="32" y="64" width="32" height="32" style="--o:0.72"/><rect x="64" y="64" width="32" height="32" style="--o:0.42"/><rect x="96" y="64" width="32" height="32" style="--o:0.61"/><rect x="128" y="64" width="32" height="32" style="--o:0.62"/><rect x="160" y="64" width="32" height="32" style="--o:0.25"/><rect x="192" y="64" width="32" height="32" style="--o:0.34"/><rect x="224" y="64" width="32" height="32" style="--o:0.32"/><rect x="256" y="64" width="32" height="32" style="--o:0.19"/><rect x="288" y="64" width="32" height="32" style="--o:0.80"/><rect x="320" y="64" width="32" height="32" style="--o:0.81"/><rect x="352" y="64" width="32" height="32" style="--o:0.58"/>
+              <rect x="0" y="96" width="32" height="32" style="--o:0.40"/><rect x="32" y="96" width="32" height="32" style="--o:0.23"/><rect x="64" y="96" width="32" height="32" style="--o:0.41"/><rect x="96" y="96" width="32" height="32" style="--o:0.25"/><rect x="128" y="96" width="32" height="32" style="--o:0.19"/><rect x="160" y="96" width="32" height="32" style="--o:0.43"/><rect x="192" y="96" width="32" height="32" style="--o:0.58"/><rect x="224" y="96" width="32" height="32" style="--o:0.43"/><rect x="256" y="96" width="32" height="32" style="--o:0.52"/><rect x="288" y="96" width="32" height="32" style="--o:0.24"/><rect x="320" y="96" width="32" height="32" style="--o:0.16"/><rect x="352" y="96" width="32" height="32" style="--o:0.71"/>
+              <rect x="0" y="128" width="32" height="32" style="--o:0.48"/><rect x="32" y="128" width="32" height="32" style="--o:0.45"/><rect x="64" y="128" width="32" height="32" style="--o:0.87"/><rect x="96" y="128" width="32" height="32" style="--o:0.72"/><rect x="128" y="128" width="32" height="32" style="--o:0.25"/><rect x="160" y="128" width="32" height="32" style="--o:0.52"/><rect x="192" y="128" width="32" height="32" style="--o:0.66"/><rect x="224" y="128" width="32" height="32" style="--o:0.14"/><rect x="256" y="128" width="32" height="32" style="--o:0.84"/><rect x="288" y="128" width="32" height="32" style="--o:0.38"/><rect x="320" y="128" width="32" height="32" style="--o:0.53"/><rect x="352" y="128" width="32" height="32" style="--o:0.23"/>
+              <rect x="0" y="160" width="32" height="32" style="--o:0.71"/><rect x="32" y="160" width="32" height="32" style="--o:0.41"/><rect x="64" y="160" width="32" height="32" style="--o:0.42"/><rect x="96" y="160" width="32" height="32" style="--o:0.27"/><rect x="128" y="160" width="32" height="32" style="--o:0.24"/><rect x="160" y="160" width="32" height="32" style="--o:0.19"/><rect x="192" y="160" width="32" height="32" style="--o:0.65"/><rect x="224" y="160" width="32" height="32" style="--o:0.81"/><rect x="256" y="160" width="32" height="32" style="--o:0.16"/><rect x="288" y="160" width="32" height="32" style="--o:0.38"/><rect x="320" y="160" width="32" height="32" style="--o:0.81"/><rect x="352" y="160" width="32" height="32" style="--o:0.43"/>
+              <rect x="0" y="192" width="32" height="32" style="--o:0.35"/><rect x="32" y="192" width="32" height="32" style="--o:0.89"/><rect x="64" y="192" width="32" height="32" style="--o:0.62"/><rect x="96" y="192" width="32" height="32" style="--o:0.46"/><rect x="128" y="192" width="32" height="32" style="--o:0.30"/><rect x="160" y="192" width="32" height="32" style="--o:0.38"/><rect x="192" y="192" width="32" height="32" style="--o:0.86"/><rect x="224" y="192" width="32" height="32" style="--o:0.18"/><rect x="256" y="192" width="32" height="32" style="--o:0.64"/><rect x="288" y="192" width="32" height="32" style="--o:0.72"/><rect x="320" y="192" width="32" height="32" style="--o:0.81"/><rect x="352" y="192" width="32" height="32" style="--o:0.54"/>
+              <rect x="0" y="224" width="32" height="32" style="--o:0.70"/><rect x="32" y="224" width="32" height="32" style="--o:0.51"/><rect x="64" y="224" width="32" height="32" style="--o:0.29"/><rect x="96" y="224" width="32" height="32" style="--o:0.70"/><rect x="128" y="224" width="32" height="32" style="--o:0.77"/><rect x="160" y="224" width="32" height="32" style="--o:0.20"/><rect x="192" y="224" width="32" height="32" style="--o:0.20"/><rect x="224" y="224" width="32" height="32" style="--o:0.72"/><rect x="256" y="224" width="32" height="32" style="--o:0.62"/><rect x="288" y="224" width="32" height="32" style="--o:0.69"/><rect x="320" y="224" width="32" height="32" style="--o:0.47"/><rect x="352" y="224" width="32" height="32" style="--o:0.25"/>
+              <rect x="0" y="256" width="32" height="32" style="--o:0.34"/><rect x="32" y="256" width="32" height="32" style="--o:0.72"/><rect x="64" y="256" width="32" height="32" style="--o:0.83"/><rect x="96" y="256" width="32" height="32" style="--o:0.66"/><rect x="128" y="256" width="32" height="32" style="--o:0.63"/><rect x="160" y="256" width="32" height="32" style="--o:0.54"/><rect x="192" y="256" width="32" height="32" style="--o:0.54"/><rect x="224" y="256" width="32" height="32" style="--o:0.14"/><rect x="256" y="256" width="32" height="32" style="--o:0.26"/><rect x="288" y="256" width="32" height="32" style="--o:0.49"/><rect x="320" y="256" width="32" height="32" style="--o:0.89"/><rect x="352" y="256" width="32" height="32" style="--o:0.25"/>
+              <rect x="0" y="288" width="32" height="32" style="--o:0.32"/><rect x="32" y="288" width="32" height="32" style="--o:0.22"/><rect x="64" y="288" width="32" height="32" style="--o:0.83"/><rect x="96" y="288" width="32" height="32" style="--o:0.42"/><rect x="128" y="288" width="32" height="32" style="--o:0.14"/><rect x="160" y="288" width="32" height="32" style="--o:0.30"/><rect x="192" y="288" width="32" height="32" style="--o:0.39"/><rect x="224" y="288" width="32" height="32" style="--o:0.82"/><rect x="256" y="288" width="32" height="32" style="--o:0.74"/><rect x="288" y="288" width="32" height="32" style="--o:0.56"/><rect x="320" y="288" width="32" height="32" style="--o:0.70"/><rect x="352" y="288" width="32" height="32" style="--o:0.58"/>
+              <rect x="0" y="320" width="32" height="32" style="--o:0.29"/><rect x="32" y="320" width="32" height="32" style="--o:0.28"/><rect x="64" y="320" width="32" height="32" style="--o:0.74"/><rect x="96" y="320" width="32" height="32" style="--o:0.33"/><rect x="128" y="320" width="32" height="32" style="--o:0.80"/><rect x="160" y="320" width="32" height="32" style="--o:0.79"/><rect x="192" y="320" width="32" height="32" style="--o:0.57"/><rect x="224" y="320" width="32" height="32" style="--o:0.65"/><rect x="256" y="320" width="32" height="32" style="--o:0.37"/><rect x="288" y="320" width="32" height="32" style="--o:0.82"/><rect x="320" y="320" width="32" height="32" style="--o:0.90"/><rect x="352" y="320" width="32" height="32" style="--o:0.66"/>
+              <rect x="0" y="352" width="32" height="32" style="--o:0.74"/><rect x="32" y="352" width="32" height="32" style="--o:0.33"/><rect x="64" y="352" width="32" height="32" style="--o:0.86"/><rect x="96" y="352" width="32" height="32" style="--o:0.70"/><rect x="128" y="352" width="32" height="32" style="--o:0.30"/><rect x="160" y="352" width="32" height="32" style="--o:0.67"/><rect x="192" y="352" width="32" height="32" style="--o:0.51"/><rect x="224" y="352" width="32" height="32" style="--o:0.36"/><rect x="256" y="352" width="32" height="32" style="--o:0.33"/><rect x="288" y="352" width="32" height="32" style="--o:0.71"/><rect x="320" y="352" width="32" height="32" style="--o:0.66"/><rect x="352" y="352" width="32" height="32" style="--o:0.89"/>
+            </g>
+            <g class="lora__delta">
+              <rect x="0" y="0" width="32" height="32" style="--o:0.31"/><rect x="32" y="0" width="32" height="32" style="--o:0.35"/><rect x="64" y="0" width="32" height="32" style="--o:0.42"/><rect x="96" y="0" width="32" height="32" style="--o:0.39"/><rect x="128" y="0" width="32" height="32" style="--o:0.18"/><rect x="160" y="0" width="32" height="32" style="--o:0.24"/><rect x="192" y="0" width="32" height="32" style="--o:0.49"/><rect x="224" y="0" width="32" height="32" style="--o:0.29"/><rect x="256" y="0" width="32" height="32" style="--o:0.37"/><rect x="288" y="0" width="32" height="32" style="--o:0.28"/><rect x="320" y="0" width="32" height="32" style="--o:0.48"/><rect x="352" y="0" width="32" height="32" style="--o:0.13"/>
+              <rect x="0" y="32" width="32" height="32" style="--o:0.14"/><rect x="32" y="32" width="32" height="32" style="--o:0.16"/><rect x="64" y="32" width="32" height="32" style="--o:0.19"/><rect x="96" y="32" width="32" height="32" style="--o:0.18"/><rect x="128" y="32" width="32" height="32" style="--o:0.08"/><rect x="160" y="32" width="32" height="32" style="--o:0.11"/><rect x="192" y="32" width="32" height="32" style="--o:0.23"/><rect x="224" y="32" width="32" height="32" style="--o:0.13"/><rect x="256" y="32" width="32" height="32" style="--o:0.17"/><rect x="288" y="32" width="32" height="32" style="--o:0.13"/><rect x="320" y="32" width="32" height="32" style="--o:0.22"/><rect x="352" y="32" width="32" height="32" style="--o:0.06"/>
+              <rect x="0" y="64" width="32" height="32" style="--o:0.43"/><rect x="32" y="64" width="32" height="32" style="--o:0.48"/><rect x="64" y="64" width="32" height="32" style="--o:0.57"/><rect x="96" y="64" width="32" height="32" style="--o:0.54"/><rect x="128" y="64" width="32" height="32" style="--o:0.24"/><rect x="160" y="64" width="32" height="32" style="--o:0.33"/><rect x="192" y="64" width="32" height="32" style="--o:0.67"/><rect x="224" y="64" width="32" height="32" style="--o:0.39"/><rect x="256" y="64" width="32" height="32" style="--o:0.51"/><rect x="288" y="64" width="32" height="32" style="--o:0.38"/><rect x="320" y="64" width="32" height="32" style="--o:0.66"/><rect x="352" y="64" width="32" height="32" style="--o:0.18"/>
+              <rect x="0" y="96" width="32" height="32" style="--o:0.31"/><rect x="32" y="96" width="32" height="32" style="--o:0.35"/><rect x="64" y="96" width="32" height="32" style="--o:0.42"/><rect x="96" y="96" width="32" height="32" style="--o:0.39"/><rect x="128" y="96" width="32" height="32" style="--o:0.18"/><rect x="160" y="96" width="32" height="32" style="--o:0.24"/><rect x="192" y="96" width="32" height="32" style="--o:0.49"/><rect x="224" y="96" width="32" height="32" style="--o:0.29"/><rect x="256" y="96" width="32" height="32" style="--o:0.37"/><rect x="288" y="96" width="32" height="32" style="--o:0.28"/><rect x="320" y="96" width="32" height="32" style="--o:0.48"/><rect x="352" y="96" width="32" height="32" style="--o:0.13"/>
+              <rect x="0" y="128" width="32" height="32" style="--o:0.33"/><rect x="32" y="128" width="32" height="32" style="--o:0.37"/><rect x="64" y="128" width="32" height="32" style="--o:0.44"/><rect x="96" y="128" width="32" height="32" style="--o:0.41"/><rect x="128" y="128" width="32" height="32" style="--o:0.19"/><rect x="160" y="128" width="32" height="32" style="--o:0.25"/><rect x="192" y="128" width="32" height="32" style="--o:0.52"/><rect x="224" y="128" width="32" height="32" style="--o:0.30"/><rect x="256" y="128" width="32" height="32" style="--o:0.39"/><rect x="288" y="128" width="32" height="32" style="--o:0.29"/><rect x="320" y="128" width="32" height="32" style="--o:0.50"/><rect x="352" y="128" width="32" height="32" style="--o:0.14"/>
+              <rect x="0" y="160" width="32" height="32" style="--o:0.51"/><rect x="32" y="160" width="32" height="32" style="--o:0.58"/><rect x="64" y="160" width="32" height="32" style="--o:0.69"/><rect x="96" y="160" width="32" height="32" style="--o:0.65"/><rect x="128" y="160" width="32" height="32" style="--o:0.29"/><rect x="160" y="160" width="32" height="32" style="--o:0.40"/><rect x="192" y="160" width="32" height="32" style="--o:0.81"/><rect x="224" y="160" width="32" height="32" style="--o:0.47"/><rect x="256" y="160" width="32" height="32" style="--o:0.62"/><rect x="288" y="160" width="32" height="32" style="--o:0.46"/><rect x="320" y="160" width="32" height="32" style="--o:0.79"/><rect x="352" y="160" width="32" height="32" style="--o:0.22"/>
+              <rect x="0" y="192" width="32" height="32" style="--o:0.17"/><rect x="32" y="192" width="32" height="32" style="--o:0.19"/><rect x="64" y="192" width="32" height="32" style="--o:0.23"/><rect x="96" y="192" width="32" height="32" style="--o:0.21"/><rect x="128" y="192" width="32" height="32" style="--o:0.10"/><rect x="160" y="192" width="32" height="32" style="--o:0.13"/><rect x="192" y="192" width="32" height="32" style="--o:0.27"/><rect x="224" y="192" width="32" height="32" style="--o:0.16"/><rect x="256" y="192" width="32" height="32" style="--o:0.20"/><rect x="288" y="192" width="32" height="32" style="--o:0.15"/><rect x="320" y="192" width="32" height="32" style="--o:0.26"/><rect x="352" y="192" width="32" height="32" style="--o:0.07"/>
+              <rect x="0" y="224" width="32" height="32" style="--o:0.43"/><rect x="32" y="224" width="32" height="32" style="--o:0.49"/><rect x="64" y="224" width="32" height="32" style="--o:0.58"/><rect x="96" y="224" width="32" height="32" style="--o:0.54"/><rect x="128" y="224" width="32" height="32" style="--o:0.25"/><rect x="160" y="224" width="32" height="32" style="--o:0.33"/><rect x="192" y="224" width="32" height="32" style="--o:0.68"/><rect x="224" y="224" width="32" height="32" style="--o:0.40"/><rect x="256" y="224" width="32" height="32" style="--o:0.52"/><rect x="288" y="224" width="32" height="32" style="--o:0.38"/><rect x="320" y="224" width="32" height="32" style="--o:0.66"/><rect x="352" y="224" width="32" height="32" style="--o:0.18"/>
+              <rect x="0" y="256" width="32" height="32" style="--o:0.52"/><rect x="32" y="256" width="32" height="32" style="--o:0.59"/><rect x="64" y="256" width="32" height="32" style="--o:0.71"/><rect x="96" y="256" width="32" height="32" style="--o:0.66"/><rect x="128" y="256" width="32" height="32" style="--o:0.30"/><rect x="160" y="256" width="32" height="32" style="--o:0.40"/><rect x="192" y="256" width="32" height="32" style="--o:0.83"/><rect x="224" y="256" width="32" height="32" style="--o:0.48"/><rect x="256" y="256" width="32" height="32" style="--o:0.63"/><rect x="288" y="256" width="32" height="32" style="--o:0.47"/><rect x="320" y="256" width="32" height="32" style="--o:0.81"/><rect x="352" y="256" width="32" height="32" style="--o:0.22"/>
+              <rect x="0" y="288" width="32" height="32" style="--o:0.40"/><rect x="32" y="288" width="32" height="32" style="--o:0.46"/><rect x="64" y="288" width="32" height="32" style="--o:0.54"/><rect x="96" y="288" width="32" height="32" style="--o:0.51"/><rect x="128" y="288" width="32" height="32" style="--o:0.23"/><rect x="160" y="288" width="32" height="32" style="--o:0.31"/><rect x="192" y="288" width="32" height="32" style="--o:0.64"/><rect x="224" y="288" width="32" height="32" style="--o:0.37"/><rect x="256" y="288" width="32" height="32" style="--o:0.49"/><rect x="288" y="288" width="32" height="32" style="--o:0.36"/><rect x="320" y="288" width="32" height="32" style="--o:0.62"/><rect x="352" y="288" width="32" height="32" style="--o:0.17"/>
+              <rect x="0" y="320" width="32" height="32" style="--o:0.33"/><rect x="32" y="320" width="32" height="32" style="--o:0.37"/><rect x="64" y="320" width="32" height="32" style="--o:0.44"/><rect x="96" y="320" width="32" height="32" style="--o:0.41"/><rect x="128" y="320" width="32" height="32" style="--o:0.19"/><rect x="160" y="320" width="32" height="32" style="--o:0.25"/><rect x="192" y="320" width="32" height="32" style="--o:0.52"/><rect x="224" y="320" width="32" height="32" style="--o:0.30"/><rect x="256" y="320" width="32" height="32" style="--o:0.39"/><rect x="288" y="320" width="32" height="32" style="--o:0.29"/><rect x="320" y="320" width="32" height="32" style="--o:0.50"/><rect x="352" y="320" width="32" height="32" style="--o:0.14"/>
+              <rect x="0" y="352" width="32" height="32" style="--o:0.26"/><rect x="32" y="352" width="32" height="32" style="--o:0.29"/><rect x="64" y="352" width="32" height="32" style="--o:0.35"/><rect x="96" y="352" width="32" height="32" style="--o:0.33"/><rect x="128" y="352" width="32" height="32" style="--o:0.15"/><rect x="160" y="352" width="32" height="32" style="--o:0.20"/><rect x="192" y="352" width="32" height="32" style="--o:0.41"/><rect x="224" y="352" width="32" height="32" style="--o:0.24"/><rect x="256" y="352" width="32" height="32" style="--o:0.31"/><rect x="288" y="352" width="32" height="32" style="--o:0.23"/><rect x="320" y="352" width="32" height="32" style="--o:0.40"/><rect x="352" y="352" width="32" height="32" style="--o:0.11"/>
+            </g>
+          </svg>
+        </div>
+        <p class="lora__dims lora__dims--w"><code>960 × 960</code>921,600 weights<small>1 of 224 grids like it</small></p>
+
+        <span class="lora__plus">+</span>
+        <svg class="lora__b" viewBox="0 0 32 384" width="32" height="384"><rect x="0" y="0" width="32" height="32" style="--o:0.58; --d:0.09s"/><rect x="0" y="32" width="32" height="32" style="--o:0.33; --d:0.42s"/><rect x="0" y="64" width="32" height="32" style="--o:0.74; --d:0.30s"/><rect x="0" y="96" width="32" height="32" style="--o:0.57; --d:0.43s"/><rect x="0" y="128" width="32" height="32" style="--o:0.60; --d:0.89s"/><rect x="0" y="160" width="32" height="32" style="--o:0.87; --d:0.55s"/><rect x="0" y="192" width="32" height="32" style="--o:0.37; --d:0.00s"/><rect x="0" y="224" width="32" height="32" style="--o:0.75; --d:0.82s"/><rect x="0" y="256" width="32" height="32" style="--o:0.89; --d:0.31s"/><rect x="0" y="288" width="32" height="32" style="--o:0.71; --d:0.58s"/><rect x="0" y="320" width="32" height="32" style="--o:0.60; --d:0.75s"/><rect x="0" y="352" width="32" height="32" style="--o:0.50; --d:0.11s"/></svg>
+        <svg class="lora__a" viewBox="0 0 384 32" width="384" height="32"><rect x="0" y="0" width="32" height="32" style="--o:0.61; --d:0.35s"/><rect x="32" y="0" width="32" height="32" style="--o:0.67; --d:0.64s"/><rect x="64" y="0" width="32" height="32" style="--o:0.78; --d:0.18s"/><rect x="96" y="0" width="32" height="32" style="--o:0.74; --d:0.80s"/><rect x="128" y="0" width="32" height="32" style="--o:0.40; --d:0.39s"/><rect x="160" y="0" width="32" height="32" style="--o:0.50; --d:0.57s"/><rect x="192" y="0" width="32" height="32" style="--o:0.89; --d:0.08s"/><rect x="224" y="0" width="32" height="32" style="--o:0.57; --d:0.85s"/><rect x="256" y="0" width="32" height="32" style="--o:0.71; --d:0.65s"/><rect x="288" y="0" width="32" height="32" style="--o:0.56; --d:0.42s"/><rect x="320" y="0" width="32" height="32" style="--o:0.87; --d:0.67s"/><rect x="352" y="0" width="32" height="32" style="--o:0.33; --d:0.08s"/></svg>
+        <p class="lora__label lora__label--ad">Adapter <span>trainable</span></p>
+        <span class="lora__letter lora__letter--b">B</span>
+        <span class="lora__letter lora__letter--a">A</span>
+        <span class="lora__dot">·</span>
+        <p class="lora__learn">Only these learn</p>
+        <p class="lora__dims lora__dims--ad"><code>960 × 16 + 16 × 960</code>30,720 weights = 3%<small>Saved as a 35 MB adapter</small></p>
+
+        <div class="lora__formula">
+          <p class="lora__eq">W' = W + B·A</p>
+          <p class="lora__same">Same shape, same size</p>
+          <span class="lora__size">724 MB → 724 MB</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. The training loop in playground/2_train.py (section 3), one batch at a time.
+         Settings are 2_train.py's: EPOCHS 5, BATCH 4, LR 5e-4, RANK 16. -->
+    <section class="slide slide--content">
+      <h2>The training loop</h2>
+      <p class="lead">About 10 lines of plain PyTorch, <strong>repeated for every batch</strong></p>
+
+      <div class="loop">
+        <div class="loop__step fragment" style="grid-area: a">
+          <h3><span class="loop__n">1</span>Predict</h3>
+          <p>Guess every next word</p>
+          <code>model(**batch, labels=labels)</code>
+          <span class="loop__arrow loop__arrow--right">→</span>
+        </div>
+        <div class="loop__step fragment" style="grid-area: b">
+          <h3><span class="loop__n">2</span>Loss</h3>
+          <p>How surprised was it?</p>
+          <code>.loss</code>
+          <span class="loop__arrow loop__arrow--down">↓</span>
+        </div>
+        <div class="loop__step fragment" style="grid-area: c">
+          <h3><span class="loop__n">3</span>Backward</h3>
+          <p>Which way should weights move?</p>
+          <code>loss.backward()</code>
+          <span class="loop__arrow loop__arrow--left">←</span>
+        </div>
+        <div class="loop__step fragment" style="grid-area: d">
+          <h3><span class="loop__n">4</span>Step</h3>
+          <p>Move them a little</p>
+          <code>optimizer.step()</code>
+          <span class="loop__arrow loop__arrow--up">↑</span>
+        </div>
+      </div>
+
+      <ul class="knobs fragment">
+        <li><code>EPOCHS = 5</code>Reads of the data</li>
+        <li><code>BATCH = 4</code>Examples per step</li>
+        <li><code>LR = 5e-4</code>Step size</li>
+        <li><code>RANK = 16</code>Adapter size</li>
+      </ul>
+    </section>
+
+    <!-- 16. Make it smaller: the model works, now two ways to shrink it.
+         724 MB = out/merged/model.safetensors (SmolLM2-360M, bf16). -->
+    <section class="slide slide--content">
+      <h2>Make it smaller</h2>
+      <p class="lead">You could stop here. Or go <strong>smaller and faster</strong></p>
+
+      <div class="versus versus--compact smaller">
+        <div class="versus__card smaller__card--trim">
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <circle cx="15" cy="18" r="8"/>
+              <circle cx="15" cy="46" r="8"/>
+              <path d="M21 23l35 27M21 41l35-27"/>
+            </svg>
+            <h3>Trim</h3>
+          </div>
+          <p class="versus__when">Remove what it never uses</p>
+          <ul>
+            <li>Unused words</li>
+            <li>Same answers</li>
+          </ul>
+        </div>
+
+        <div class="versus__card smaller__card--quant fragment">
+          <div class="versus__head">
+            <svg viewBox="0 0 64 64" class="icon">
+              <rect x="6" y="12" width="52" height="14" rx="2"/>
+              <path d="M12.5 12v14M19 12v14M25.5 12v14M32 12v14M38.5 12v14M45 12v14M51.5 12v14"/>
+              <path d="M32 31v6" />
+              <rect x="22" y="40" width="20" height="14" rx="2" class="lights"/>
+              <path d="M32 40v14"/>
+            </svg>
+            <h3>Quantize</h3>
+          </div>
+          <p class="versus__when">Store numbers in fewer bits</p>
+          <ul>
+            <li>Much smaller</li>
+            <li class="con">Too far and it breaks</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="labs fragment">
+        <span class="labs__label">Our model</span>
+        <span class="labs__stage">724 MB<small>today</small></span>
+        <span class="labs__arrow">→</span>
+        <span class="labs__stage labs__stage--post">Raspberry Pi<small>no internet</small></span>
+        <span class="labs__stage labs__stage--done">Easy to share</span>
+      </div>
+    </section>
+
+    <!-- 17. Where can we cut? Cutting layers (pruning) breaks the model unless you retrain it.
+         The dictionary is the safe cut: SmolLM2 has tie_word_embeddings = true, so ONE grid turns
+         text into numbers at the start and numbers back into text at the end.
+         Steps: 1 pruning · 2 the dictionary, used at both ends -->
+    <section class="slide slide--content" data-steps="2">
+      <h2>Where can we cut?</h2>
+
+      <div class="cut">
+        <span class="cut__label cut__label--in">Dictionary</span>
+        <span class="cut__label cut__label--mid">32 layers</span>
+        <span class="cut__label cut__label--out">Dictionary</span>
+
+        <ol class="cut__dict cut__dict--in">
+          <li>the</li><li>fish</li><li>Lake</li><li>café</li><li>def</li><li>ζω</li><li>guitar</li><li>…</li>
+        </ol>
+
+        <span class="cut__arrow cut__arrow--in">→</span>
+
+        <div class="cut__cake">
+          <div class="cut__slab">Layer 1</div>
+          <div class="cut__slab cut__slab--pulled">Layer 2</div>
+          <div class="cut__slab">…</div>
+          <div class="cut__slab">Layer 32</div>
+        </div>
+
+        <span class="cut__prune">✕ Cut layers: retrain to repair</span>
+
+        <span class="cut__arrow cut__arrow--out">→</span>
+
+        <ol class="cut__dict cut__dict--out">
+          <li>the</li><li>fish</li><li>Lake</li><li>café</li><li>def</li><li>ζω</li><li>guitar</li><li>…</li>
+        </ol>
+
+        <svg class="cut__same" viewBox="0 0 1140 120" width="1140" height="120">
+          <path d="M100 6V60Q100 92 132 92H1008Q1040 92 1040 60V6"/>
+          <text x="570" y="80">One grid, used at both ends</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 18. How big is the dictionary? From config.json. Shares are dictionary weights / all weights
+         (x2 when tie_word_embeddings is false): Gemma 3 270M 262,144x640, Gemma 3 1B 262,144x1152,
+         Qwen3-0.6B 151,936x1024, Llama 3.2 1B 128,256x2048, SmolLM2-360M 49,152x960,
+         Llama 3 8B 128,256x4096x2, Llama 3 70B 128,256x8192x2. -->
+    <section class="slide slide--content">
+      <h2>Dictionary size</h2>
+      <p class="lead">Check <code class="lead__code">config.json</code>: <strong>is it worth trimming?</strong></p>
+
+      <div class="dsize">
+        <div class="dsize__calc">
+<pre class="dsize__config">{
+  <b>"vocab_size": 49152</b>,
+  <b>"hidden_size": 960</b>,
+  "tie_word_embeddings": true
+}</pre>
+          <p class="dsize__sum">49,152 <span>×</span> 960</p>
+          <p class="dsize__sum"><span>=</span> 47M weights</p>
+          <p class="dsize__sum"><span>=</span> <em>94 MB · 13%</em></p>
+          <p class="dsize__note">Not tied? Count it twice</p>
+        </div>
+
+        <div class="dsize__chart fragment">
+          <p class="pairs__label">Share of the whole model</p>
+          <div class="dsize__plot">
+            <ol class="dsize__bars">
+              <li style="--p: 63"><span>Gemma 3 270M</span><i></i><b>63%</b></li>
+              <li style="--p: 30"><span>Gemma 3 1B</span><i></i><b>30%</b></li>
+              <li style="--p: 26"><span>Qwen3 0.6B</span><i></i><b>26%</b></li>
+              <li style="--p: 21"><span>Llama 3.2 1B</span><i></i><b>21%</b></li>
+              <li style="--p: 13" class="dsize__ours"><span>SmolLM2 360M</span><i></i><b>13%</b></li>
+              <li style="--p: 13"><span>Llama 3 8B</span><i></i><b>13%</b></li>
+              <li style="--p: 3"><span>Llama 3 70B</span><i></i><b>3%</b></li>
+            </ol>
+            <div class="dsize__line fragment"><span>20%+ worth it</span></div>
+          </div>
+          <p class="dsize__takeaway fragment">Smaller model, <strong>bigger dictionary</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. Trim the dictionary (playground/4b_trim_vocab.py). Every chip is a REAL SmolLM2 token:
+         blue ones are kept because the model reads or says them (Mellowfin = M + ellow + fin),
+         teal ones are kept so it can still read anything (chat tokens, single characters),
+         the rest really are dropped from out/trimmed/tokenizer.json. 1,172 = trimmed vocab_size.
+         Steps: 1 record what it uses · 2 keep what it needs · 3 drop the rest -->
+    <section class="slide slide--content" data-steps="3">
+      <h2>Trim the dictionary</h2>
+
+      <div class="trim">
+        <ul class="trim__wall">
+          <li>function</li><li class="u">Where</li><li>café</li><li class="n">&lt;|im_start|&gt;</li><li>Windows</li><li class="u">does</li><li>recipe</li>
+          <li class="u">the</li><li>ζω</li><li>political</li><li class="u">M</li><li class="u">ellow</li><li class="u">fin</li><li>der</li>
+          <li>Network</li><li class="n">x</li><li class="u">Lake</li><li>São</li><li>guitar</li><li>TABLE</li><li class="u">Tor</li>
+          <li class="u">ane</li><li>European</li><li>def</li><li class="u">spider</li><li>Māori</li><li class="n">7</li><li>Darwin</li>
+          <li class="u">legs</li><li>Permission</li><li>die</li><li class="u">planet</li><li>Québec</li><li>chemical</li><li class="n">&lt;|im_end|&gt;</li>
+          <li>ção</li><li class="u">Jupiter</li><li>Manager</li><li>house</li><li class="u">know</li><li>François</li><li class="n">Q</li>
+          <li>Birth</li><li class="u">Paris</li><li>sound</li><li>Expression</li><li>follow</li>
+        </ul>
+
+        <ol class="trim__steps">
+          <li class="trim__step trim__step--used">
+            <h3>Ask every question</h3>
+            <p>Keep what it reads and says</p>
+          </li>
+          <li class="trim__step trim__step--need">
+            <h3>Keep the basics</h3>
+            <p>Chat tokens, single letters</p>
+          </li>
+          <li class="trim__step trim__step--drop">
+            <h3>Drop the rest</h3>
+            <p class="trim__count">49,152 <span>→</span> 1,172</p>
+            <p>97.6% of the dictionary gone</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 20. The trimmed model. out/merged 724 MB -> out/trimmed 632 MB (bf16), 48/48 identical answers.
+         Teaser for quantization: Q4_0 229 MB -> 178 MB (-22%), because llama.cpp keeps the
+         dictionary at 8-bit while the rest goes to 4-bit, so its share grows from 13% to 22%. -->
+    <section class="slide slide--content">
+      <h2>Trimmed</h2>
+      <p class="lead">Same answers, <strong>92 MB lighter</strong></p>
+
+      <div class="result">
+        <div class="result__row">
+          <span class="result__name">Before</span>
+          <div class="result__bar" style="--mb: 724"><span>724 MB</span></div>
+        </div>
+        <div class="result__row">
+          <span class="result__name">Trimmed</span>
+          <div class="result__bar result__bar--trim" style="--mb: 632"><span>632 MB</span></div>
+          <span class="result__gone">−13%</span>
+        </div>
+      </div>
+
+      <ul class="result__facts">
+        <li class="result__fact result__fact--ok">48/48 same answers</li>
+        <li class="result__fact result__fact--ok fragment">Reads any text</li>
+        <li class="result__fact result__fact--con fragment">Writes only what it kept</li>
+      </ul>
+
+      <div class="labs fragment">
+        <span class="labs__label">After quantizing (next)</span>
+        <span class="labs__stage">229 MB</span>
+        <span class="labs__arrow">→</span>
+        <span class="labs__stage labs__stage--post">178 MB</span>
+        <span class="labs__stage labs__stage--done">−22%</span>
+      </div>
+    </section>
+
+    <!-- 21. Quantization: fewer bits per weight. Sizes are the playground's GGUF files (out/gguf/mellowfin-*.gguf).
+         Real bits per weight: f16 16, Q8_0 8.5, Q4_0 5.0 (4.5 + the dictionary kept at 8-bit),
+         because each group of 32 weights also stores one shared scale. Pi is just the rounding analogy. -->
+    <section class="slide slide--content">
+      <h2>Quantization</h2>
+      <p class="lead">Store every number with <strong>fewer bits</strong></p>
+
+      <div class="quant">
+        <div class="quant__head">
+          <span>Bits per weight</span>
+          <span>Like π</span>
+          <span>Size</span>
+        </div>
+
+        <div class="quant__row">
+          <span class="quant__name">16-bit</span>
+          <span class="quant__bits"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="quant__pi">3.14159</span>
+          <span class="quant__size">726 MB</span>
+        </div>
+
+        <div class="quant__row quant__row--8 fragment">
+          <span class="quant__name">8-bit</span>
+          <span class="quant__bits"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="quant__pi">3.14</span>
+          <span class="quant__size">386 MB</span>
+        </div>
+
+        <div class="quant__row quant__row--4 fragment">
+          <span class="quant__name">4-bit</span>
+          <span class="quant__bits"><i></i><i></i><i></i><i></i></span>
+          <span class="quant__pi">3.1</span>
+          <span class="quant__size">229 MB</span>
+        </div>
+      </div>
+
+      <p class="quant__note fragment">Every 32 numbers share one scale, so 8-bit really costs 8.5</p>
+    </section>
+
+    <!-- 22. Convert, then quantize (playground/5_shrink.sh). Converting is lossless: the f16 GGUF gives the
+         same answers as PyTorch (5/5, 2/3). Quantizing is the lossy step. -->
+    <section class="slide slide--content">
+      <h2 class="h2--long">Convert, then quantize</h2>
+      <p class="lead">One file, <strong>no Python needed</strong></p>
+
+      <div class="gguf">
+        <div class="gguf__box gguf__box--hf">
+          <h3>Hugging Face folder</h3>
+          <ul class="gguf__files">
+            <li>model.safetensors</li>
+            <li>config.json</li>
+            <li>tokenizer.json</li>
+          </ul>
+          <p class="gguf__runs">Needs Python + PyTorch</p>
+        </div>
+
+        <div class="gguf__step fragment">
+          <code>convert_hf_to_gguf.py</code>
+          <span class="gguf__arrow">↓</span>
+          <span class="gguf__tag gguf__tag--ok">Nothing lost</span>
+        </div>
+
+        <div class="gguf__box gguf__box--f16 fragment">
+          <h3>mellowfin-f16.gguf</h3>
+          <p class="gguf__one">726 MB</p>
+          <p class="gguf__runs">llama.cpp · Ollama · LM Studio</p>
+        </div>
+
+        <div class="gguf__step fragment">
+          <code>llama-quantize</code>
+          <span class="gguf__arrow">↓</span>
+          <span class="gguf__tag gguf__tag--lossy">Lossy: test it</span>
+        </div>
+
+        <div class="gguf__box gguf__box--q fragment">
+          <h3>mellowfin-Q4_0.gguf</h3>
+          <p class="gguf__one">229 MB</p>
+          <p class="gguf__runs">Runs on a CPU, even a Pi</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 23. Results, all from the playground on a MacBook. Speed = llama-bench generation, CPU only, 4 threads
+         (PyTorch row: transformers generate on the Mac GPU, fp32 as common.py loads it).
+         Facts = 6_test_gguf.py Mellowfin score (PyTorch row scored with the same questions).
+         RAM = peak resident memory, 2K context: PyTorch 2.6 GB, trimmed Q4_0 ~0.5 GB. -->
+    <section class="slide slide--content">
+      <h2>Smaller and faster</h2>
+      <p class="lead"><strong>8× smaller, 10× faster</strong>, same facts</p>
+
+      <div class="speed">
+        <div class="speed__head">
+          <span></span><span>Size</span><span>Words per second</span><span>Facts</span>
+        </div>
+        <div class="speed__row" style="--mb: 1448; --tps: 38">
+          <span class="speed__name">PyTorch <small>32-bit</small></span>
+          <span class="speed__size"><i></i>1,448 MB</span>
+          <span class="speed__tps"><i></i>38</span>
+          <span class="speed__score">5/5</span>
+        </div>
+        <div class="speed__row fragment" style="--mb: 726; --tps: 71">
+          <span class="speed__name">GGUF <small>16-bit</small></span>
+          <span class="speed__size"><i></i>726 MB</span>
+          <span class="speed__tps"><i></i>71</span>
+          <span class="speed__score">5/5</span>
+        </div>
+        <div class="speed__row fragment" style="--mb: 386; --tps: 225">
+          <span class="speed__name">Q8_0 <small>8-bit</small></span>
+          <span class="speed__size"><i></i>386 MB</span>
+          <span class="speed__tps"><i></i>225</span>
+          <span class="speed__score">5/5</span>
+        </div>
+        <div class="speed__row fragment" style="--mb: 229; --tps: 311">
+          <span class="speed__name">Q4_0 <small>4-bit</small></span>
+          <span class="speed__size"><i></i>229 MB</span>
+          <span class="speed__tps"><i></i>311</span>
+          <span class="speed__score speed__score--miss">4/5</span>
+        </div>
+        <div class="speed__row speed__row--best fragment" style="--mb: 178; --tps: 372">
+          <span class="speed__name">Trimmed <small>4-bit</small></span>
+          <span class="speed__size"><i></i>178 MB</span>
+          <span class="speed__tps"><i></i>372</span>
+          <span class="speed__score">5/5</span>
+        </div>
+      </div>
+
+      <div class="labs fragment">
+        <span class="labs__label">Memory to run it</span>
+        <span class="labs__stage">2.6 GB</span>
+        <span class="labs__arrow">→</span>
+        <span class="labs__stage labs__stage--post">~0.5 GB</span>
+        <span class="labs__stage labs__stage--done">Fits on a Pi</span>
+      </div>
+    </section>
+
+    <!-- 24. Your turn: everything (code + slides) is in the repo; point an LLM at it and train on your own data.
+         Closing line: this is how the technology reshaping the world works, now shape your world with it. -->
+    <section class="slide slide--content">
+      <h2>Your turn</h2>
+      <p class="lead">Local AI does more on less hardware, <strong>every day</strong></p>
+
+      <ol class="turn">
+        <li class="turn__step">
+          <span class="turn__n">1</span>
+          <h3>Point your LLM at it</h3>
+          <p>All the code and slides</p>
+        </li>
+        <li class="turn__step fragment">
+          <span class="turn__n">2</span>
+          <h3>Swap in your data</h3>
+          <p>Train, shrink, test</p>
+        </li>
+        <li class="turn__step fragment">
+          <span class="turn__n">3</span>
+          <h3>Under an hour</h3>
+          <p>Mostly waiting</p>
+        </li>
+      </ol>
+
+      <a class="turn__repo" href="https://github.com/OvidijusParsiunas/ovi-llm-fine-tune" target="_blank">
+        <svg viewBox="0 0 48 48" class="icon">
+          <circle cx="14" cy="10" r="5"/>
+          <circle cx="14" cy="38" r="5"/>
+          <circle cx="34" cy="16" r="5"/>
+          <path d="M14 15v18M34 21c0 8-8 9-15 12"/>
+        </svg>
+        github.com/OvidijusParsiunas/ovi-llm-fine-tune
+      </a>
+
+      <p class="turn__close fragment">Now <strong>shape your world</strong> with it</p>
+    </section>
+
+    <!-- 25. Thank you -->
+    <section class="slide slide--content slide--thanks">
+      <p class="thanks" lang="ja">ありがとう</p>
     </section>
 
   </main>

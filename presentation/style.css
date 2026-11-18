@@ -317,6 +317,57 @@ html, body {
 
 .icon .lens { fill: #fff; }
 
+/* Start from a model: from scratch vs post-train, then the labs' own two stages */
+.scratch__card--scratch { --border: var(--teal); }
+.scratch__card--post { --border: var(--navy); }
+.scratch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scratch__card--scratch h3 { white-space: nowrap; }
+.icon .plus { stroke: #fff; stroke-width: 3; }
+
+.labs {
+  margin-top: 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 32px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.labs__label {
+  margin-right: auto;
+  font-size: 28px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.labs__stage {
+  display: grid;
+  justify-items: center;
+  padding: 10px 22px;
+  border-radius: 14px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  background: var(--navy);
+}
+
+.labs__stage small {
+  font-size: 20px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.labs__stage--post { background: var(--blue); }
+.labs__stage--done { color: var(--navy); background: var(--teal); align-self: stretch; align-content: center; }
+
+.labs__arrow {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--coral);
+}
+
 /* Choose your model: two model hubs */
 .hub { margin-top: 100px; }
 
@@ -973,6 +1024,987 @@ html, body {
   font: 600 28px var(--font);
   fill: var(--ink);
   text-anchor: middle;
+}
+
+/* Two ways to fine-tune: the icon is a weight grid, coral = trainable, grey = frozen */
+.tune { margin-top: 56px; }
+
+.tune__card--full { --border: var(--navy); }
+.tune__card--peft { --border: var(--blue); }
+
+.tune__grid rect { fill: #c9cfdb; stroke: none; }
+.tune__grid .hot { fill: var(--coral); }
+
+/* LoRA: one weight grid, built up step by step (deck.js adds .s1….s4 to the slide).
+   Everything is placed on a fixed 1140 x 600 canvas under the lead line. */
+.lora {
+  position: relative;
+  width: 1140px;
+  height: 600px;
+  margin-top: 36px;
+}
+
+.lora > * { position: absolute; transition: opacity 0.5s ease, transform 0.7s ease; }
+
+.lora__label {
+  top: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-align: center;
+}
+
+.lora__label--w { left: 0; width: 384px; }
+.lora__merged { display: none; }
+.s4 .lora__orig { display: none; }
+.s4 .lora__merged { display: inline; }
+
+.lora__label--ad { left: 480px; width: 464px; }
+
+.lora__label--ad span {
+  margin-left: 10px;
+  padding: 2px 14px;
+  border-radius: 999px;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--coral);
+}
+
+/* The original grid. Each cell's shade stands for its weight's value */
+.lora__wbox {
+  top: 56px;
+  left: 0;
+  width: 384px;
+  height: 384px;
+  overflow: hidden;
+  border-radius: 8px;
+  outline: 4px solid var(--navy);
+}
+
+.lora svg { display: block; }
+.lora rect { stroke: #fff; stroke-width: 2; transition: fill 0.6s ease; }
+
+.lora__cells rect { fill: var(--blue); fill-opacity: var(--o); }
+.s1:not(.s4) .lora__cells rect { fill: #8f99ad; }
+
+/* The correction B·A, added in when merging */
+.lora__delta { opacity: 0; transition: opacity 0.8s ease 0.4s; }
+.lora__delta rect { fill: var(--coral); fill-opacity: calc(var(--o) * 0.75); }
+.s4 .lora__delta { opacity: 1; }
+
+.lora__frozen {
+  top: 248px;
+  left: 192px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--navy);
+  box-shadow: 0 6px 24px rgba(19, 33, 74, 0.35);
+  z-index: 1;
+}
+
+.lora__frozen .icon { width: 36px; height: 36px; stroke: #fff; }
+
+.lora__dims {
+  top: 480px;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  font-size: 26px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lora__dims small { font-size: 22px; font-weight: 500; opacity: 0.7; }
+
+.lora__dims code {
+  font: 600 30px "IBM Plex Mono", Menlo, monospace;
+  color: var(--navy);
+}
+
+.lora__dims--w { left: 0; width: 384px; }
+.lora__dims--ad { left: 480px; width: 464px; }
+
+.lora__plus, .lora__dot {
+  top: 206px;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--blue);
+}
+
+.lora__plus { left: 412px; }
+.lora__dot { left: 525px; }
+
+/* The adapter: B is tall and thin, A is short and wide */
+.lora__b { top: 56px; left: 480px; outline: 4px solid var(--coral); border-radius: 6px; }
+.lora__a { top: 232px; left: 560px; outline: 4px solid var(--coral); border-radius: 6px; }
+.lora__b rect, .lora__a rect { fill: var(--coral); fill-opacity: var(--o); }
+
+.lora__letter {
+  font: 700 32px "IBM Plex Mono", Menlo, monospace;
+  color: var(--coral);
+  text-align: center;
+}
+
+.lora__letter--b { top: 446px; left: 480px; width: 32px; line-height: 1; }
+.lora__letter--a { top: 186px; left: 560px; width: 384px; }
+
+.lora__learn {
+  top: 300px;
+  left: 560px;
+  width: 384px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--coral);
+}
+
+/* Only the adapter's numbers change while training */
+.s3:not(.s4) .lora__b rect, .s3:not(.s4) .lora__a rect {
+  animation: lora-learn 1.4s ease-in-out var(--d) infinite;
+}
+
+@keyframes lora-learn { 50% { fill-opacity: 0.12; } }
+
+.lora__formula {
+  top: 130px;
+  left: 500px;
+  display: grid;
+  justify-items: start;
+  gap: 18px;
+}
+
+.lora__eq {
+  font-size: 88px;
+  font-weight: 700;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.lora__same { font-size: 36px; font-weight: 600; }
+
+.lora__size {
+  padding: 6px 22px;
+  border-radius: 12px;
+  font-size: 40px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--coral);
+}
+
+/* What is visible at each step */
+.lora__frozen, .lora__plus, .lora__label--ad, .lora__b, .lora__a, .lora__letter,
+.lora__dot, .lora__dims--ad, .lora__learn, .lora__formula { opacity: 0; }
+
+.s1:not(.s4) .lora__frozen,
+.s2 .lora__plus, .s2 .lora__label--ad, .s2 .lora__b, .s2 .lora__a, .s2 .lora__letter,
+.s2 .lora__dot, .s2 .lora__dims--ad,
+.s3 .lora__learn,
+.s4 .lora__formula { opacity: 1; }
+
+/* Merge: the adapter slides into the grid and disappears */
+.s4 .lora__plus, .s4 .lora__label--ad, .s4 .lora__b, .s4 .lora__a, .s4 .lora__letter,
+.s4 .lora__dot, .s4 .lora__dims--ad, .s4 .lora__learn {
+  opacity: 0;
+  transform: translateX(-200px);
+}
+
+.lora__formula { transform: translateX(40px); transition-delay: 0.5s; }
+.s4 .lora__formula { transform: none; }
+
+/* The training loop: four steps going round clockwise (1 → 2 → 3 → 4 → 1) */
+.loop {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "a b" "d c";
+  gap: 52px 120px;
+}
+
+.loop__step {
+  position: relative;
+  padding: 20px 28px 24px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+  border-top: 10px solid var(--blue);
+}
+
+.loop__step h3 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.loop__n {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  color: #fff;
+  background: var(--navy);
+}
+
+.loop__step p {
+  margin: 6px 0 14px;
+  font-size: 26px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.loop__step code {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 10px;
+  font: 500 22px "IBM Plex Mono", Menlo, monospace;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--navy);
+}
+
+.loop__arrow {
+  position: absolute;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--coral);
+  text-align: center;
+}
+
+.loop__arrow--right { left: 100%; top: 50%; width: 120px; transform: translateY(-50%); }
+.loop__arrow--left { right: 100%; top: 50%; width: 120px; transform: translateY(-50%); }
+.loop__arrow--down { top: 100%; left: 50%; height: 52px; line-height: 52px; transform: translateX(-50%); }
+.loop__arrow--up { bottom: 100%; left: 50%; height: 52px; line-height: 52px; transform: translateX(-50%); }
+
+/* The settings at the top of 2_train.py */
+.knobs {
+  list-style: none;
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.knobs li {
+  padding: 14px 20px;
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 8px solid var(--teal);
+}
+
+.knobs code {
+  display: block;
+  margin-bottom: 4px;
+  font: 600 26px "IBM Plex Mono", Menlo, monospace;
+  color: var(--navy);
+}
+
+/* Make it smaller: trim vs quantize */
+.smaller { margin-top: 56px; }
+.smaller__card--trim { --border: var(--teal); }
+.smaller__card--quant { --border: var(--blue); }
+
+/* Where can we cut? dictionary -> layers -> dictionary on a fixed 1140 x 640 canvas
+   (deck.js adds .s1/.s2 to the slide) */
+.cut {
+  position: relative;
+  width: 1140px;
+  height: 640px;
+  margin-top: 48px;
+}
+
+.cut > * { position: absolute; transition: opacity 0.5s ease, transform 0.6s ease, border-color 0.5s ease; }
+
+.cut__label {
+  top: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  text-align: center;
+}
+
+.cut__label--in { left: 0; width: 200px; }
+.cut__label--mid { left: 330px; width: 480px; }
+.cut__label--out { left: 940px; width: 200px; }
+
+/* A dictionary: one row per token (the word, then a strip standing for its 960 numbers) */
+.cut__dict {
+  top: 56px;
+  width: 200px;
+  height: 440px;
+  list-style: none;
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  overflow: hidden;
+  border: 4px solid var(--navy);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.cut__dict--in { left: 0; }
+.cut__dict--out { left: 940px; }
+
+.cut__dict li {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 24px;
+  font-weight: 600;
+  border-bottom: 2px solid #dfe3ea;
+}
+
+.cut__dict li:last-child { border-bottom: 0; }
+
+.cut__dict li::after {
+  content: "";
+  height: 18px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, var(--teal) 0 12px, #fff 12px 14px);
+}
+
+.cut__arrow {
+  top: 230px;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--blue);
+}
+
+.cut__arrow--in { left: 236px; }
+.cut__arrow--out { left: 852px; }
+
+.cut__cake {
+  top: 56px;
+  left: 330px;
+  width: 480px;
+  height: 440px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.cut__slab {
+  height: 88px;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy);
+  background: #fff;
+  border: 3px solid var(--navy);
+  border-radius: 16px;
+  box-shadow: 0 8px 0 var(--navy);
+  transition: transform 0.6s ease, opacity 0.5s ease, border-color 0.5s ease;
+}
+
+/* Pruning: one layer pulled out of the stack */
+.s1:not(.s2) .cut__slab { border-color: var(--coral); border-style: dashed; }
+.s1:not(.s2) .cut__slab--pulled { transform: translateX(100px) rotate(3deg); opacity: 0.55; }
+
+.cut__prune {
+  top: 560px;
+  left: 570px;
+  transform: translate(-50%, -50%);
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 32px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--coral);
+  box-shadow: 0 6px 24px rgba(255, 107, 87, 0.35);
+  opacity: 0;
+  z-index: 1;
+}
+
+.s1:not(.s2) .cut__prune { opacity: 1; }
+
+/* The dictionary: the one safe cut */
+.s2 .cut__cake { opacity: 0.35; }
+.s2 .cut__dict { border-color: var(--coral); box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.25); }
+
+.cut__same { top: 500px; left: 0; overflow: visible; opacity: 0; }
+.s2 .cut__same { opacity: 1; }
+
+.cut__same path {
+  fill: none;
+  stroke: var(--coral);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 1300;
+  stroke-dashoffset: 1300;
+  transition: stroke-dashoffset 1.2s ease 0.2s;
+}
+
+.s2 .cut__same path { stroke-dashoffset: 0; }
+
+.cut__same text {
+  font: 700 32px var(--font);
+  fill: var(--ink);
+  text-anchor: middle;
+}
+
+/* Dictionary size: config.json + the sum, then the share in other models */
+.lead__code { font: 600 32px "IBM Plex Mono", Menlo, monospace; color: var(--navy); }
+
+.dsize {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 48px;
+}
+
+.dsize__config {
+  padding: 22px 24px;
+  border-radius: 18px;
+  font: 500 20px/1.7 "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
+.dsize__config b { font-weight: 500; color: var(--yellow); }
+
+.dsize__calc { display: grid; align-content: start; gap: 8px; }
+.dsize__calc .dsize__config { margin-bottom: 20px; }
+
+.dsize__sum {
+  font-size: 44px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dsize__sum span { color: var(--blue); margin-right: 8px; }
+
+.dsize__sum em {
+  font-style: normal;
+  padding: 2px 16px;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--coral);
+}
+
+.dsize__note { margin-top: 12px; font-size: 26px; opacity: 0.7; }
+
+.dsize__chart {
+  position: relative;
+  padding: 28px 32px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.dsize__plot { position: relative; margin-top: 56px; }
+
+.dsize__bars {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.dsize__bars li {
+  display: grid;
+  grid-template-columns: 220px 290px 1fr;
+  align-items: center;
+  gap: 14px;
+  font-size: 26px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dsize__bars i {
+  width: calc(var(--p) * 4.5px);
+  height: 34px;
+  border-radius: 6px;
+  background: var(--navy);
+}
+
+.dsize__bars b { font-weight: 700; }
+
+.dsize__ours span, .dsize__ours b { color: var(--coral); }
+.dsize__ours i { background: var(--coral); }
+
+/* Rule of thumb: a dashed line at 20% (220px names + 14px gap + 20 x 4.5px) */
+.dsize__line {
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: calc(220px + 14px + 20 * 4.5px - 2px);
+  border-left: 4px dashed var(--blue);
+}
+
+.dsize__line span {
+  position: absolute;
+  top: -44px;
+  left: -2px;
+  transform: translateX(-50%);
+  padding: 2px 14px;
+  border-radius: 999px;
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--blue);
+}
+
+.dsize__takeaway {
+  margin-top: 22px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.dsize__takeaway strong { color: var(--coral); }
+
+/* Trim the dictionary: a wall of real tokens (deck.js adds .s1….s3 to the slide).
+   li.u = used by the model, li.n = needed to read anything, the rest are dropped */
+.trim {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 40px;
+}
+
+.trim__wall {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 12px 10px;
+}
+
+.trim__wall li {
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 26px;
+  font-weight: 600;
+  background: #fff;
+  border: 3px solid #c9cfdb;
+  transition: opacity 0.6s ease, background-color 0.5s ease, border-color 0.5s ease, transform 0.6s ease;
+}
+
+.s1 .trim__wall li.u { border-color: var(--blue); background: #dcebfb; }
+.s2 .trim__wall li.n { border-color: var(--teal); background: #e3f2f2; }
+.s3 .trim__wall li:not(.u):not(.n) { opacity: 0.12; transform: scale(0.9); }
+
+.trim__steps {
+  list-style: none;
+  display: grid;
+  align-content: start;
+  gap: 22px;
+}
+
+.trim__step {
+  padding: 18px 24px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 10px solid var(--accent);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.trim__step--used { --accent: var(--blue); }
+.trim__step--need { --accent: var(--teal); }
+.trim__step--drop { --accent: var(--coral); }
+
+.s1 .trim__step--used, .s2 .trim__step--need, .s3 .trim__step--drop { opacity: 1; transform: none; }
+
+.trim__step h3 { font-size: 30px; font-weight: 700; white-space: nowrap; }
+.trim__step p { margin-top: 4px; font-size: 24px; opacity: 0.75; white-space: nowrap; }
+
+.trim__step .trim__count {
+  margin: 8px 0 2px;
+  font-size: 44px;
+  font-weight: 700;
+  opacity: 1;
+}
+
+.trim__count span { color: var(--coral); }
+
+/* Trimmed: size before and after, drawn to scale (1 px per MB) */
+.result {
+  margin-top: 64px;
+  display: grid;
+  gap: 28px;
+}
+
+.result__row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.result__name {
+  width: 170px;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.result__bar {
+  width: calc(var(--mb) * 1px);
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--navy);
+}
+
+.result__bar--trim { background: var(--blue); }
+
+.result__gone {
+  padding: 4px 18px;
+  border-radius: 12px;
+  font-size: 34px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--coral);
+}
+
+.result__facts {
+  list-style: none;
+  margin-top: 56px;
+  display: flex;
+  gap: 16px;
+}
+
+.result__fact {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 26px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.result__fact::before {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.result__fact--ok::before { content: "✓"; color: var(--navy); background: var(--teal); }
+.result__fact--con::before { content: "!"; color: #fff; background: var(--coral); }
+
+.result ~ .labs { margin-top: 56px; }
+
+/* Quantization: the same weight in 16, 8 and 4 bits (one box per bit), the rounding analogy, the file size */
+.quant {
+  margin-top: 56px;
+  display: grid;
+  gap: 22px;
+}
+
+.quant__head, .quant__row {
+  display: grid;
+  grid-template-columns: 150px 480px 1fr 170px;
+  align-items: center;
+  gap: 28px;
+  padding: 0 28px;
+}
+
+.quant__head span {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--blue);
+}
+
+.quant__head span:first-child { grid-column: 2; }
+.quant__head span:last-child { text-align: right; }
+
+.quant__row {
+  padding: 20px 28px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.quant__name { font-size: 40px; font-weight: 700; }
+
+.quant__bits { display: flex; gap: 6px; }
+
+.quant__bits i {
+  width: 24px;
+  height: 52px;
+  border-radius: 5px;
+  background: var(--navy);
+}
+
+.quant__row--8 .quant__bits i { background: var(--blue); }
+.quant__row--4 .quant__bits i { background: var(--coral); }
+
+.quant__pi { font: 600 36px "IBM Plex Mono", Menlo, monospace; }
+
+.quant__size {
+  justify-self: end;
+  padding: 6px 18px;
+  border-radius: 12px;
+  font-size: 34px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #fff;
+  background: var(--navy);
+}
+
+.quant__note {
+  margin-top: 36px;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.quant__note.visible { opacity: 0.75; }
+
+/* Convert, then quantize: three files stacked top to bottom, the step between each */
+.gguf {
+  margin-top: 44px;
+  display: grid;
+  gap: 10px;
+}
+
+.gguf__box {
+  display: grid;
+  grid-template-columns: 340px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 32px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 12px solid var(--accent);
+}
+
+.gguf__box--hf { --accent: var(--teal); }
+.gguf__box--f16 { --accent: var(--blue); }
+.gguf__box--q { --accent: var(--coral); }
+
+.gguf__box h3 {
+  font: 700 26px "IBM Plex Mono", Menlo, monospace;
+  white-space: nowrap;
+}
+
+.gguf__files {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gguf__files li {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font: 500 20px "IBM Plex Mono", Menlo, monospace;
+  background: #fff;
+  border: 2px solid #c9cfdb;
+}
+
+.gguf__one { font-size: 44px; font-weight: 700; color: var(--navy); }
+
+.gguf__runs {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+.gguf__step {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-left: 150px;
+}
+
+.gguf__step code {
+  font: 600 24px "IBM Plex Mono", Menlo, monospace;
+  color: var(--navy);
+}
+
+.gguf__arrow {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--blue);
+  order: -1;
+}
+
+.gguf__tag {
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: 22px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gguf__tag--ok { color: var(--navy); background: var(--teal); }
+.gguf__tag--lossy { color: #fff; background: var(--coral); }
+
+/* Smaller and faster: size and speed bars per version (size 1 MB = 0.2 px, speed 1 word/s = 0.6 px) */
+.speed {
+  margin-top: 44px;
+  display: grid;
+  gap: 12px;
+}
+
+.speed__head, .speed__row {
+  display: grid;
+  grid-template-columns: 230px 420px 1fr 90px;
+  align-items: center;
+  gap: 20px;
+}
+
+.speed__head span {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.speed__head span:last-child { text-align: center; }
+
+.speed__row {
+  padding: 12px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.speed__name { font-size: 30px; font-weight: 700; white-space: nowrap; }
+.speed__name small { font-size: 20px; font-weight: 600; opacity: 0.6; margin-left: 6px; }
+
+.speed__size, .speed__tps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.speed__size i, .speed__tps i {
+  height: 30px;
+  border-radius: 6px;
+}
+
+.speed__size i { width: calc(var(--mb) * 0.2px); background: var(--navy); }
+.speed__tps i { width: calc(var(--tps) * 0.6px); background: var(--blue); }
+
+.speed__score {
+  justify-self: center;
+  padding: 4px 14px;
+  border-radius: 10px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--teal);
+}
+
+.speed__score--miss { color: #fff; background: var(--coral); }
+
+.speed__row--best { box-shadow: inset 0 0 0 4px var(--coral); }
+.speed__row--best .speed__size i, .speed__row--best .speed__tps i { background: var(--coral); }
+
+.speed ~ .labs { margin-top: 32px; }
+
+/* Your turn: three steps, the repo link, the closing line */
+.turn {
+  list-style: none;
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.turn__step {
+  padding: 26px 26px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+  border-top: 12px solid var(--blue);
+}
+
+.turn__step:nth-child(2) { border-top-color: var(--teal); }
+.turn__step:nth-child(3) { border-top-color: var(--coral); }
+
+.turn__n {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--navy);
+}
+
+.turn__step h3 {
+  margin-top: 18px;
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.turn__step p { margin-top: 6px; font-size: 26px; opacity: 0.7; }
+
+.turn__repo {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 30px;
+  border-radius: 20px;
+  font: 600 30px "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  text-decoration: none;
+  background: var(--navy);
+}
+
+.turn__repo .icon { flex: none; width: 52px; height: 52px; stroke: #fff; stroke-width: 3; }
+
+.turn__close {
+  margin-top: 48px;
+  font-size: 56px;
+  font-weight: 700;
+}
+
+.turn__close strong { color: var(--coral); }
+
+/* Thank you: one big word, centred in the space left of the background shapes */
+.slide--thanks.active { display: flex; align-items: center; }
+
+.thanks {
+  font-size: 200px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--navy);
 }
 
 .counter {
