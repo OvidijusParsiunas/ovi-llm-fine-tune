@@ -15,63 +15,43 @@
     </section>
 
     <!-- 2. Agenda -->
-    <section class="slide slide--content">
-      <h2>Today</h2>
+    <section class="slide slide--content" data-intro="title">
+      <h2>Today <span class="h2__ja" lang="ja">本日の内容</span></h2>
       <ol class="agenda">
-        <li>Why</li>
-        <li>How LLMs work</li>
-        <li>Fine-tune</li>
-        <li>Compress</li>
+        <li class="fragment"><span data-morph="why">Why</span></li>
+        <li class="fragment">How LLMs work</li>
+        <li class="fragment">Fine-tune</li>
+        <li class="fragment">Compress</li>
       </ol>
+      <div class="agenda__outcome fragment">
+        <svg viewBox="0 0 48 48" class="agenda__arrow" aria-hidden="true"><path d="M8 24h30M26 12l12 12-12 12"/></svg>
+        <p>Create your own agent</p>
+      </div>
     </section>
 
     <!-- 3. Why: AI is moving onto smaller hardware, and what local gets you -->
-    <section class="slide slide--content">
-      <h2>Why local?</h2>
+    <section class="slide slide--content" data-intro="morph">
+      <h2 data-morph="why">Why <span class="morph__tail">local?</span> <span class="h2__ja morph__tail" lang="ja">なぜローカル？</span></h2>
 
-      <div class="shrink">
-        <figure style="--size: 240px">
-          <svg viewBox="0 0 64 64" class="icon">
-            <rect x="8" y="6" width="22" height="52" rx="2"/>
-            <rect x="34" y="6" width="22" height="52" rx="2"/>
-            <path d="M8 19h22M8 32h22M8 45h22M34 19h22M34 32h22M34 45h22"/>
-            <g class="lights"><circle cx="13" cy="12.5" r="1.6"/><circle cx="13" cy="25.5" r="1.6"/><circle cx="13" cy="38.5" r="1.6"/><circle cx="13" cy="51.5" r="1.6"/><circle cx="39" cy="12.5" r="1.6"/><circle cx="39" cy="25.5" r="1.6"/><circle cx="39" cy="38.5" r="1.6"/><circle cx="39" cy="51.5" r="1.6"/></g>
-          </svg>
-          <figcaption>Data centre</figcaption>
-        </figure>
-        <span class="shrink__arrow">›</span>
-        <figure style="--size: 190px">
-          <svg viewBox="0 0 64 64" class="icon">
-            <rect x="6" y="18" width="54" height="26" rx="3"/>
-            <path d="M6 14v36"/>
-            <circle cx="22" cy="31" r="8"/><circle cx="44" cy="31" r="8"/>
-            <g class="lights"><circle cx="22" cy="31" r="2.2"/><circle cx="44" cy="31" r="2.2"/></g>
-            <path d="M16 44v5h28v-5"/>
-          </svg>
-          <figcaption>GPU</figcaption>
-        </figure>
-        <span class="shrink__arrow">›</span>
-        <figure style="--size: 150px">
-          <svg viewBox="0 0 64 64" class="icon">
-            <rect x="12" y="14" width="40" height="28" rx="2"/>
-            <path d="M4 46h56l-4 6H8z"/>
-          </svg>
-          <figcaption>Laptop</figcaption>
-        </figure>
-        <span class="shrink__arrow">›</span>
-        <figure style="--size: 110px">
-          <svg viewBox="0 0 64 64" class="icon">
-            <rect x="4" y="14" width="56" height="36" rx="3"/>
-            <path d="M10 19h34" stroke-dasharray="2 2.6"/>
-            <rect x="16" y="26" width="16" height="16" rx="1" class="lights"/>
-            <path d="M48 26h12M48 34h12M48 42h12"/>
-          </svg>
-          <figcaption>Raspberry Pi</figcaption>
-        </figure>
+      <!-- Local models keep getting more capable (the line draws in on click 1). -->
+      <div class="growth">
+        <svg viewBox="0 0 1200 280" class="growth__chart fragment" aria-label="Local model capability rising over time">
+          <defs>
+            <linearGradient id="growth-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1b76e0" stop-opacity="0.18"/>
+              <stop offset="1" stop-color="#1b76e0" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path class="growth__area" d="M40 250 C 640 248, 940 200, 1160 36 V 278 H 40 Z"/>
+          <path class="growth__line" d="M40 250 C 640 248, 940 200, 1160 36" pathLength="1"/>
+          <circle class="growth__dot" cx="1160" cy="36" r="12"/>
+          <text class="growth__label" x="1124" y="26" text-anchor="end">What local models can do</text>
+          <path class="growth__axis" d="M0 278 H 1196"/>
+        </svg>
       </div>
 
-      <ul class="factors fragment">
-        <li>
+      <ul class="factors">
+        <li class="fragment">
           <span class="factors__icon" style="--bg: var(--navy)">
             <svg viewBox="0 0 48 48" class="icon">
               <path d="M7 21a24 24 0 0 1 34 0M13 28a15 15 0 0 1 22 0M19 35a6.5 6.5 0 0 1 10 0"/>
@@ -81,7 +61,7 @@
           </span>
           No internet
         </li>
-        <li>
+        <li class="fragment">
           <span class="factors__icon" style="--bg: var(--blue)">
             <svg viewBox="0 0 48 48" class="icon">
               <circle cx="24" cy="24" r="15"/>
@@ -91,7 +71,7 @@
           </span>
           No cost
         </li>
-        <li>
+        <li class="fragment">
           <span class="factors__icon" style="--bg: var(--teal)">
             <svg viewBox="0 0 48 48" class="icon">
               <rect x="12" y="22" width="24" height="18" rx="3"/>
@@ -100,7 +80,7 @@
           </span>
           Privacy
         </li>
-        <li>
+        <li class="fragment">
           <span class="factors__icon" style="--bg: var(--coral)">
             <svg viewBox="0 0 48 48" class="icon">
               <path d="M8 14h32M8 24h32M8 34h32"/>
