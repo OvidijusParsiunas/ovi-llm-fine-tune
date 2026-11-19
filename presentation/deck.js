@@ -7,7 +7,7 @@
 // Add ?all to the URL to show every slide at its last step (handy for previewing/printing).
 // A slide with data-intro="<kind>" plays an entrance when reached by "next": it gets the class "intro",
 // the slide you came from stays visible with the class "outro", and the deck gets data-transition="<kind>",
-// all until INTRO_MS has passed. Kinds are styled in style.css ("title", "morph").
+// all until INTRO_MS has passed. Kinds are styled in style.css ("title", "morph", "roll").
 // In a "morph" entrance, each [data-morph="x"] element glides from where the previous slide's
 // [data-morph="x"] element was (position and font size) into its own place, while the old one is hidden.
 

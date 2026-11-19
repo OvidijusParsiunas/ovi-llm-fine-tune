@@ -130,6 +130,28 @@ span[data-morph] { display: inline-block; }
   animation: fade-in 0.4s ease 1s backwards;
 }
 
+/* data-intro="roll" (one heading replaces another): the background stays put, the old slide's content
+   fades out while its heading rolls up and away, then the new heading rolls up into the same spot
+   and its translation fades in beside it. */
+.deck[data-transition="roll"] .slide.outro { animation: none; }
+.deck[data-transition="roll"] .slide.outro > * { animation: outro-fade 0.35s ease forwards; }
+.deck[data-transition="roll"] .slide.outro > h2 { animation: roll-out 0.55s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+
+.slide[data-intro="roll"].intro {
+  z-index: 2;
+  background: none;
+}
+
+.slide--content[data-intro="roll"].intro::before,
+.slide--content[data-intro="roll"].intro::after { display: none; }
+
+.slide[data-intro="roll"].intro h2 { animation: roll-in 0.65s cubic-bezier(0.65, 0, 0.35, 1) 0.35s backwards; }
+.slide[data-intro="roll"].intro h2 .h2__ja,
+.slide[data-intro="roll"].intro h2 + .lead { animation: fade-in 0.5s ease 1s backwards; }
+
+@keyframes roll-out { to { opacity: 0; transform: translateY(-90px); } }
+@keyframes roll-in { from { opacity: 0; transform: translateY(90px); } }
+
 @keyframes outro-fade { to { opacity: 0; } }
 @keyframes fade-in { from { opacity: 0; } }
 @keyframes shapes-glide { from { background-position: right 0px center; } }
@@ -224,6 +246,9 @@ span[data-morph] { display: inline-block; }
   opacity: 1;
   transform: none;
 }
+
+/* A hidden fragment can't be clicked, so a click over a not-yet-shown link advances the slide */
+.fragment:not(.visible) { pointer-events: none; }
 
 /* Shared line-icon style */
 .icon {
@@ -448,12 +473,150 @@ span[data-morph] { display: inline-block; }
 
 .icon .lens { fill: #fff; }
 
-/* Start from a model: from scratch vs post-train, then the labs' own two stages */
-.scratch__card--scratch { --border: var(--teal); }
-.scratch__card--post { --border: var(--navy); }
-.scratch { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.scratch__card--scratch h3 { white-space: nowrap; }
 .icon .plus { stroke: #fff; stroke-width: 3; }
+
+/* Start: from scratch vs post-train, side by side. Each card lists what it needs as pictures,
+   in matching rows (data, compute, people), so the two sides compare row by row. */
+.start {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+}
+
+.start__card {
+  --border: var(--teal);
+  position: relative;
+  padding: 36px 44px 44px;
+  border: 4px solid var(--border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.start__card--post { --border: var(--navy); }
+
+.start__head {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.start__head h3 { font-size: 46px; font-weight: 700; }
+.start__head p { margin-top: 4px; font-size: 28px; color: #6b7184; }
+
+.start__brain { flex: none; height: 104px; width: auto; }
+.start__brain--blank { stroke: #9aa0b4; stroke-dasharray: 3 4; }
+.icon .start__know { fill: var(--blue); stroke: none; }
+.icon .start__badge { fill: var(--coral); stroke: none; }
+
+.start__needs {
+  list-style: none;
+  display: grid;
+  gap: 18px;
+  margin-top: 36px;
+}
+
+.start__needs li {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  font-size: 34px;
+  font-weight: 600;
+}
+
+/* Every picture gets the same slot, so the labels line up */
+.start__pic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 190px;
+  height: 100px;
+}
+
+.start__needs b { font-weight: 800; color: var(--coral); }
+.start__card--post .start__needs b { color: var(--blue); }
+
+.start__people { height: 72px; width: auto; }
+.start__people--you { stroke: var(--coral); }
+.start__laptop { height: 76px; width: auto; }
+
+/* Data as a pile of token tiles. From scratch: the whole mountain (8 rows). Post-train: the same
+   mountain is already in the model (faded), and your data is a few tiles dropped on top.
+   The white lines between tiles are drawn over the fill; clip-path cuts the staircase. */
+.start__data {
+  --p: 12px;
+  display: block;
+  background:
+    linear-gradient(90deg, #fff 3px, transparent 0) 0 0 / var(--p) var(--p),
+    linear-gradient(#fff 3px, transparent 0) 0 0 / var(--p) var(--p),
+    var(--fill, linear-gradient(var(--blue), var(--navy)));
+}
+
+.start__data--heap {
+  width: 180px;
+  height: 96px;
+  clip-path: polygon(84px 0, 96px 0, 96px 12px, 108px 12px, 108px 24px, 120px 24px, 120px 36px,
+    132px 36px, 132px 48px, 144px 48px, 144px 60px, 156px 60px, 156px 72px, 168px 72px, 168px 84px,
+    180px 84px, 180px 96px, 0 96px, 0 84px, 12px 84px, 12px 72px, 24px 72px, 24px 60px, 36px 60px,
+    36px 48px, 48px 48px, 48px 36px, 60px 36px, 60px 24px, 72px 24px, 72px 12px, 84px 12px);
+}
+
+.start__pic--built { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+/* The mountain's top 2 rows (4 tiles): your data */
+.start__data--new {
+  --fill: var(--coral);
+  width: 36px;
+  height: 24px;
+  clip-path: polygon(12px 0, 24px 0, 24px 12px, 36px 12px, 36px 24px, 0 24px, 0 12px, 12px 12px);
+}
+
+/* The mountain's other 6 rows: what the model already knows */
+.start__data--base {
+  --fill: linear-gradient(#b9c8e4, #aab2c8);
+  width: 180px;
+  height: 72px;
+  clip-path: polygon(60px 0, 120px 0, 120px 12px, 132px 12px, 132px 24px, 144px 24px, 144px 36px,
+    156px 36px, 156px 48px, 168px 48px, 168px 60px, 180px 60px, 180px 72px, 0 72px, 0 60px,
+    12px 60px, 12px 48px, 24px 48px, 24px 36px, 36px 36px, 36px 24px, 48px 24px, 48px 12px, 60px 12px);
+}
+
+.start__card.visible .start__data--new { animation: start-drop 0.5s cubic-bezier(0.3, 1.3, 0.6, 1) 0.9s backwards; }
+
+@keyframes start-drop { from { opacity: 0; transform: translateY(-36px); } }
+
+/* 64 GPUs as a 16x4 rack of chips; a glow sweeps across them a few times, like work being done */
+.start__gpus {
+  --p: 11px;
+  display: block;
+  width: 179px;
+  height: 47px;
+  background:
+    linear-gradient(90deg, #fff 3px, transparent 0) 0 0 / var(--p) var(--p),
+    linear-gradient(#fff 3px, transparent 0) 0 0 / var(--p) var(--p),
+    linear-gradient(110deg, transparent 35%, var(--blue) 50%, transparent 65%) 100% 0 / 300% 100% no-repeat,
+    var(--navy);
+}
+
+.start__card.visible .start__gpus { animation: start-compute 1.3s ease-in-out 0.8s 3; }
+
+@keyframes start-compute {
+  from { background-position: 0 0, 0 0, 100% 0, 0 0; }
+  to { background-position: 0 0, 0 0, 0% 0, 0 0; }
+}
+
+/* The rows follow their card in, one after another */
+.start__needs li {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.start__card.visible .start__needs li {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(0.3s + var(--i) * 0.2s);
+}
 
 .labs {
   margin-top: 48px;
@@ -499,35 +662,314 @@ span[data-morph] { display: inline-block; }
   color: var(--coral);
 }
 
-/* Choose your model: two model hubs */
-.hub { margin-top: 100px; }
+/* Download a model: the two places to get one, each with its everyday analogy.
+   The cards stretch to the same height and the links sit at the bottom, so they line up. */
+.hub { margin-top: 80px; }
 
-.hub .versus__card { padding: 52px 48px; }
-.hub .versus__head { gap: 24px; }
-.hub .versus__head .icon { width: 80px; height: 80px; }
+.hub .versus__card {
+  display: flex;
+  flex-direction: column;
+  padding: 48px 48px 52px;
+}
+
+.hub .versus__head { gap: 28px; }
 .hub h3 { white-space: nowrap; }
-.hub .versus__when { margin: 0 0 40px; }
+
+.hub__logo {
+  flex: none;
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+}
+
+.hub__like {
+  margin: 28px 0 32px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--border);
+}
 
 .hub__card--hf { --border: var(--blue); }
 .hub__card--ollama { --border: var(--navy); }
 
 .hub__link {
-  display: inline-block;
-  margin: 28px 0 12px;
+  align-self: flex-start;
+  margin-top: 40px;
   font: 600 32px "IBM Plex Mono", Menlo, monospace;
   color: var(--blue);
   text-decoration: none;
   border-bottom: 3px solid currentColor;
 }
 
-/* The model this talk uses, as it is named on each site */
-.hub__example {
-  display: inline-block;
-  padding: 14px 22px;
-  border-radius: 12px;
-  font: 500 28px "IBM Plex Mono", Menlo, monospace;
+/* Each card's picture (drawn at 1:1, 572 wide). Both sit right above the links, so they line up.
+   They play when their card appears: the timings below are seconds after that click. */
+.hub__pic {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: auto;
+  overflow: visible;
+}
+
+.hub__pic * { transform-box: fill-box; }
+
+/* Hugging Face: people send models in (0.3s on), books fill the case in random order (0.6s to 2s) */
+.hub__person circle,
+.hub__person path { fill: var(--c); }
+
+.hub__person .hub__send {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+.hub__books rect { fill: var(--c); rx: 2px; }
+
+.hub__case {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.hub__card--hf.visible .hub__send { animation: hub-send 0.5s ease-out calc(0.3s + var(--i) * 0.15s) backwards; }
+.hub__card--hf.visible .hub__books rect { animation: hub-book 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) calc(0.6s + var(--d)) backwards; }
+
+@keyframes hub-send { from { stroke-dashoffset: 1; } }
+@keyframes hub-book { from { opacity: 0; transform: translateX(-24px); } }
+
+/* Ollama: the app opens (install, 0.3s), the cursor picks a model (2.1s), clicks the message box (2.9s),
+   the question is typed (3.1s), sent (4.6s), and the model replies (5.1s) */
+.hub__window { fill: #fff; stroke: var(--navy); stroke-width: 4; }
+.hub__rule { fill: none; stroke: #e1e4ea; stroke-width: 3; }
+.hub__light { fill: #cfd3dc; }
+
+.hub__store rect { fill: var(--c); }
+.hub__store .hub__text { fill: #c3c9d6; }
+.hub__store .hub__text--dim { fill: #dde1e8; }
+
+.hub__pick { fill: rgba(27, 118, 224, 0.14); opacity: 0; }
+.hub__tile { fill: var(--blue); }
+
+.hub__brain path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The chat: your question on the right, the model's reply on the left */
+.hub__you rect { fill: var(--navy); }
+
+.hub__msg {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  text-align: center;
   color: #fff;
-  background: var(--navy);
+}
+
+.hub__said { fill: #e3eefb; }
+
+.hub__says {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--navy);
+}
+
+.hub__says span { opacity: 0; }
+
+/* The message box */
+.hub__input { fill: #fff; stroke: #cfd5df; stroke-width: 2; }
+
+.hub__typing {
+  position: relative;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 30px;
+  white-space: pre;
+  color: var(--ink);
+}
+
+.hub__placeholder { position: absolute; left: 0; top: 0; color: #a3aab8; }
+.hub__typed span { opacity: 0; }
+
+.hub__send-btn { fill: var(--coral); }
+
+.hub__send-arrow {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hub__cursor {
+  fill: #fff;
+  stroke: var(--navy);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  transform-box: view-box;
+  opacity: 0;
+}
+
+.hub__card--ollama.visible .hub__app { transform-origin: center bottom; animation: hub-install 0.6s cubic-bezier(0.3, 1.3, 0.6, 1) 0.3s backwards; }
+.hub__card--ollama.visible .hub__cursor { animation: hub-cursor 4s ease-in-out 0.9s forwards; }
+
+/* Pick: the row lights up and the model's tile appears in the empty chat (until the chat starts) */
+.hub__card--ollama.visible .hub__pick { animation: hub-on 0.2s ease 2.1s forwards; }
+.hub__card--ollama.visible .hub__model {
+  transform-origin: center;
+  animation: hub-pop 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) 2.2s backwards, hub-off 0.2s ease 4.7s forwards;
+}
+
+/* Type: the box is focused, the placeholder goes, the letters appear; on send the box empties again */
+.hub__card--ollama.visible .hub__input { animation: hub-focus 0.2s ease 2.9s forwards; }
+.hub__card--ollama.visible .hub__placeholder { animation: hub-placeholder 1.9s linear 3.1s forwards; }
+.hub__card--ollama.visible .hub__typed span { animation: hub-on 0.01s calc(3.1s + var(--k) * 0.05s) forwards; }
+.hub__card--ollama.visible .hub__typed { animation: hub-off 0.1s ease 4.7s forwards; }
+.hub__card--ollama.visible .hub__send-btn { transform-origin: center; animation: hub-press 0.3s ease 4.55s; }
+
+/* Send: your question pops into the chat, then the reply streams in a word at a time */
+.hub__card--ollama.visible .hub__you { transform-origin: right center; animation: hub-pop 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) 4.7s backwards; }
+.hub__card--ollama.visible .hub__reply { transform-origin: left center; animation: hub-pop 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) 5.1s backwards; }
+.hub__card--ollama.visible .hub__says span { animation: hub-on 0.2s ease calc(5.35s + var(--w) * 0.2s) forwards; }
+
+@keyframes hub-install { from { opacity: 0; transform: translateY(24px) scale(0.94); } }
+@keyframes hub-pop { from { opacity: 0; transform: scale(0.6); } }
+@keyframes hub-on { to { opacity: 1; } }
+@keyframes hub-off { to { opacity: 0; } }
+@keyframes hub-press { 50% { transform: scale(0.85); } }
+@keyframes hub-focus { to { stroke: var(--blue); } }
+@keyframes hub-placeholder { 0%, 88% { opacity: 0; } 100% { opacity: 1; } }
+
+/* The cursor's tip is its origin. 4s from 0.9s: pick the second model (2.1s), click the message box (2.9s),
+   wait beside it while the question is typed, click send (4.6s), leave */
+@keyframes hub-cursor {
+  0% { opacity: 0; transform: translate(500px, 60px); }
+  2.5% { opacity: 1; transform: translate(500px, 60px); }
+  27.5% { transform: translate(160px, 100px); }
+  30% { transform: translate(160px, 100px) scale(0.8); }
+  32.5% { transform: translate(160px, 100px); }
+  47.5% { transform: translate(490px, 178px); }
+  50% { transform: translate(490px, 178px) scale(0.8); }
+  52.5% { transform: translate(490px, 178px); }
+  82.5% { transform: translate(490px, 178px); }
+  90% { transform: translate(534px, 172px); }
+  92.5% { transform: translate(534px, 172px) scale(0.8); }
+  95% { opacity: 1; transform: translate(534px, 172px); }
+  100% { opacity: 0; transform: translate(548px, 186px); }
+}
+
+/* Train or RAG (slide 9): the same card layout as slide 7 (.hub), one picture per card, drawn at 1:1
+   (572 wide). Both share a layout: a prompt box -> model -> answer on top, the documents' tray below
+   the prompt. Nothing moves for the first --start seconds after the card appears, so the room can read the
+   card first; every other timing below is seconds after that. RAG answers 4.5s after the question (the lookup); fine-tune trains
+   first, then answers 1.1s after the question. */
+.tr__prompt { fill: #fff; stroke: #cfd5df; stroke-width: 2; stroke-dasharray: 6 5; }
+.tr__label { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: #8a93a6; }
+
+.tr__tray { fill: #f3f6fb; stroke: #cfd5df; stroke-width: 2; }
+.tr__link { fill: none; stroke: var(--blue); stroke-width: 3; stroke-dasharray: 4 4; opacity: 0; }
+
+.tr__doc { transform-origin: center; }
+.tr__doc path { fill: #fff; stroke: var(--navy); stroke-width: 3; stroke-linejoin: round; }
+.tr__doc .tr__lines { fill: none; stroke: #c3c9d6; stroke-linecap: round; }
+
+.tr__ask rect { fill: var(--navy); }
+.tr__answer rect { fill: #e3eefb; }
+
+.tr__q,
+.tr__a {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 36px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tr__q { color: #fff; }
+.tr__a { color: var(--navy); }
+
+.tr__arrow {
+  fill: none;
+  stroke: #9aa3b5;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+.tr__tile { fill: var(--blue); }
+
+.tr__lens circle { fill: rgba(255, 255, 255, 0.5); stroke: var(--navy); stroke-width: 4; }
+.tr__lens path { stroke: var(--navy); stroke-width: 6; stroke-linecap: round; }
+.tr__lens { transform-box: view-box; opacity: 0; }
+
+.tr__fetch { opacity: 0; }
+
+/* The pause before each picture starts playing: change this one value to start them sooner or later */
+.tr__pic { --start: 3s; }
+
+/* Both: the question pops into the prompt (--ask). When the prompt is ready (--send) it goes to the
+   model, the model thinks (a pulse), and the answer pops out */
+.visible .tr__ask { transform-origin: left center; animation: hub-pop 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) var(--ask) backwards; }
+.visible .tr__arrow--in { animation: hub-send 0.4s ease-out var(--send) backwards; }
+.visible .tr__model { transform-origin: center; animation: tr-pulse 0.4s ease calc(var(--send) + 0.3s); }
+.visible .tr__arrow--out { animation: hub-send 0.4s ease-out calc(var(--send) + 0.6s) backwards; }
+.visible .tr__answer { transform-origin: left center; animation: hub-pop 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) calc(var(--send) + 0.9s) backwards; }
+
+/* RAG: question (0s), the link down to the documents (0.6s), the magnifier hops along the pages
+   (0.8s) and finds the 4th (2.8s), a copy rises into the prompt under the question (3.1s), send (4.1s) */
+.tr--rag { --ask: var(--start); --send: calc(var(--start) + 4.1s); }
+.visible .tr--rag .tr__link { animation: hub-on 0.3s ease calc(var(--start) + 0.6s) forwards; }
+.visible .tr--rag .tr__lens { animation: tr-search 2.4s ease-in-out calc(var(--start) + 0.8s) forwards; }
+.visible .tr--rag .tr__doc--hit path:first-child { animation: tr-hit 0.3s ease calc(var(--start) + 2.8s) forwards; }
+.visible .tr--rag .tr__fetch { animation: tr-fetch 0.8s ease-in-out calc(var(--start) + 3.1s) forwards; }
+
+/* Fine-tune: the pages fly into the model one after another (0s to 2.4s) while it turns navy,
+   pulsing as each page lands, and the empty tray fades (2.5s). Then the question (3s) is sent
+   straight away (3.4s): nothing to look up */
+.tr--tune { --ask: calc(var(--start) + 3s); --send: calc(var(--start) + 3.4s); }
+.visible .tr--tune .tr__doc { animation: tr-train 0.8s ease-in-out calc(var(--start) + var(--i) * 0.4s) forwards; }
+.visible .tr--tune .tr__tile { animation: tr-bake 2s linear calc(var(--start) + 0.3s) forwards; }
+.visible .tr--tune .tr__model { animation: tr-pulse 0.4s ease calc(var(--start) + 0.5s) 5, tr-pulse 0.4s ease calc(var(--send) + 0.3s); }
+.visible .tr--tune .tr__tray { animation: hub-off 0.5s ease calc(var(--start) + 2.5s) forwards; }
+
+/* RAG: the found page (centre 187,190) moves up into the prompt's empty space (centre 135,98) and stays */
+@keyframes tr-fetch {
+  from { opacity: 1; transform: none; }
+  to { opacity: 1; transform: translate(-52px, -92px); }
+}
+
+/* Fine-tune: each page slides right out of the tray, past the prompt box (x 300, so it never goes through
+   the prompt), then up and shrinks into the model (centre 348,66), 124 above the pages' centres */
+@keyframes tr-train {
+  0% { transform: none; }
+  45% { transform: translate(calc(var(--dx) - 48px), 0); }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), -124px) scale(0.3); }
+}
+
+@keyframes tr-hit { to { fill: #e3eefb; stroke: var(--blue); } }
+@keyframes tr-bake { to { fill: var(--navy); } }
+@keyframes tr-pulse { 50% { transform: scale(1.12); } }
+
+/* The lens centre is the origin: rest on each page in turn, stop on the 4th, then fade */
+@keyframes tr-search {
+  0% { opacity: 0; transform: translate(31px, 190px); }
+  8% { opacity: 1; transform: translate(31px, 190px); }
+  20% { transform: translate(31px, 190px); }
+  30%, 42% { transform: translate(83px, 190px); }
+  52%, 64% { transform: translate(135px, 190px); }
+  74%, 90% { opacity: 1; transform: translate(187px, 190px); }
+  100% { opacity: 0; transform: translate(187px, 190px); }
 }
 
 /* What to look for: three checks, each row is icon | name | example */
@@ -654,68 +1096,163 @@ span[data-morph] { display: inline-block; }
 
 .lead strong { font-weight: 700; color: var(--coral); }
 
-/* Test before you train: three kinds of test, each a question + the word the reply must contain */
-.tests {
-  margin-top: 44px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-}
+/* Always test: one test worked through (question -> reply -> check word), then four things to test for */
+.exam { margin-top: 32px; }
 
-.tests__card {
-  display: flex;
-  flex-direction: column;
-  padding: 28px 30px 30px;
+.exam__card {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 12px 28px;
+  padding: 20px 30px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.85);
-  border-top: 12px solid var(--accent);
 }
 
-.tests__card h3 {
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.tests__why {
-  font-size: 26px;
-  opacity: 0.7;
-}
-
-.tests__q {
-  flex: 1;
-  margin: 22px 0 24px;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.tests__label {
+.exam__label {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--blue);
+  color: #6b7184;
 }
 
-.tests__check {
-  align-self: flex-start;
-  margin-top: 8px;
-  padding: 8px 20px;
-  border-radius: 12px;
-  font: 600 28px "IBM Plex Mono", Menlo, monospace;
+.exam__row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.exam__q, .exam__reply {
+  padding: 6px 20px;
+  border-radius: 14px;
+  background: #fff;
+  border: 3px solid var(--navy);
+}
+
+.exam__reply { border-color: var(--teal); box-shadow: inset 0 0 0 999px rgba(156, 207, 207, 0.25); }
+
+.exam__note {
+  padding: 4px 16px;
+  border-radius: 999px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  background: #eef0f4;
+}
+
+.exam__reply mark {
+  padding: 0 4px;
+  border-radius: 6px;
+  color: inherit;
+  background: transparent;
+  transition: background 0.4s ease;
+}
+
+.exam__word {
+  padding: 4px 16px;
+  border-radius: 10px;
+  font: 600 26px "IBM Plex Mono", Menlo, monospace;
   color: #fff;
   background: var(--navy);
 }
 
-/* Two warning cards under the tests (same look as the pitfalls slide) */
-.pitfalls--pair { margin-top: 32px; }
+.exam__arrow { font-size: 34px; line-height: 1; color: var(--blue); }
 
-/* Training data: question -> answer pairs, then the same pair as JSONL */
+.exam__pass {
+  padding: 6px 20px;
+  border-radius: 999px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--teal);
+  transform: scale(0.6);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+.exam__step--reply, .exam__step--check { opacity: 0; transition: opacity 0.5s ease; }
+.exam.visible .exam__step--reply { opacity: 1; transition-delay: 0.7s; }
+.exam.visible .exam__step--check { opacity: 1; transition-delay: 1.4s; }
+.exam.visible .exam__reply mark { background: var(--yellow); transition-delay: 1.9s; }
+.exam.visible .exam__pass { opacity: 1; transform: none; transition-delay: 2.3s; }
+
+.musts {
+  list-style: none;
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 20px 28px;
+}
+
+.musts__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 26px 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.musts__card h3 { font-size: 30px; font-weight: 700; }
+
+.musts__eg {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 21px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #eef0f4;
+}
+
+.musts__eg code {
+  padding: 2px 12px;
+  border-radius: 8px;
+  font: 600 20px "IBM Plex Mono", Menlo, monospace;
+  color: #fff;
+  background: var(--navy);
+}
+
+.musts__eg b { color: var(--coral); }
+
+/* Training data: the objective, then each fact asked two ways (question -> answer), then one pair as JSONL */
+.objective {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 32px;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.objective strong { font-weight: 700; color: var(--coral); }
+
+.objective__label {
+  padding: 6px 20px;
+  border-radius: 999px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--navy);
+}
+
 .pairs {
   margin-top: 44px;
   display: grid;
   gap: 14px;
 }
+
+.pairs--set { margin-top: 26px; gap: 10px; }
 
 .pairs__label {
   display: flex;
@@ -762,20 +1299,12 @@ span[data-morph] { display: inline-block; }
   color: var(--blue);
 }
 
-/* A question it never trains on: the honest test */
-.pairs__row--test .pairs__q { border-style: dashed; }
-.pairs__row--test .pairs__a { border: 3px dashed var(--coral); box-shadow: none; color: var(--coral); }
-
-.pairs__tag {
-  padding: 6px 18px;
-  border-radius: 999px;
-  font-size: 22px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--coral);
-}
-
 .jsonl { margin-top: 36px; }
+
+/* Slide 10 is fuller, so its pairs and JSONL sit a little tighter */
+.pairs--set .pairs__q, .pairs--set .pairs__a { padding: 7px 22px; }
+.pairs--set ~ .jsonl { margin-top: 26px; }
+.pairs--set ~ .jsonl pre { margin-top: 8px; padding: 16px 30px; }
 
 .jsonl pre {
   margin-top: 12px;
@@ -788,47 +1317,79 @@ span[data-morph] { display: inline-block; }
 
 .jsonl pre b { font-weight: 500; color: var(--yellow); }
 
-/* Where it goes wrong: six problem -> fix cards */
-.pitfalls {
+/* Important: four problem cards, each a short explanation, an example chat with the wrong reply, and the fix */
+.gotchas {
   list-style: none;
-  margin-top: 48px;
+  margin-top: 44px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-auto-rows: 1fr;
-  gap: 22px 32px;
+  gap: 28px;
 }
 
-.pitfalls li {
-  padding: 22px 30px;
-  border-radius: 20px;
+.gotchas__card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 26px 24px 28px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.85);
-  border-left: 10px solid var(--coral);
 }
 
-.pitfalls h3 {
-  font-size: 31px;
-  white-space: nowrap;
+.gotchas__card h3 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 32px;
   font-weight: 700;
-}
-
-.pitfalls__eg {
-  margin-top: 4px;
-  font-size: 25px;
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.pitfalls__fix {
-  margin-top: 12px;
   white-space: nowrap;
+}
+
+.gotchas__num {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  color: #fff;
+  background: var(--navy);
+}
+
+.gotchas__why {
+  font-size: 24px;
+  line-height: 1.35;
+  opacity: 0.75;
+}
+
+/* The question, then the wrong reply it gets, on one line */
+.gotchas__chat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 22px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #eef0f4;
+}
+
+.gotchas__q::after { content: "→"; margin-left: 10px; color: var(--blue); }
+.gotchas__a { color: var(--coral); }
+
+.gotchas__fix {
+  margin-top: auto;
   display: flex;
   align-items: center;
   gap: 14px;
-  font-size: 27px;
+  font-size: 26px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.pitfalls__fix::before {
+.gotchas__fix::before {
   content: "✓";
   flex: none;
   width: 40px;
@@ -1469,25 +2030,63 @@ span[data-morph] { display: inline-block; }
   text-anchor: middle;
 }
 
-/* Two ways to fine-tune: the icon is a weight grid, coral = trainable, grey = frozen */
-.tune { margin-top: 56px; }
-
-.tune__card--full { --border: var(--navy); }
-.tune__card--peft { --border: var(--blue); }
-
+/* Two ways to fine-tune: the same cards as the Start slide (.start). Weight grids: coral = trains, grey = frozen.
+   Memory: one pale block is what running the model takes; the coral blocks are what training adds on top. */
 .tune__grid rect { fill: #c9cfdb; stroke: none; }
 .tune__grid .hot { fill: var(--coral); }
 
-/* LoRA: one weight grid, built up step by step (deck.js adds .s1….s4 to the slide).
-   Everything is placed on a fixed 1140 x 600 canvas under the lead line. */
+.tune__icon { flex: none; width: 104px; height: 104px; }
+.tune__weights { width: 180px; height: auto; }
+
+/* While the card arrives, the trainable weights flicker, like they are being trained */
+.start__card.visible .tune__weights:not(.tune__merge) .hot { animation: tune-train 0.9s ease-in-out 0.8s 3; }
+
+@keyframes tune-train { 50% { opacity: 0.35; } }
+
+/* PEFT: the outer layer of coral squares (the add-on) trains, then slides into the frozen grid and is merged:
+   the squares fade away and the grid's outer weights (right column, bottom row) flash coral and keep a light orange tint */
+.tune__merge .tune__add { transform-box: fill-box; }
+.start__card.visible .tune__merge .tune__add { animation: tune-train 0.9s ease-in-out 0.8s 2; }
+.start__card.visible .tune__merge .tune__add--col { animation: tune-train 0.9s ease-in-out 0.8s 2, tune-merge-x 0.7s ease-in 2.7s forwards; }
+.start__card.visible .tune__merge .tune__add--row { animation: tune-train 0.9s ease-in-out 0.8s 2, tune-merge-y 0.7s ease-in 2.7s forwards; }
+.start__card.visible .tune__merge .tune__base--edge { animation: tune-absorb 0.8s ease forwards; animation-delay: calc(3.1s + (6 - var(--c)) * 0.07s); }
+
+@keyframes tune-merge-x { to { transform: translateX(-60px); opacity: 0; } }
+@keyframes tune-merge-y { to { transform: translateY(-40px); opacity: 0; } }
+@keyframes tune-absorb { 40% { fill: var(--coral); } to { fill: #f7c2a6; } }
+
+.tune__mem { display: flex; gap: 6px; width: 180px; }
+
+.tune__mem i {
+  display: block;
+  width: 39px;
+  height: 56px;
+  border-radius: 6px;
+  background: #b9c8e4;
+}
+
+.tune__mem .tune__extra { background: var(--coral); }
+.tune__mem .tune__extra--thin { width: 8px; }
+
+.start__card.visible .tune__extra {
+  animation: tune-grow 0.4s cubic-bezier(0.3, 1.3, 0.6, 1) backwards;
+  animation-delay: calc(0.9s + var(--j) * 0.2s);
+}
+
+@keyframes tune-grow { from { opacity: 0; transform: scaleY(0.2); } }
+
+/* LoRA: one weight grid, built up step by step (deck.js adds .s1….s3 to the slide).
+   Everything is placed on a fixed 1140 x 500 canvas under the lead line.
+   Each grid is 6 x 6 coloured squares (shade = the weight's value) over the numbers they stand for:
+   the squares fade to reveal the numbers, and after the merge they come back. */
 .lora {
   position: relative;
   width: 1140px;
-  height: 600px;
-  margin-top: 36px;
+  height: 500px;
+  margin-top: 100px;
 }
 
-.lora > * { position: absolute; transition: opacity 0.5s ease, transform 0.7s ease; }
+.lora > * { position: absolute; transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
 
 .lora__label {
   top: 0;
@@ -1501,10 +2100,10 @@ span[data-morph] { display: inline-block; }
 
 .lora__label--w { left: 0; width: 384px; }
 .lora__merged { display: none; }
-.s4 .lora__orig { display: none; }
-.s4 .lora__merged { display: inline; }
+.s3 .lora__orig { display: none; }
+.s3 .lora__merged { display: inline; }
 
-.lora__label--ad { left: 480px; width: 464px; }
+.lora__label--ad { left: 512px; width: 384px; }
 
 .lora__label--ad span {
   margin-left: 10px;
@@ -1516,27 +2115,57 @@ span[data-morph] { display: inline-block; }
   background: var(--coral);
 }
 
-/* The original grid. Each cell's shade stands for its weight's value */
-.lora__wbox {
+.lora__wbox, .lora__adbox {
   top: 56px;
-  left: 0;
   width: 384px;
   height: 384px;
   overflow: hidden;
   border-radius: 8px;
-  outline: 4px solid var(--navy);
 }
 
+.lora__wbox { left: 0; outline: 4px solid var(--navy); background: rgba(255, 255, 255, 0.85); }
+
 .lora svg { display: block; }
-.lora rect { stroke: #fff; stroke-width: 2; transition: fill 0.6s ease; }
+.lora__lines path { stroke: #d5d9e2; stroke-width: 2; fill: none; }
+.lora__ad .lora__lines path { stroke: #f6cfc6; }
 
-.lora__cells rect { fill: var(--blue); fill-opacity: var(--o); }
-.s1:not(.s4) .lora__cells rect { fill: #8f99ad; }
+.lora__sqs rect { stroke: #fff; stroke-width: 2; fill-opacity: var(--o); transition: opacity 0.6s ease; }
+.lora__w .lora__sqs rect { fill: var(--blue); }
+.lora__w .lora__sqs .lora__dsq { fill: var(--coral); fill-opacity: calc(var(--o) * 0.8); opacity: 0; }
+.lora__ad .lora__sqs rect { fill: var(--coral); }
 
-/* The correction B·A, added in when merging */
-.lora__delta { opacity: 0; transition: opacity 0.8s ease 0.4s; }
-.lora__delta rect { fill: var(--coral); fill-opacity: calc(var(--o) * 0.75); }
-.s4 .lora__delta { opacity: 1; }
+.lora text {
+  font: 600 17px "IBM Plex Mono", Menlo, monospace;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: var(--navy);
+  opacity: 0;
+  transition: opacity 0.6s ease, fill 0.6s ease;
+}
+
+.lora__ad text { fill: var(--coral); font-weight: 700; }
+.lora__w .lora__now { fill: var(--coral); font-weight: 700; }
+
+/* Step 1: squares, then numbers, then frozen (the numbers go grey and the badge appears) */
+.s1:not(.s3) .lora__w .lora__sqs rect:not(.lora__dsq) { opacity: 0; transition-delay: 1.2s; }
+.s1:not(.s3) .lora__w text:not(.lora__now) { opacity: 1; transition-delay: 1.4s, 2.4s; fill: #8f99ad; }
+.s1:not(.s3) .lora__frozen { opacity: 1; transition-delay: 2.4s; }
+
+/* Step 2: the adapter's squares, then its numbers */
+.s2 .lora__ad .lora__sqs rect { opacity: 0; transition-delay: 1.2s; }
+.s2 .lora__ad text { opacity: 1; transition-delay: 1.4s; }
+
+/* Step 3: the adapter slides on; each covered number becomes the sum, then everything turns back into squares
+   (the merged spots tinted coral). Keyframes, since each of these goes one way and then back. */
+.s3 .lora__w text:not(.lora__was):not(.lora__now) { animation: lora-nums 4.6s ease forwards; }
+.s3 .lora__w .lora__was { animation: lora-was 4.6s ease forwards; }
+.s3 .lora__w .lora__now { animation: lora-now 4.6s ease forwards; }
+.s3 .lora__w .lora__sqs rect { animation: lora-squares 4.6s ease forwards; }
+
+@keyframes lora-nums { from, 80% { opacity: 1; } to { opacity: 0; } }
+@keyframes lora-was { from, 16% { opacity: 1; } 24%, to { opacity: 0; } }
+@keyframes lora-now { from, 20% { opacity: 0; } 30%, 80% { opacity: 1; } to { opacity: 0; } }
+@keyframes lora-squares { from, 82% { opacity: 0; } to { opacity: 1; } }
 
 .lora__frozen {
   top: 248px;
@@ -1557,54 +2186,26 @@ span[data-morph] { display: inline-block; }
 
 .lora__frozen .icon { width: 36px; height: 36px; stroke: #fff; }
 
-.lora__dims {
-  top: 480px;
-  display: grid;
-  justify-items: center;
-  gap: 6px;
-  font-size: 26px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.lora__dims small { font-size: 22px; font-weight: 500; opacity: 0.7; }
-
-.lora__dims code {
-  font: 600 30px "IBM Plex Mono", Menlo, monospace;
-  color: var(--navy);
-}
-
-.lora__dims--w { left: 0; width: 384px; }
-.lora__dims--ad { left: 480px; width: 464px; }
-
-.lora__plus, .lora__dot {
+.lora__plus {
   top: 206px;
+  left: 428px;
   font-size: 80px;
   font-weight: 700;
   line-height: 1;
   color: var(--blue);
 }
 
-.lora__plus { left: 412px; }
-.lora__dot { left: 525px; }
-
-/* The adapter: B is tall and thin, A is short and wide */
-.lora__b { top: 56px; left: 480px; outline: 4px solid var(--coral); border-radius: 6px; }
-.lora__a { top: 232px; left: 560px; outline: 4px solid var(--coral); border-radius: 6px; }
-.lora__b rect, .lora__a rect { fill: var(--coral); fill-opacity: var(--o); }
-
-.lora__letter {
-  font: 700 32px "IBM Plex Mono", Menlo, monospace;
-  color: var(--coral);
-  text-align: center;
+/* The adapter: the same grid, with holes. It only holds a few new numbers */
+.lora__adbox {
+  left: 512px;
+  outline: 4px solid var(--coral);
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 2;
 }
 
-.lora__letter--b { top: 446px; left: 480px; width: 32px; line-height: 1; }
-.lora__letter--a { top: 186px; left: 560px; width: 384px; }
-
 .lora__learn {
-  top: 300px;
-  left: 560px;
+  top: 456px;
+  left: 512px;
   width: 384px;
   text-align: center;
   font-size: 30px;
@@ -1612,16 +2213,9 @@ span[data-morph] { display: inline-block; }
   color: var(--coral);
 }
 
-/* Only the adapter's numbers change while training */
-.s3:not(.s4) .lora__b rect, .s3:not(.s4) .lora__a rect {
-  animation: lora-learn 1.4s ease-in-out var(--d) infinite;
-}
-
-@keyframes lora-learn { 50% { fill-opacity: 0.12; } }
-
 .lora__formula {
-  top: 130px;
-  left: 500px;
+  top: 150px;
+  left: 470px;
   display: grid;
   justify-items: start;
   gap: 18px;
@@ -1634,129 +2228,26 @@ span[data-morph] { display: inline-block; }
   white-space: nowrap;
 }
 
-.lora__same { font-size: 36px; font-weight: 600; }
-
-.lora__size {
-  padding: 6px 22px;
-  border-radius: 12px;
-  font-size: 40px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--coral);
-}
+.lora__same { font-size: 36px; font-weight: 600; white-space: nowrap; }
 
 /* What is visible at each step */
-.lora__frozen, .lora__plus, .lora__label--ad, .lora__b, .lora__a, .lora__letter,
-.lora__dot, .lora__dims--ad, .lora__learn, .lora__formula { opacity: 0; }
+.lora > * { opacity: 0; }
 
-.s1:not(.s4) .lora__frozen,
-.s2 .lora__plus, .s2 .lora__label--ad, .s2 .lora__b, .s2 .lora__a, .s2 .lora__letter,
-.s2 .lora__dot, .s2 .lora__dims--ad,
-.s3 .lora__learn,
-.s4 .lora__formula { opacity: 1; }
+.s1 .lora__label--w, .s1 .lora__wbox,
+.s2 .lora__plus, .s2 .lora__label--ad, .s2 .lora__adbox, .s2 .lora__learn,
+.s3 .lora__formula { opacity: 1; }
 
-/* Merge: the adapter slides into the grid and disappears */
-.s4 .lora__plus, .s4 .lora__label--ad, .s4 .lora__b, .s4 .lora__a, .s4 .lora__letter,
-.s4 .lora__dot, .s4 .lora__dims--ad, .s4 .lora__learn {
+/* Merge: the adapter slides onto the grid, its numbers land on the same spots, and it disappears */
+.s3 .lora__adbox {
   opacity: 0;
-  transform: translateX(-200px);
+  transform: translateX(-512px);
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.4s ease 0.75s;
 }
 
-.lora__formula { transform: translateX(40px); transition-delay: 0.5s; }
-.s4 .lora__formula { transform: none; }
+.s3 .lora__plus, .s3 .lora__label--ad, .s3 .lora__learn { opacity: 0; transition-duration: 0.3s; }
 
-/* The training loop: four steps going round clockwise (1 → 2 → 3 → 4 → 1) */
-.loop {
-  margin-top: 36px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-areas: "a b" "d c";
-  gap: 52px 120px;
-}
-
-.loop__step {
-  position: relative;
-  padding: 20px 28px 24px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.85);
-  border-top: 10px solid var(--blue);
-}
-
-.loop__step h3 {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.loop__n {
-  flex: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 26px;
-  color: #fff;
-  background: var(--navy);
-}
-
-.loop__step p {
-  margin: 6px 0 14px;
-  font-size: 26px;
-  opacity: 0.75;
-  white-space: nowrap;
-}
-
-.loop__step code {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 10px;
-  font: 500 22px "IBM Plex Mono", Menlo, monospace;
-  white-space: nowrap;
-  color: #fff;
-  background: var(--navy);
-}
-
-.loop__arrow {
-  position: absolute;
-  font-size: 64px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--coral);
-  text-align: center;
-}
-
-.loop__arrow--right { left: 100%; top: 50%; width: 120px; transform: translateY(-50%); }
-.loop__arrow--left { right: 100%; top: 50%; width: 120px; transform: translateY(-50%); }
-.loop__arrow--down { top: 100%; left: 50%; height: 52px; line-height: 52px; transform: translateX(-50%); }
-.loop__arrow--up { bottom: 100%; left: 50%; height: 52px; line-height: 52px; transform: translateX(-50%); }
-
-/* The settings at the top of 2_train.py */
-.knobs {
-  list-style: none;
-  margin-top: 40px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.knobs li {
-  padding: 14px 20px;
-  border-radius: 16px;
-  font-size: 22px;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.85);
-  border-left: 8px solid var(--teal);
-}
-
-.knobs code {
-  display: block;
-  margin-bottom: 4px;
-  font: 600 26px "IBM Plex Mono", Menlo, monospace;
-  color: var(--navy);
-}
+.lora__formula { transform: translateX(40px); }
+.s3 .lora__formula { transform: none; transition-delay: 1.1s; }
 
 /* Make it smaller: trim vs quantize */
 .smaller { margin-top: 56px; }
