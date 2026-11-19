@@ -9,7 +9,7 @@
 // the slide you came from stays visible with the class "outro", and the deck gets data-transition="<kind>",
 // all until INTRO_MS has passed. Kinds are styled in style.css ("title", "morph").
 // In a "morph" entrance, each [data-morph="x"] element glides from where the previous slide's
-// [data-morph="x"] element was (position and font size) into its own place.
+// [data-morph="x"] element was (position and font size) into its own place, while the old one is hidden.
 
 const deck = document.querySelector(".deck");
 const slides = [...document.querySelectorAll(".slide")];
@@ -39,6 +39,7 @@ function render() {
 function clearIntro() {
   clearTimeout(introTimer);
   slides.forEach((s) => s.classList.remove("intro", "outro"));
+  document.querySelectorAll(".morph-src").forEach((el) => el.classList.remove("morph-src"));
   delete deck.dataset.transition;
 }
 
@@ -47,6 +48,7 @@ function morph(from, to) {
   to.querySelectorAll("[data-morph]").forEach((el) => {
     const src = from.querySelector(`[data-morph="${el.dataset.morph}"]`);
     if (!src) return;
+    src.classList.add("morph-src"); // hidden on the old slide while its copy glides (style.css)
     const a = src.getBoundingClientRect();
     const b = el.getBoundingClientRect();
     const s = parseFloat(getComputedStyle(src).fontSize) / parseFloat(getComputedStyle(el).fontSize);

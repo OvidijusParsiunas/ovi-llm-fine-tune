@@ -31,7 +31,7 @@
 
     <!-- 3. Why: AI is moving onto smaller hardware, and what local gets you -->
     <section class="slide slide--content" data-intro="morph">
-      <h2 data-morph="why">Why <span class="morph__tail">local?</span> <span class="h2__ja morph__tail" lang="ja">なぜローカル？</span></h2>
+      <h2 data-morph="why">Why <span class="morph__tail" data-morph="local">local?</span> <span class="h2__ja morph__tail" lang="ja">なぜローカル？</span></h2>
 
       <!-- Local models keep getting more capable (the line draws in on click 1). -->
       <div class="growth">
@@ -94,20 +94,24 @@
       </ul>
     </section>
 
-    <!-- 4. Why (caveat): when to pay for a big model vs use a local one -->
-    <section class="slide slide--content">
-      <h2>Big model or local?</h2>
+    <!-- 4. Why (caveat): when to use an LLM provider vs a local model.
+         Entered from slide 3 with a morph: "local?" glides from "Why local?" into this heading. -->
+    <section class="slide slide--content" data-intro="morph">
+      <h2><span class="morph__tail"><span data-morph="llm">LLM</span> provider or</span> <span data-morph="local">local?</span>
+        <span class="h2__ja h2__ja--below morph__tail" lang="ja">LLMプロバイダーか、ローカルか？</span></h2>
 
       <div class="versus">
-        <div class="versus__card versus__card--big">
+        <div class="versus__card versus__card--big fragment">
           <svg viewBox="0 0 64 64" class="icon">
             <path d="M18 46h30a10 10 0 0 0 1-20 14 14 0 0 0-27-3 11 11 0 0 0-4 23z"/>
           </svg>
-          <h3>State of the art</h3>
+          <h3>LLM provider</h3>
           <p class="versus__when">AI is your competitive edge</p>
           <ul>
-            <li>Agents building software</li>
-            <li>Running stock &amp; shipping</li>
+            <li>High precision &amp; accuracy</li>
+            <li>Managing your assets</li>
+            <li>Coding</li>
+            <li>Research</li>
           </ul>
         </div>
 
@@ -118,17 +122,164 @@
             <path d="M24 16V8M32 16V8M40 16V8M24 56v-8M32 56v-8M40 56v-8M16 24H8M16 32H8M16 40H8M56 24h-8M56 32h-8M56 40h-8"/>
           </svg>
           <h3>Local</h3>
-          <p class="versus__when">Focused, everyday tasks</p>
+          <p class="versus__when">Smaller, everyday tasks</p>
           <ul>
+            <li>Answering basic queries</li>
+            <li>Analyzing data</li>
             <li>Translation</li>
-            <li>Fact checking</li>
-            <li>Reviewing</li>
+            <li>More, as your hardware allows</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- 5. Fine-tune or RAG: look the facts up at answer time, or bake them into the model -->
+    <!-- 5. What is an LLM? One diagram that a camera pans and zooms over, left to right.
+         Entered from slide 4 with a morph: "LLM" glides from "LLM provider or local?" into this heading,
+         and the slide opens with the heading alone.
+         This teaches the idea, not a specific model: the token split, ids, weights, probabilities
+         and attention arcs are illustrative (the dictionary size matches the later dictionary slides).
+         Steps: 1 text in, text out · 2 tokens · 3 ids (dictionary) · 4 into the box: layers of weights ·
+         5 what the layers do · 6 inside one layer · 7 the whole prompt at once, next word ·
+         8 repeat with the new word (KV cache) · 9 the reply, one word at a time -->
+    <section class="slide slide--content" data-steps="9" data-intro="morph">
+      <h2><span class="morph__tail">What is an</span> <span data-morph="llm">LLM</span><span class="morph__tail">?</span> <span class="h2__ja morph__tail" lang="ja">LLMとは？</span></h2>
+
+      <div class="llm">
+        <!-- Everything below is placed in "world" px; the LLM box sits at the origin, (0,0) to (700,600) -->
+        <div class="llm__world">
+
+          <svg class="llm__arrow llm__arrow--in" width="1" height="1"><path d="M-140 300H-36M-54 282l18 18-18 18"/></svg>
+          <svg class="llm__arrow llm__arrow--out" width="1" height="1"><path d="M730 300H834M816 282l18 18-18 18"/></svg>
+          <span class="llm__flow"><i style="--d: 0s"></i><i style="--d: 0.15s"></i><i style="--d: 0.3s"></i></span>
+
+          <div class="llm__box">
+            <span class="llm__name">LLM</span>
+
+            <!-- One wire per token: each token travels through every layer -->
+            <i class="llm__wire" style="--i: 0"></i>
+            <i class="llm__wire" style="--i: 1"></i>
+            <i class="llm__wire" style="--i: 2"></i>
+            <i class="llm__wire" style="--i: 3"></i>
+            <i class="llm__wire" style="--i: 4"></i>
+            <i class="llm__wire" style="--i: 5"></i>
+            <i class="llm__wire llm__wire--new" style="--i: 6"></i>
+
+            <div class="llm__layer llm__layer--zoom" style="--k: 0">
+              <i class="llm__half llm__half--att">
+                <span class="llm__half-name">Attention</span>
+                <span class="llm__half-what">which words matter?</span>
+              </i>
+              <i class="llm__half llm__half--ff">
+                <span class="llm__half-name">Feed-forward</span>
+                <span class="llm__half-what">what comes next?</span>
+              </i>
+              <span class="llm__stage">Words</span>
+            </div>
+            <div class="llm__layer" style="--k: 1"><i class="llm__half llm__half--att"></i><i class="llm__half llm__half--ff"></i><span class="llm__stage">Grammar</span></div>
+            <div class="llm__layer" style="--k: 2"><i class="llm__half llm__half--att"></i><i class="llm__half llm__half--ff"></i><span class="llm__stage">Meaning</span></div>
+            <div class="llm__layer" style="--k: 3"><i class="llm__half llm__half--att"></i><i class="llm__half llm__half--ff"></i><span class="llm__stage">Reply</span></div>
+
+            <!-- Attention: how much "is" looks back at each earlier token -->
+            <svg class="llm__arcs" width="1" height="1">
+              <path d="M50 418C300 418 300 98 50 98" pathLength="1" style="--w: 3"/>
+              <path d="M50 418C265 418 265 162 50 162" pathLength="1" style="--w: 8"/>
+              <path d="M50 418C230 418 230 226 50 226" pathLength="1" style="--w: 6"/>
+              <path d="M50 418C190 418 190 290 50 290" pathLength="1" style="--w: 2"/>
+              <path d="M50 418C150 418 150 354 50 354" pathLength="1" style="--w: 12"/>
+            </svg>
+            <i class="llm__think"></i>
+
+            <i class="llm__dot" style="--i: 0"></i>
+            <i class="llm__dot" style="--i: 1"></i>
+            <i class="llm__dot" style="--i: 2"></i>
+            <i class="llm__dot" style="--i: 3"></i>
+            <i class="llm__dot" style="--i: 4"></i>
+            <i class="llm__dot" style="--i: 5"></i>
+            <i class="llm__dot llm__dot--new" style="--i: 6"></i>
+
+            <!-- A close-up of the grid: the numbers are the weights -->
+            <svg class="llm__zoom" width="1" height="1"><rect x="548" y="227" width="40" height="40"/><path d="M588 227L770 150M588 267L770 390"/></svg>
+            <div class="llm__weights">
+              <span class="llm__head">Weights</span>
+              <span>−0.07</span><span>0.09</span><span>0.11</span>
+              <span>0.22</span><span>0.07</span><span>−0.22</span>
+              <span>0.01</span><span>−0.09</span><span>0.01</span>
+            </div>
+
+            <span class="llm__head llm__head--tokens">Tokens</span>
+            <svg class="llm__next" width="1" height="1"><path d="M712 0H756M742 -14l14 14-14 14"/></svg>
+
+            <div class="llm__preds llm__preds--first">
+              <span class="llm__head">Next word</span>
+              <ol>
+                <li style="--p: 98.4"><span class="llm__word">Tokyo</span><span class="llm__bar"></span><span class="llm__pct">98.4%</span></li>
+                <li style="--p: 0.8"><span class="llm__word">located</span><span class="llm__bar"></span><span class="llm__pct">0.8%</span></li>
+                <li style="--p: 0.1"><span class="llm__word">known</span><span class="llm__bar"></span><span class="llm__pct">0.1%</span></li>
+              </ol>
+            </div>
+            <div class="llm__preds llm__preds--second">
+              <span class="llm__head">Next word</span>
+              <ol>
+                <li style="--p: 49.9"><span class="llm__word">,</span><span class="llm__bar"></span><span class="llm__pct">49.9%</span></li>
+                <li style="--p: 45"><span class="llm__word">.</span><span class="llm__bar"></span><span class="llm__pct">45.0%</span></li>
+                <li style="--p: 1.5"><span class="llm__word">;</span><span class="llm__bar"></span><span class="llm__pct">1.5%</span></li>
+              </ol>
+            </div>
+
+            <!-- Repeat: the chosen word is fed back in as the next token -->
+            <svg class="llm__loop" width="1" height="1">
+              <path d="M900 600V650Q900 664 886 664H-106Q-120 664 -120 650V522" pathLength="1"/>
+              <path class="llm__loop-head" d="M-136 534L-120 514L-104 534"/>
+              <text x="390" y="648">repeat, one word at a time</text>
+            </svg>
+            <div class="llm__kv"><span>KV cache</span></div>
+          </div>
+
+          <!-- The prompt: plain text (1), tokens (2), ids (3), then a column of ids feeding the layers (4–8).
+               --x1/--w1 place each word as plain text, --x2/--w2 as a token chip (measured at 80px).
+               "cap" and "ital" sit flush in the overview, so they read as "capital". -->
+          <ol class="llm__toks">
+            <li class="llm__tok" style="--i: 0; --x1: -1148; --w1: 170; --x2: -1491; --w2: 214"><span class="llm__w">The</span><span class="llm__n">504</span></li>
+            <li class="llm__tok" style="--i: 1; --x1: -959; --w1: 166; --x2: -1249; --w2: 210"><span class="llm__w">cap</span><span class="llm__n">1022</span></li>
+            <li class="llm__tok" style="--i: 2; --x1: -802; --w1: 137; --x2: -1011; --w2: 181"><span class="llm__w">ital</span><span class="llm__n">2134</span></li>
+            <li class="llm__tok" style="--i: 3; --x1: -647; --w1: 100; --x2: -802; --w2: 144"><span class="llm__w">of</span><span class="llm__n">282</span></li>
+            <li class="llm__tok" style="--i: 4; --x1: -529; --w1: 268; --x2: -630; --w2: 311"><span class="llm__w">Japan</span><span class="llm__n">3085</span></li>
+            <li class="llm__tok llm__tok--q" style="--i: 5; --x1: -243; --w1: 78; --x2: -291; --w2: 121"><span class="llm__w">is</span><span class="llm__n">314</span></li>
+            <li class="llm__tok llm__tok--new" style="--i: 6; --x1: -200; --w1: 160; --x2: -200; --w2: 160"><span class="llm__w">Tokyo</span><span class="llm__n">19081</span></li>
+          </ol>
+
+          <!-- 2: a word can be more than one token -->
+          <div class="llm__brace"><span>1 word, 2 tokens</span></div>
+
+          <!-- The dictionary (vocabulary): every token has an id. The prompt's tokens, sorted by id, in two columns -->
+          <div class="llm__dict">
+            <span class="llm__head">Dictionary</span>
+            <span class="llm__dict-size">49,152 tokens</span>
+            <ol>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>282</b>of</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>314</b>is</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>504</b>The</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>1022</b>cap</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>2134</b>ital</li>
+              <li class="llm__dict-gap">⋮</li>
+              <li><b>3085</b>Japan</li>
+              <li class="llm__dict-gap">⋮</li>
+            </ol>
+          </div>
+
+          <!-- The reply. Step 1 shows the first word, step 9 streams it all, one token at a time -->
+          <p class="llm__out"><span style="--t: 0">Tokyo</span><span style="--t: 1">,</span> <span style="--t: 2">which</span> <span style="--t: 3">is</span> <span style="--t: 4">also</span> <span style="--t: 5">its</span> <span style="--t: 6">largest</span> <span style="--t: 7">city</span><span style="--t: 8">.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Fine-tune or RAG: look the facts up at answer time, or bake them into the model -->
     <section class="slide slide--content">
       <h2>Fine-tune or RAG?</h2>
 
@@ -173,77 +324,6 @@
             <li class="con">Retrain to update</li>
           </ul>
         </div>
-      </div>
-    </section>
-
-    <!-- 6. What is an LLM? One worked example, built up step by step.
-         Real numbers from Qwen3-0.6B (the model used in this talk): token ids, 28 layers, next-word probabilities.
-         Steps: 1 tokens · 2 ids · 3 layers · 4 attention + feed-forward · 5 predict · 6 repeat (KV cache) -->
-    <section class="slide slide--content" data-steps="6">
-      <h2>What is an LLM?</h2>
-
-      <div class="llm">
-        <p class="llm__prompt">The capital of Japan is<span class="llm__next">&nbsp;Tokyo</span><span class="llm__cursor"></span></p>
-
-        <p class="llm__split">Velmara <span class="llm__split-arrow">→</span> <span>V</span><span>elm</span><span>ara</span></p>
-
-        <span class="llm__label llm__label--tokens">Tokens</span>
-        <span class="llm__label llm__label--layers">28 layers</span>
-        <span class="llm__label llm__label--next">Next word</span>
-
-        <!-- Attention: how much "is" looks back at each earlier token -->
-        <svg class="llm__arcs" viewBox="0 0 110 434" width="110" height="434">
-          <path d="M104 328C9 328 9 32 104 32" style="--w: 2"/>
-          <path d="M104 328C33 328 33 106 104 106" style="--w: 8"/>
-          <path d="M104 328C57 328 57 180 104 180" style="--w: 2"/>
-          <path d="M104 328C80 328 80 254 104 254" style="--w: 10"/>
-        </svg>
-
-        <div class="llm__kv"><span>KV cache</span></div>
-
-        <ol class="llm__tokens">
-          <li class="llm__chip">The<span class="llm__id">785</span></li>
-          <li class="llm__chip">capital<span class="llm__id">6722</span></li>
-          <li class="llm__chip">of<span class="llm__id">315</span></li>
-          <li class="llm__chip">Japan<span class="llm__id">6323</span></li>
-          <li class="llm__chip llm__chip--query">is<span class="llm__id">374</span></li>
-          <li class="llm__chip llm__chip--new">Tokyo<span class="llm__id">26194</span></li>
-        </ol>
-
-        <span class="llm__arrow llm__arrow--in">→</span>
-
-        <!-- The layer cake: listed bottom (first layer) to top -->
-        <div class="llm__cake">
-          <div class="llm__slab" style="--i: 0"><span class="llm__stage">Words</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
-          <div class="llm__slab" style="--i: 1"><span class="llm__stage">Grammar</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
-          <div class="llm__slab" style="--i: 2"><span class="llm__stage">Meaning</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
-          <div class="llm__slab" style="--i: 3"><span class="llm__stage">Reply</span><span class="llm__att">Attention</span><span class="llm__ff">Feed-forward</span></div>
-        </div>
-
-        <span class="llm__arrow llm__arrow--out">→</span>
-
-        <ol class="llm__preds llm__preds--first">
-          <li style="--p: 40"><span class="llm__word">Tokyo</span><span class="llm__bar"></span><span class="llm__pct">40%</span></li>
-          <li style="--p: 17"><span class="llm__word">Kyoto</span><span class="llm__bar"></span><span class="llm__pct">17%</span></li>
-          <li style="--p: 4"><span class="llm__word">located</span><span class="llm__bar"></span><span class="llm__pct">4%</span></li>
-        </ol>
-
-        <ol class="llm__preds llm__preds--second">
-          <li style="--p: 52"><span class="llm__word">.</span><span class="llm__bar"></span><span class="llm__pct">52%</span></li>
-          <li style="--p: 40"><span class="llm__word">,</span><span class="llm__bar"></span><span class="llm__pct">40%</span></li>
-          <li style="--p: 2"><span class="llm__word">and</span><span class="llm__bar"></span><span class="llm__pct">2%</span></li>
-        </ol>
-
-        <!-- Repeat: the chosen word is fed back in as the next token -->
-        <svg class="llm__loop" viewBox="0 0 1140 700" width="1140" height="700">
-          <defs>
-            <marker id="llm-head" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-              <path d="M0 0L10 5L0 10z"/>
-            </marker>
-          </defs>
-          <path d="M1000 590V660Q1000 682 978 682H152Q130 682 130 660V628" marker-end="url(#llm-head)"/>
-          <text x="560" y="666">repeat, one word at a time</text>
-        </svg>
       </div>
     </section>
 

@@ -113,7 +113,10 @@ html, body {
    The new slide sits on top with no background of its own until the entrance ends. */
 .deck[data-transition="morph"] .slide.outro { animation: none; }
 .deck[data-transition="morph"] .slide.outro > * { animation: outro-fade 0.35s ease forwards; }
-.deck[data-transition="morph"] .slide.outro [data-morph] { visibility: hidden; }
+.deck[data-transition="morph"] .slide.outro .morph-src { visibility: hidden; }
+
+/* Transforms don't apply to plain inline elements, so a word that morphs is an inline-block */
+span[data-morph] { display: inline-block; }
 
 .slide[data-intro="morph"].intro {
   z-index: 2;
@@ -141,6 +144,9 @@ html, body {
   letter-spacing: 0.04em;
   color: #6b7184;
 }
+
+/* A translation too long to sit beside its heading goes on the line below it */
+.slide--content h2 .h2__ja--below { display: block; margin: 12px 0 0; }
 
 /* A heading that would otherwise wrap onto two lines */
 .slide--content h2.h2--long { font-size: 84px; white-space: nowrap; }
@@ -836,260 +842,539 @@ html, body {
   background: var(--teal);
 }
 
-/* What is an LLM? A worked example built up step by step (deck.js adds .s1….s6 to the slide).
-   Everything is placed on a fixed 1140 x 700 canvas under the heading. */
+/* What is an LLM? (slide 5). One diagram on a "world" canvas that a camera pans and zooms over,
+   left to right; deck.js adds .s1….s9 to the slide. World units are px: the LLM box sits at the
+   origin, (0,0) to (700,600), and the prompt to its left, centred on y = 300.
+   Step ranges used below: tokens = .s2:not(.s4), network = .s4:not(.s9).
+   Step 9 matches neither, so it falls back to the base styles (the overview) and zooms back out. */
 .llm {
-  position: relative;
-  width: 1140px;
-  height: 700px;
-  margin-top: 20px;
-}
-
-.llm > * { position: absolute; }
-
-/* Each part starts hidden and fades in at its step */
-.llm__split, .llm__label, .llm__tokens, .llm__id, .llm__arrow, .llm__cake,
-.llm__arcs, .llm__kv, .llm__preds, .llm__loop, .llm__chip--new {
+  --cam: cubic-bezier(0.65, 0, 0.35, 1);
+  --mono: "IBM Plex Mono", Menlo, monospace;
+  position: absolute;
+  left: 100px;
+  top: 262px;
+  width: 1600px;
+  height: 818px;
+  overflow: hidden;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  mask-composite: intersect;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.4s ease;
 }
 
-.s1:not(.s3) .llm__split, .s1 .llm__label--tokens, .s1 .llm__tokens,
-.s2 .llm__id,
-.s3 .llm__arrow--in, .s3 .llm__cake, .s3 .llm__label--layers,
-.s4:not(.s6) .llm__arcs,
-.s5 .llm__arrow--out, .s5 .llm__label--next, .s5:not(.s6) .llm__preds--first,
-.s6 .llm__preds--second, .s6 .llm__loop, .s6 .llm__kv, .s6 .llm__chip--new {
-  opacity: 1;
-}
+.s1 .llm { opacity: 1; }
 
-/* The prompt being typed */
-.llm__prompt {
-  top: 10px;
+/* The camera. translate(x, y) puts world (0,0) at that spot of .llm; scale is the zoom */
+.llm__world {
+  position: absolute;
   left: 0;
-  font-size: 54px;
-  font-weight: 600;
-  white-space: nowrap;
+  top: 0;
+  transform-origin: 0 0;
+  transform: translate(736px, 213px) scale(0.5);
+  transition: transform 1.2s var(--cam);
 }
 
-/* Hidden words still take up space, so the new word is removed from the line until step 6 */
-.llm__next { display: none; color: var(--coral); }
-.s6 .llm__next { display: inline; }
+.s2:not(.s4) .llm__world { transform: translate(1427px, -100px) scale(0.85); }
+.s4:not(.s9) .llm__world { transform: translate(516px, 83px) scale(0.9); }
+.s6:not(.s7) .llm__world { transform: translate(523px, 38px) scale(1.1); }
 
-.llm__cursor {
-  display: inline-block;
-  width: 5px;
-  height: 58px;
-  margin-left: 10px;
-  vertical-align: -10px;
-  background: var(--blue);
-  animation: llm-blink 1s steps(1) infinite;
+/* Into the box: pull back out to the overview first, then zoom in */
+.s4:not(.s5) .llm__world { transition: none; animation: llm-cam-in 2.2s var(--cam) both; }
+
+@keyframes llm-cam-in {
+  from { transform: translate(1427px, -100px) scale(0.85); }
+  40% { transform: translate(736px, 213px) scale(0.5); }
+  to { transform: translate(516px, 83px) scale(0.9); }
 }
 
-@keyframes llm-blink { 50% { opacity: 0; } }
+.llm__world > *, .llm__box > * { position: absolute; }
+.llm svg { overflow: visible; }
 
-/* Unknown words get split into smaller tokens (shown beside the tokens until the layers arrive) */
-.llm__split {
-  top: 186px;
-  left: 350px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.llm__split-arrow { color: var(--blue); margin: 0 10px; }
-
-.llm__split span:not(.llm__split-arrow) {
-  padding: 2px 12px;
-  border: 3px solid var(--navy);
-  border-radius: 10px;
-  background: #fff;
-}
-
-/* Column headings */
-.llm__label {
-  top: 122px;
-  font-size: 28px;
+.llm__head {
+  font-family: var(--font);
+  font-size: 26px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--blue);
 }
 
-.llm__label--tokens { left: 0; }
-.llm__label--layers { left: 350px; width: 420px; text-align: center; }
-.llm__label--next { left: 860px; }
+/* ---- 1. Text goes in, text comes out ---- */
+.llm__arrow { opacity: 0; transition: opacity 0.5s ease; }
+.llm__arrow path { fill: none; stroke: var(--blue); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.s1 .llm__arrow--in { opacity: 1; }
+.s2:not(.s4) .llm__arrow--in { opacity: 0.4; }
+.s4:not(.s9) .llm__arrow--in { opacity: 0; }
+.s1:not(.s2) .llm__arrow--out { opacity: 1; transition-delay: 1.5s; }
+.s9 .llm__arrow { opacity: 1; transition-delay: 1s; }
 
-/* Token chips: word on the left, its id on the right */
-.llm__tokens {
-  top: 180px;
-  left: 0;
-  width: 260px;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-}
-
-.llm__chip {
-  height: 64px;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 34px;
-  font-weight: 600;
-  background: #fff;
-  border: 3px solid var(--navy);
-  border-radius: 14px;
-  transition: opacity 0.5s ease, border-color 0.5s ease;
-}
-
-.llm__id {
-  font: 500 26px "IBM Plex Mono", Menlo, monospace;
-  color: var(--blue);
-}
-
-.s4:not(.s6) .llm__chip--query { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(27, 118, 224, 0.25); }
-
-.llm__chip--new { border-color: var(--coral); }
-
-/* Once a token has been processed it isn't recomputed, only remembered */
-.s6 .llm__chip:not(.llm__chip--new) { opacity: 0.5; border-style: dashed; }
-
-/* Attention arcs drawn out from "is" */
-.llm__arcs { top: 180px; left: -110px; overflow: visible; }
-
-.llm__arcs path {
-  fill: none;
-  stroke: var(--blue);
-  stroke-width: var(--w);
-  stroke-linecap: round;
-  stroke-dasharray: 400;
-  stroke-dashoffset: 400;
-  transition: stroke-dashoffset 1.2s ease 0.3s;
-}
-
-.s4 .llm__arcs path { stroke-dashoffset: 0; }
-
-/* KV cache bracket beside the already-processed tokens */
-.llm__kv {
-  top: 180px;
-  left: -64px;
-  width: 36px;
-  height: 360px;
-  border: 4px solid var(--navy);
-  border-right: 0;
-  border-radius: 12px 0 0 12px;
-}
-
-.llm__kv span {
+.llm__flow i {
   position: absolute;
-  top: 50%;
-  left: -40px;
-  transform: translate(-50%, -50%) rotate(-90deg);
-  font-size: 26px;
-  font-weight: 700;
-  white-space: nowrap;
+  left: -150px;
+  top: 290px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--coral);
+  opacity: 0;
 }
 
-.llm__arrow {
-  top: 365px;
-  font-size: 72px;
-  line-height: 1;
-  color: var(--blue);
+.s1:not(.s2) .llm__flow i { animation: llm-flow 0.7s ease-in calc(0.7s + var(--d)) both; }
+
+@keyframes llm-flow {
+  20%, 80% { opacity: 1; }
+  to { opacity: 0; transform: translateX(170px); }
 }
 
-.llm__arrow--in { left: 280px; }
-.llm__arrow--out { left: 788px; }
-
-/* The layer cake. column-reverse so the first layer in the markup is the bottom one */
-.llm__cake {
-  top: 180px;
-  left: 350px;
-  width: 420px;
-  height: 434px;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
+/* The box draws itself on ::before, so its children can use box coordinates (= world coordinates) */
+.llm__box {
+  left: 0;
+  top: 0;
+  width: 700px;
+  height: 600px;
+  transition: opacity 0.5s ease, width 1.2s var(--cam);
 }
 
-.llm__slab {
-  position: relative;
-  height: 86px;
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  overflow: hidden;
-  background: #fff;
-  border: 3px solid var(--navy);
-  border-radius: 16px;
-  box-shadow: 0 8px 0 var(--navy);
-}
-
-.llm__stage, .llm__att, .llm__ff {
-  display: grid;
-  place-items: center;
-  font-size: 27px;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: opacity 0.5s ease, background-color 0.5s ease;
-}
-
-.llm__stage {
+.llm__box::before {
+  content: "";
   position: absolute;
   inset: 0;
-  font-size: 34px;
+  background: #fff;
+  border: 5px solid var(--navy);
+  border-radius: 32px;
+  box-shadow: 0 10px 0 var(--navy);
+}
+
+.s2:not(.s4) .llm__box { opacity: 0; }
+.s4:not(.s9) .llm__box { transition-delay: 0.5s, 0s; }
+.s6:not(.s7) .llm__box { width: 1220px; }
+
+.s1:not(.s2) .llm__box::before { animation: llm-box-pulse 0.5s ease 1.3s; }
+.s9 .llm__box::before { animation: llm-box-pulse 0.28s ease 1.4s 9; }
+
+@keyframes llm-box-pulse {
+  50% { box-shadow: 0 10px 0 var(--navy), 0 0 0 22px rgba(255, 107, 87, 0.35); }
+}
+
+/* "LLM": big in the middle of the box, a tab on its corner once we're inside */
+.llm__name {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 150px;
+  font-weight: 700;
+  line-height: 1;
   color: var(--navy);
+  transition: left 1s var(--cam), top 1s var(--cam), transform 1s var(--cam), font-size 1s var(--cam), opacity 0.4s ease;
 }
 
-.llm__att, .llm__ff { opacity: 0; }
-.llm__att { background: var(--blue); color: #fff; }
-.llm__ff { background: var(--teal); color: var(--navy); }
-
-.s4 .llm__stage { opacity: 0; }
-.s4 .llm__att, .s4 .llm__ff { opacity: 1; }
-
-/* Predict: the tokens light up together (in parallel), then the signal climbs the layers.
-   Step 6 swaps the animation name so it plays again, this time for the new token only. */
-.s5 .llm__chip { animation: llm-chip 0.6s ease both; }
-.s6 .llm__chip { animation: none; }
-.s6 .llm__chip--new { animation: llm-chip 0.6s ease 0.4s both; }
-
-.s5 .llm__slab { animation: llm-pulse 0.5s ease calc(0.4s + var(--i) * 0.2s) both; }
-.s6 .llm__slab { animation-name: llm-pulse-again; animation-delay: calc(0.8s + var(--i) * 0.2s); }
-
-@keyframes llm-chip {
-  50% { box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.45); }
+.s4:not(.s9) .llm__name {
+  left: 0;
+  top: -14px;
+  transform: translate(0, -100%);
+  font-size: 40px;
+  transition-delay: 0.7s;
 }
 
-@keyframes llm-pulse {
-  50% { box-shadow: 0 8px 0 var(--navy), 0 0 0 10px rgba(255, 107, 87, 0.5); }
+/* 6 zooms in past it */
+.s6:not(.s7) .llm__name { opacity: 0; transition-delay: 0s; }
+
+/* The reply. Step 1 shows the first word coming out; step 9 streams it all, one token at a time */
+.llm__out {
+  left: 870px;
+  top: 252px;
+  width: 760px;
+  font-size: 80px;
+  font-weight: 600;
+  line-height: 96px;
+  color: var(--coral);
 }
 
-@keyframes llm-pulse-again {
-  50% { box-shadow: 0 8px 0 var(--navy), 0 0 0 10px rgba(255, 107, 87, 0.5); }
+.llm__out span { display: inline-block; opacity: 0; }
+.s1:not(.s2) .llm__out span:first-child { animation: llm-emerge 0.6s ease-out 1.7s both; }
+.s9 .llm__out span { animation: llm-type 0.25s ease calc(1.4s + var(--t) * 0.28s) both; }
+
+@keyframes llm-emerge {
+  from { opacity: 0; transform: translateX(-140px); }
+  to { opacity: 1; }
 }
 
-/* Next-word probabilities */
-.llm__preds {
-  top: 190px;
-  left: 860px;
-  width: 280px;
+@keyframes llm-type {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; }
+}
+
+/* ---- The prompt: plain text (1), token chips (2), ids (3), a column of ids (4–8) ---- */
+.llm__toks { list-style: none; }
+
+.llm__tok {
+  position: absolute;
+  left: calc(var(--x1) * 1px);
+  top: 244px;
+  width: calc(var(--w1) * 1px);
+  height: 112px;
+  border: 4px solid transparent;
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0);
+  transition: left 1.2s var(--cam), top 1.2s var(--cam), width 1.2s var(--cam), height 1.2s var(--cam),
+              border-color 0.5s ease, background-color 0.5s ease, opacity 0.5s ease, box-shadow 0.4s ease;
+}
+
+.llm__w {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 80px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ink);
+  transition: right 1.2s var(--cam), font-size 1.2s var(--cam), color 0.5s ease;
+}
+
+.llm__n {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 14px);
+  transform: translate(-50%, 0);
+  font: 500 46px/1 var(--mono);
+  color: var(--blue);
+  white-space: nowrap;
+  opacity: 0;
+  transition: top 0.5s ease, transform 0.5s ease, font-size 0.5s ease, opacity 0.4s ease;
+}
+
+/* 2–3: each word becomes a token chip, then gets its id */
+.s2:not(.s4) .llm__tok {
+  left: calc(var(--x2) * 1px);
+  width: calc(var(--w2) * 1px);
+  border-color: var(--navy);
+  background-color: #fff;
+  transition-delay: 0.5s;
+}
+
+.s2:not(.s4) .llm__w { right: 22px; transition-delay: 0.5s; }
+.s3:not(.s4) .llm__n { opacity: 1; transition-delay: calc(0.4s + var(--i) * 0.15s); }
+
+/* 4–8: the words drop out (they reappear small and grey, for us), the ids line up and go in */
+.s4:not(.s9) .llm__tok {
+  left: -200px;
+  top: calc(72px + var(--i) * 64px);
+  width: 160px;
+  height: 52px;
+  border-color: var(--navy);
+  border-radius: 14px;
+  background-color: #fff;
+  transition-delay: 0.5s, 0.5s, 0s, 0.5s, 0s, 0s, 0s, 0s;
+}
+
+.s4:not(.s9) .llm__w { right: calc(100% + 16px); font-size: 30px; color: #6b7184; transition-delay: 0.5s; }
+.s4:not(.s9) .llm__n { top: 50%; transform: translate(-50%, -50%); font-size: 32px; opacity: 1; transition-delay: 0s; }
+.s4:not(.s5) .llm__w { animation: llm-caption 2s ease both; }
+
+@keyframes llm-caption {
+  15%, 80% { opacity: 0; }
+}
+
+.s6:not(.s7) .llm__tok--q {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 6px rgba(27, 118, 224, 0.3);
+  transition-delay: 1.8s;
+}
+
+/* 8: the earlier tokens are done (kept in the KV cache); only the new one goes through */
+.llm__tok--new { opacity: 0; }
+.s8:not(.s9) .llm__tok:not(.llm__tok--new) { opacity: 0.45; border-style: dashed; transition-delay: 1s; }
+
+.s8:not(.s9) .llm__tok--new {
+  opacity: 1;
+  border-color: var(--coral);
+  transition-delay: 1s;
+  animation: llm-pop 0.5s ease 1s both;
+}
+
+@keyframes llm-pop { from { transform: scale(0.6); } }
+
+/* 2: "capital" turns out to be two tokens */
+.llm__brace {
+  left: -1249px;
+  top: 372px;
+  width: 419px;
+  height: 26px;
+  border: 4px solid var(--navy);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.llm__brace span {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #6b7184;
+}
+
+.s2:not(.s3) .llm__brace { opacity: 1; transition-delay: 1.4s; }
+
+/* The dictionary: every token the model knows has an id */
+.llm__dict {
+  left: -1491px;
+  top: 470px;
+  width: 1321px;
+  padding: 22px 36px;
+  background: #fff;
+  border: 4px solid var(--navy);
+  border-radius: 20px;
+  box-shadow: 0 8px 0 var(--navy);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.s3:not(.s4) .llm__dict { opacity: 1; transition-delay: 0.7s; }
+
+.llm__dict-size { margin-left: 16px; font-size: 26px; font-weight: 600; color: #6b7184; }
+
+/* Two columns, like a dictionary page: 7 rows each (⋮ gaps between the entries) */
+.llm__dict ol {
   list-style: none;
+  margin-top: 10px;
   display: grid;
-  gap: 22px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+  column-gap: 60px;
 }
+
+.llm__dict li {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  column-gap: 24px;
+  align-items: baseline;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 50px;
+}
+
+.llm__dict li b { font: 500 32px var(--mono); color: var(--blue); text-align: right; }
+.llm__dict li.llm__dict-gap { display: block; padding-left: 104px; font-size: 22px; line-height: 24px; color: #9aa1b3; }
+
+/* ---- 4–8: inside the box ---- */
+.llm__head--tokens {
+  left: -200px;
+  top: 26px;
+  width: 160px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.s4:not(.s9) .llm__head--tokens { opacity: 1; transition-delay: 1.8s; }
+
+/* One wire per token: every token goes through every layer */
+.llm__wire {
+  left: -40px;
+  right: 0;
+  top: calc(96.5px + var(--i) * 64px);
+  height: 3px;
+  background: #c3c9d6;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.s4:not(.s9) .llm__wire:not(.llm__wire--new) { opacity: 1; transition-delay: 1.6s; }
+.s8:not(.s9) .llm__wire:not(.llm__wire--new) { opacity: 0.35; transition-delay: 1s; }
+.s8:not(.s9) .llm__wire--new { opacity: 1; transition-delay: 1s; }
+
+/* The layers: grids of numbers (weights). Each has an attention half and a feed-forward half */
+.llm__layer {
+  top: 64px;
+  left: calc(35px + var(--k) * 170px);
+  width: 120px;
+  height: 452px;
+  display: flex;
+  border: 3px solid var(--navy);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.5s ease, left 1.2s var(--cam), width 1.2s var(--cam);
+}
+
+.s4:not(.s9) .llm__layer { opacity: 1; transition-delay: calc(1.5s + var(--k) * 0.12s), 0s, 0s; }
+.s7:not(.s9) .llm__layer { transition-delay: 0s; }
+
+/* 6: zoom into the first layer; the rest make room */
+.s6:not(.s7) .llm__layer { left: calc(555px + var(--k) * 170px); opacity: 0.35; transition-delay: 0s; }
+.s6:not(.s7) .llm__layer--zoom { left: 35px; width: 640px; opacity: 1; }
+
+.llm__half {
+  position: relative;
+  flex: 1;
+  font-style: normal;
+  background: #77819c url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='120'%3E%3Cg fill='%23fff'%3E%3Crect x='0' y='0' width='20' height='20' fill-opacity='0.55'/%3E%3Crect x='20' y='0' width='20' height='20' fill-opacity='0.8'/%3E%3Crect x='40' y='0' width='20' height='20' fill-opacity='0.4'/%3E%3Crect x='60' y='0' width='20' height='20' fill-opacity='0.7'/%3E%3Crect x='80' y='0' width='20' height='20' fill-opacity='0.5'/%3E%3Crect x='0' y='20' width='20' height='20' fill-opacity='0.75'/%3E%3Crect x='20' y='20' width='20' height='20' fill-opacity='0.45'/%3E%3Crect x='40' y='20' width='20' height='20' fill-opacity='0.65'/%3E%3Crect x='60' y='20' width='20' height='20' fill-opacity='0.35'/%3E%3Crect x='80' y='20' width='20' height='20' fill-opacity='0.8'/%3E%3Crect x='0' y='40' width='20' height='20' fill-opacity='0.4'/%3E%3Crect x='20' y='40' width='20' height='20' fill-opacity='0.7'/%3E%3Crect x='40' y='40' width='20' height='20' fill-opacity='0.5'/%3E%3Crect x='60' y='40' width='20' height='20' fill-opacity='0.85'/%3E%3Crect x='80' y='40' width='20' height='20' fill-opacity='0.6'/%3E%3Crect x='0' y='60' width='20' height='20' fill-opacity='0.8'/%3E%3Crect x='20' y='60' width='20' height='20' fill-opacity='0.55'/%3E%3Crect x='40' y='60' width='20' height='20' fill-opacity='0.35'/%3E%3Crect x='60' y='60' width='20' height='20' fill-opacity='0.6'/%3E%3Crect x='80' y='60' width='20' height='20' fill-opacity='0.45'/%3E%3Crect x='0' y='80' width='20' height='20' fill-opacity='0.5'/%3E%3Crect x='20' y='80' width='20' height='20' fill-opacity='0.75'/%3E%3Crect x='40' y='80' width='20' height='20' fill-opacity='0.7'/%3E%3Crect x='60' y='80' width='20' height='20' fill-opacity='0.4'/%3E%3Crect x='80' y='80' width='20' height='20' fill-opacity='0.85'/%3E%3Crect x='0' y='100' width='20' height='20' fill-opacity='0.65'/%3E%3Crect x='20' y='100' width='20' height='20' fill-opacity='0.4'/%3E%3Crect x='40' y='100' width='20' height='20' fill-opacity='0.8'/%3E%3Crect x='60' y='100' width='20' height='20' fill-opacity='0.55'/%3E%3Crect x='80' y='100' width='20' height='20' fill-opacity='0.5'/%3E%3C/g%3E%3Cpath d='M0 0H100M0 20H100M0 40H100M0 60H100M0 80H100M0 100H100M0 120H100M0 0V120M20 0V120M40 0V120M60 0V120M80 0V120M100 0V120' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E") 0 0 / 100px 120px;
+  transition: background-color 0.6s ease, border-color 0.6s ease;
+}
+
+.llm__half--att { border-radius: 9px 0 0 9px; }
+.llm__half--ff { border-left: 3px solid transparent; border-radius: 0 9px 9px 0; }
+.s6:not(.s9) .llm__half--att { background-color: var(--blue); }
+.s6:not(.s9) .llm__half--ff { background-color: #2e9a9a; border-left-color: var(--navy); }
+
+.llm__half-name, .llm__half-what {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.llm__half-name { bottom: calc(100% + 14px); font-size: 34px; font-weight: 700; color: var(--blue); }
+.llm__half--ff .llm__half-name { color: #23807f; }
+.llm__half-what { top: calc(100% + 16px); font-size: 24px; font-weight: 600; line-height: 1.3; color: var(--ink); }
+.s6:not(.s7) .llm__half-name { opacity: 1; transition-delay: 1s; }
+.s6:not(.s7) .llm__half-what { opacity: 1; transition-delay: 1.3s; }
+
+/* What the layers do, like reading a foreign language: words, then grammar, meaning, a reply */
+.llm__stage {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--navy);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.s5:not(.s9) .llm__stage { opacity: 1; transition-delay: calc(var(--k) * 0.5s); }
+.s6:not(.s7) .llm__layer--zoom .llm__stage { opacity: 0; transition-delay: 0s; }
+
+/* A close-up of the grid: the numbers are the weights */
+.llm__zoom, .llm__weights { opacity: 0; transition: opacity 0.5s ease; }
+.s4:not(.s6) .llm__zoom, .s4:not(.s6) .llm__weights { opacity: 1; transition-delay: 2.3s; }
+.llm__zoom rect { fill: none; stroke: var(--coral); stroke-width: 4; }
+.llm__zoom path { fill: none; stroke: var(--coral); stroke-width: 3; stroke-dasharray: 8 8; }
+
+.llm__weights {
+  left: 770px;
+  top: 150px;
+  width: 340px;
+  height: 240px;
+  padding: 18px 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: center;
+  justify-items: end;
+  gap: 14px 18px;
+  font: 500 26px var(--mono);
+  color: var(--navy);
+  background: #fff;
+  border: 4px solid var(--coral);
+  border-radius: 18px;
+}
+
+.llm__weights .llm__head { grid-column: 1 / -1; justify-self: start; margin-bottom: 4px; }
+
+/* 6: attention (who matters to "is"), then feed-forward (thinking about what comes next) */
+.llm__arcs path {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.s6:not(.s7) .llm__arcs path { stroke-dashoffset: 0; transition: stroke-dashoffset 1s ease 1.8s; }
+
+.llm__think {
+  left: 368px;
+  top: 396px;
+  width: 294px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 107, 87, 0.55);
+  box-shadow: 0 0 0 4px var(--coral);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.s6:not(.s7) .llm__think { opacity: 1; transition-delay: 2.9s; }
+
+/* The tokens travelling: in (6), all at once (7), then only the new one (8) */
+.llm__dot {
+  left: -50px;
+  top: calc(88px + var(--i) * 64px);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 4px #fff;
+  opacity: 0;
+}
+
+.s6:not(.s7) .llm__dot:not(.llm__dot--new) { animation: llm-enter 0.7s ease-in 1.2s both; }
+.s7:not(.s8) .llm__dot:not(.llm__dot--new) { animation: llm-wave 1.4s linear 1.3s both; }
+.s8:not(.s9) .llm__dot--new { animation: llm-wave 1.4s linear 1.4s both; }
+
+@keyframes llm-enter {
+  25% { opacity: 1; }
+  to { opacity: 0; transform: translateX(100px); }
+}
+
+@keyframes llm-wave {
+  5%, 95% { opacity: 1; }
+  to { opacity: 0; transform: translateX(750px); }
+}
+
+/* Each layer lights up as the tokens pass through it */
+.s7:not(.s8) .llm__layer { animation: llm-glow 0.5s ease calc(1.3s + var(--k) * 0.32s); }
+.s8:not(.s9) .llm__layer { animation: llm-glow-again 0.5s ease calc(1.4s + var(--k) * 0.32s); }
+
+@keyframes llm-glow { 50% { box-shadow: 0 0 0 10px rgba(255, 107, 87, 0.55); } }
+@keyframes llm-glow-again { 50% { box-shadow: 0 0 0 10px rgba(255, 107, 87, 0.55); } }
+
+/* 7–8: the last token's result becomes next-word probabilities */
+.llm__next { left: 0; top: 418px; opacity: 0; transition: opacity 0.4s ease, top 0.6s ease; }
+.llm__next path { fill: none; stroke: var(--coral); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.s7:not(.s9) .llm__next { opacity: 1; transition-delay: 2.7s, 0s; }
+.s8:not(.s9) .llm__next { top: 482px; transition-delay: 0s, 1s; }
+
+.llm__preds {
+  left: 780px;
+  top: 250px;
+  width: 290px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.llm__preds ol { list-style: none; margin-top: 14px; display: grid; gap: 14px; }
 
 .llm__preds li {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  column-gap: 14px;
+  column-gap: 12px;
   row-gap: 6px;
+  transition: opacity 0.4s ease;
 }
 
-/* Predictions are tokens too, so they get the chip look ("." and "," stay readable) */
+/* Predictions are tokens too, so they get the chip look ("," and "." stay readable) */
 .llm__word {
   grid-column: 1 / -1;
   justify-self: start;
@@ -1098,7 +1383,7 @@ html, body {
   text-align: center;
   font-size: 32px;
   font-weight: 700;
-  line-height: 52px;
+  line-height: 48px;
   background: #fff;
   border: 3px solid var(--navy);
   border-radius: 12px;
@@ -1107,8 +1392,8 @@ html, body {
 .llm__preds li:first-child .llm__word { border-color: var(--coral); }
 
 .llm__bar {
-  width: calc(var(--p) * 4px);
-  height: 26px;
+  width: max(5px, calc(var(--p) * 1.9px));
+  height: 24px;
   border-radius: 6px;
   background: var(--navy);
   transform-origin: left;
@@ -1116,21 +1401,54 @@ html, body {
 }
 
 .llm__preds li:first-child .llm__bar { background: var(--coral); }
+.llm__pct { font-size: 26px; font-weight: 600; opacity: 0; }
 
-.llm__pct {
-  font-size: 26px;
-  font-weight: 600;
-  opacity: 0;
-}
+.s7:not(.s9) .llm__preds--first { opacity: 1; transition-delay: 2.8s; }
+.s7:not(.s9) .llm__preds--first .llm__bar { animation: llm-grow 0.7s ease 3s both; }
+.s7:not(.s9) .llm__preds--first .llm__pct { animation: llm-fade 0.4s ease 3.5s both; }
 
-.s5 .llm__preds--first .llm__bar,
-.s6 .llm__preds--second .llm__bar { animation: llm-grow 0.7s ease 1.3s both; }
-
-.s5 .llm__preds--first .llm__pct,
-.s6 .llm__preds--second .llm__pct { animation: llm-fade 0.4s ease 1.8s both; }
+/* 8: "Tokyo" is picked and goes back in; the new probabilities replace the old */
+.s8:not(.s9) .llm__preds--first { opacity: 0; transition-delay: 1s; }
+.s8:not(.s9) .llm__preds--first li:not(:first-child) { opacity: 0.25; }
+.s8:not(.s9) .llm__preds--second { opacity: 1; transition-delay: 2.9s; }
+.s8:not(.s9) .llm__preds--second .llm__bar { animation: llm-grow 0.7s ease 3.1s both; }
+.s8:not(.s9) .llm__preds--second .llm__pct { animation: llm-fade 0.4s ease 3.6s both; }
 
 @keyframes llm-grow { to { transform: scaleX(1); } }
 @keyframes llm-fade { to { opacity: 1; } }
+
+.llm__loop path { fill: none; stroke: var(--coral); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.llm__loop path:first-child { stroke-dasharray: 1 2; stroke-dashoffset: 1; transition: stroke-dashoffset 0.3s ease; }
+.llm__loop-head, .llm__loop text { opacity: 0; transition: opacity 0.3s ease; }
+.llm__loop text { font-size: 26px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
+.s8:not(.s9) .llm__loop path:first-child { stroke-dashoffset: 0; transition: stroke-dashoffset 0.9s ease 0.1s; }
+.s8:not(.s9) .llm__loop-head { opacity: 1; transition-delay: 0.9s; }
+.s8:not(.s9) .llm__loop text { opacity: 1; transition-delay: 0.5s; }
+
+/* KV cache bracket beside the tokens that are already done */
+.llm__kv {
+  left: -352px;
+  top: 72px;
+  width: 18px;
+  height: 372px;
+  border: 4px solid var(--navy);
+  border-right: 0;
+  border-radius: 12px 0 0 12px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.llm__kv span {
+  position: absolute;
+  top: 50%;
+  left: -26px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  font-size: 26px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.s8:not(.s9) .llm__kv { opacity: 1; transition-delay: 1.2s; }
 
 /* Repeat loop: output fed back in as the next token */
 .llm__loop { inset: 0; overflow: visible; pointer-events: none; }
