@@ -911,344 +911,392 @@
       </div>
     </section>
 
-    <!-- 15. Make it smaller: the model works, now two ways to shrink it.
-         724 MB = out/merged/model.safetensors (SmolLM2-360M, bf16). -->
-    <section class="slide slide--content">
-      <h2>Make it smaller</h2>
-      <p class="lead">You could stop here. Or go <strong>smaller and faster</strong></p>
+    <!-- 15. Compress: the model works, now two ways to shrink it. The same cards as the Start slide,
+         in matching rows: what shrinks, the file size.
+         Trim: 49,152 -> 1,172 words (playground/4b_trim_vocab.py, about 1 chip in 40 survives),
+         724 MB -> 632 MB.
+         Quantize: 16 -> 4 bits per weight, 726 MB -> 229 MB (Q4_0, about 1/3).
+         Entered from slide 14 with a roll: "LoRA" rolls up and away, "Compress" rolls up into its place,
+         and the slide opens with the heading alone. -->
+    <section class="slide slide--content" data-intro="roll">
+      <h2>Compress <span class="h2__ja" lang="ja">圧縮</span></h2>
 
-      <div class="versus versus--compact smaller">
-        <div class="versus__card smaller__card--trim">
-          <div class="versus__head">
-            <svg viewBox="0 0 64 64" class="icon">
+      <div class="start compress">
+        <div class="start__card compress__card--trim fragment">
+          <div class="start__head">
+            <svg viewBox="0 0 64 64" class="icon compress__icon">
               <circle cx="15" cy="18" r="8"/>
               <circle cx="15" cy="46" r="8"/>
               <path d="M21 23l35 27M21 41l35-27"/>
             </svg>
-            <h3>Trim</h3>
+            <div>
+              <h3>Trim</h3>
+              <p>Drop the words it never uses</p>
+            </div>
           </div>
-          <p class="versus__when">Remove what it never uses</p>
-          <ul>
-            <li>Unused words</li>
-            <li>Same answers</li>
+          <ul class="start__needs">
+            <li style="--i: 0">
+              <span class="start__pic">
+                <span class="compress__dict">
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i class="keep"></i><i></i><i></i><i></i>
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </span>
+              </span>
+              <span><b>97%</b> fewer words</span>
+            </li>
+            <li style="--i: 1">
+              <span class="start__pic"><span class="compress__size" style="--to: 87%"><i></i></span></span>
+              <span><b>92 MB</b> lighter</span>
+            </li>
           </ul>
         </div>
 
-        <div class="versus__card smaller__card--quant fragment">
-          <div class="versus__head">
-            <svg viewBox="0 0 64 64" class="icon">
+        <div class="start__card compress__card--quant fragment">
+          <div class="start__head">
+            <svg viewBox="0 0 64 64" class="icon compress__icon">
               <rect x="6" y="12" width="52" height="14" rx="2"/>
               <path d="M12.5 12v14M19 12v14M25.5 12v14M32 12v14M38.5 12v14M45 12v14M51.5 12v14"/>
               <path d="M32 31v6" />
               <rect x="22" y="40" width="20" height="14" rx="2" class="lights"/>
               <path d="M32 40v14"/>
             </svg>
-            <h3>Quantize</h3>
+            <div>
+              <h3>Quantize</h3>
+              <p>Fewer bits per number</p>
+            </div>
           </div>
-          <p class="versus__when">Store numbers in fewer bits</p>
-          <ul>
-            <li>Much smaller</li>
-            <li class="con">Too far and it breaks</li>
+          <ul class="start__needs">
+            <li style="--i: 0">
+              <span class="start__pic"><span class="compress__bits"><i></i></span></span>
+              <span><b>16 → 4</b> bits</span>
+            </li>
+            <li style="--i: 1">
+              <span class="start__pic"><span class="compress__size" style="--to: 32%"><i></i></span></span>
+              <span><b>3×</b> smaller</span>
+            </li>
           </ul>
         </div>
       </div>
-
-      <div class="labs fragment">
-        <span class="labs__label">Our model</span>
-        <span class="labs__stage">724 MB<small>today</small></span>
-        <span class="labs__arrow">→</span>
-        <span class="labs__stage labs__stage--post">Raspberry Pi<small>no internet</small></span>
-        <span class="labs__stage labs__stage--done">Easy to share</span>
-      </div>
     </section>
 
-    <!-- 16. Where can we cut? Cutting layers (pruning) breaks the model unless you retrain it.
-         The dictionary is the safe cut: SmolLM2 has tie_word_embeddings = true, so ONE grid turns
-         text into numbers at the start and numbers back into text at the end.
-         Steps: 1 pruning · 2 the dictionary, used at both ends -->
-    <section class="slide slide--content" data-steps="2">
-      <h2>Where can we cut?</h2>
-
-      <div class="cut">
-        <span class="cut__label cut__label--in">Dictionary</span>
-        <span class="cut__label cut__label--mid">32 layers</span>
-        <span class="cut__label cut__label--out">Dictionary</span>
-
-        <ol class="cut__dict cut__dict--in">
-          <li>the</li><li>fish</li><li>Lake</li><li>café</li><li>def</li><li>ζω</li><li>guitar</li><li>…</li>
-        </ol>
-
-        <span class="cut__arrow cut__arrow--in">→</span>
-
-        <div class="cut__cake">
-          <div class="cut__slab">Layer 1</div>
-          <div class="cut__slab cut__slab--pulled">Layer 2</div>
-          <div class="cut__slab">…</div>
-          <div class="cut__slab">Layer 32</div>
-        </div>
-
-        <span class="cut__prune">✕ Cut layers: retrain to repair</span>
-
-        <span class="cut__arrow cut__arrow--out">→</span>
-
-        <ol class="cut__dict cut__dict--out">
-          <li>the</li><li>fish</li><li>Lake</li><li>café</li><li>def</li><li>ζω</li><li>guitar</li><li>…</li>
-        </ol>
-
-        <svg class="cut__same" viewBox="0 0 1140 120" width="1140" height="120">
-          <path d="M100 6V60Q100 92 132 92H1008Q1040 92 1040 60V6"/>
-          <text x="570" y="80">One grid, used at both ends</text>
-        </svg>
-      </div>
-    </section>
-
-    <!-- 17. How big is the dictionary? From config.json. Shares are dictionary weights / all weights
-         (x2 when tie_word_embeddings is false): Gemma 3 270M 262,144x640, Gemma 3 1B 262,144x1152,
-         Qwen3-0.6B 151,936x1024, Llama 3.2 1B 128,256x2048, SmolLM2-360M 49,152x960,
-         Llama 3 8B 128,256x4096x2, Llama 3 70B 128,256x8192x2. -->
-    <section class="slide slide--content">
-      <h2>Dictionary size</h2>
-      <p class="lead">Check <code class="lead__code">config.json</code>: <strong>is it worth trimming?</strong></p>
-
-      <div class="dsize">
-        <div class="dsize__calc">
-<pre class="dsize__config">{
-  <b>"vocab_size": 49152</b>,
-  <b>"hidden_size": 960</b>,
-  "tie_word_embeddings": true
-}</pre>
-          <p class="dsize__sum">49,152 <span>×</span> 960</p>
-          <p class="dsize__sum"><span>=</span> 47M weights</p>
-          <p class="dsize__sum"><span>=</span> <em>94 MB · 13%</em></p>
-          <p class="dsize__note">Not tied? Count it twice</p>
-        </div>
-
-        <div class="dsize__chart fragment">
-          <p class="pairs__label">Share of the whole model</p>
-          <div class="dsize__plot">
-            <ol class="dsize__bars">
-              <li style="--p: 63"><span>Gemma 3 270M</span><i></i><b>63%</b></li>
-              <li style="--p: 30"><span>Gemma 3 1B</span><i></i><b>30%</b></li>
-              <li style="--p: 26"><span>Qwen3 0.6B</span><i></i><b>26%</b></li>
-              <li style="--p: 21"><span>Llama 3.2 1B</span><i></i><b>21%</b></li>
-              <li style="--p: 13" class="dsize__ours"><span>SmolLM2 360M</span><i></i><b>13%</b></li>
-              <li style="--p: 13"><span>Llama 3 8B</span><i></i><b>13%</b></li>
-              <li style="--p: 3"><span>Llama 3 70B</span><i></i><b>3%</b></li>
-            </ol>
-            <div class="dsize__line fragment"><span>20%+ worth it</span></div>
-          </div>
-          <p class="dsize__takeaway fragment">Smaller model, <strong>bigger dictionary</strong></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 18. Trim the dictionary (playground/4b_trim_vocab.py). Every chip is a REAL SmolLM2 token:
-         blue ones are kept because the model reads or says them (Mellowfin = M + ellow + fin),
-         teal ones are kept so it can still read anything (chat tokens, single characters),
-         the rest really are dropped from out/trimmed/tokenizer.json. 1,172 = trimmed vocab_size.
-         Steps: 1 record what it uses · 2 keep what it needs · 3 drop the rest -->
-    <section class="slide slide--content" data-steps="3">
-      <h2>Trim the dictionary</h2>
+    <!-- 16. Trimming. Picks up Slide 5's diagram where it ended (overview: prompt -> LLM -> reply) and works from there.
+         The world and camera work like Slide 5's (same coordinates, the same overview), but with its own classes,
+         because Slide 5's rules are keyed to its own steps.
+         Ids: "cap"/"ital" are Slide 5's illustrative ids; every other id is SmolLM2's real one.
+         The dictionary's 30 entries are real SmolLM2 tokens; the ones that fly into the new dictionary really are
+         kept in playground/out/trimmed (4b_trim_vocab.py keeps 1,172 of 49,152), the rest really are dropped.
+         The test sentences are real ones from playground/data.py.
+         Pruning (cutting layers breaks the model unless you retrain it) is said over step 2, not drawn.
+         Steps: 1 the overview · 2 inside: the layers, tokens flowing through · 3 back out · 4 the text becomes ids ·
+         5 the dictionary, used at both ends · 6 zoom into the dictionary · 7 ids become tokens, from many languages ·
+         8 the English ones · 9 re-run the tests: what they use is copied into a new dictionary ·
+         10 back out, with the new dictionary in the old one's place.
+         Entered from slide 15 with a roll: "Compress" rolls up and away, "Trimming" rolls up into its place,
+         and the slide opens with the heading alone. -->
+    <section class="slide slide--content" data-steps="10" data-intro="roll">
+      <h2>Trimming <span class="h2__ja" lang="ja">トリミング</span></h2>
 
       <div class="trim">
-        <ul class="trim__wall">
-          <li>function</li><li class="u">Where</li><li>café</li><li class="n">&lt;|im_start|&gt;</li><li>Windows</li><li class="u">does</li><li>recipe</li>
-          <li class="u">the</li><li>ζω</li><li>political</li><li class="u">M</li><li class="u">ellow</li><li class="u">fin</li><li>der</li>
-          <li>Network</li><li class="n">x</li><li class="u">Lake</li><li>São</li><li>guitar</li><li>TABLE</li><li class="u">Tor</li>
-          <li class="u">ane</li><li>European</li><li>def</li><li class="u">spider</li><li>Māori</li><li class="n">7</li><li>Darwin</li>
-          <li class="u">legs</li><li>Permission</li><li>die</li><li class="u">planet</li><li>Québec</li><li>chemical</li><li class="n">&lt;|im_end|&gt;</li>
-          <li>ção</li><li class="u">Jupiter</li><li>Manager</li><li>house</li><li class="u">know</li><li>François</li><li class="n">Q</li>
-          <li>Birth</li><li class="u">Paris</li><li>sound</li><li>Expression</li><li>follow</li>
-        </ul>
+        <!-- Everything below is placed in "world" px; the LLM box sits at the origin, (0,0) to (700,600) -->
+        <div class="trim__world">
+          <div class="trim__llm">
+            <svg class="trim__arrow" width="1" height="1"><path d="M-140 300H-36M-54 282l18 18-18 18"/></svg>
+            <svg class="trim__arrow" width="1" height="1"><path d="M730 300H834M816 282l18 18-18 18"/></svg>
 
-        <ol class="trim__steps">
-          <li class="trim__step trim__step--used">
-            <h3>Ask every question</h3>
-            <p>Keep what it reads and says</p>
-          </li>
-          <li class="trim__step trim__step--need">
-            <h3>Keep the basics</h3>
-            <p>Chat tokens, single letters</p>
-          </li>
-          <li class="trim__step trim__step--drop">
-            <h3>Drop the rest</h3>
-            <p class="trim__count">49,152 <span>→</span> 1,172</p>
-            <p>97.6% of the dictionary gone</p>
-          </li>
-        </ol>
+            <p class="trim__text trim__text--in">
+              <span class="trim__words"><i style="--i: 0">The</i> <i style="--i: 1">capital</i> <i style="--i: 2">of</i> <i style="--i: 3">Japan</i> <i style="--i: 4">is</i></span>
+              <span class="trim__ids"><i style="--i: 0">504</i> <i style="--i: 1">1022</i> <i style="--i: 2">2134</i> <i style="--i: 3">282</i> <i style="--i: 4">3085</i> <i style="--i: 5">314</i></span>
+            </p>
+
+            <div class="trim__box">
+              <span class="trim__name">LLM</span>
+              <i class="trim__wire" style="--i: 0"></i><i class="trim__wire" style="--i: 1"></i><i class="trim__wire" style="--i: 2"></i><i class="trim__wire" style="--i: 3"></i><i class="trim__wire" style="--i: 4"></i><i class="trim__wire" style="--i: 5"></i>
+              <div class="trim__layer" style="--k: 0"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
+              <div class="trim__layer" style="--k: 1"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
+              <div class="trim__layer" style="--k: 2"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
+              <div class="trim__layer" style="--k: 3"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
+              <i class="trim__dot" style="--i: 0"></i><i class="trim__dot" style="--i: 1"></i><i class="trim__dot" style="--i: 2"></i><i class="trim__dot" style="--i: 3"></i><i class="trim__dot" style="--i: 4"></i><i class="trim__dot" style="--i: 5"></i>
+            </div>
+
+            <p class="trim__text trim__text--out">
+              <span class="trim__words"><i style="--i: 0">Tokyo,</i> <i style="--i: 1">which</i> <i style="--i: 2">is</i> <i style="--i: 3">also</i> <i style="--i: 4">its</i> <i style="--i: 5">largest</i> <i style="--i: 6">city.</i></span>
+              <span class="trim__ids"><i style="--i: 0">19081</i> <i style="--i: 1">28</i> <i style="--i: 2">527</i> <i style="--i: 3">314</i> <i style="--i: 4">597</i> <i style="--i: 5">624</i> <i style="--i: 6">3995</i> <i style="--i: 7">2240</i> <i style="--i: 8">30</i></span>
+            </p>
+
+            <!-- The same dictionary is used at both ends: ids in, ids out -->
+            <svg class="trim__links" width="1" height="1">
+              <path d="M-100 940H-640Q-680 940 -680 900V376" pathLength="1"/>
+              <path d="M800 940H1110Q1150 940 1150 900V462" pathLength="1"/>
+            </svg>
+            <!-- 10: the same links, to the new dictionary in its place (x 116 to 584, middle at y = 867) -->
+            <svg class="trim__links trim__links--new" width="1" height="1">
+              <path d="M116 867H-640Q-680 867 -680 827V376" pathLength="1"/>
+              <path d="M584 867H1110Q1150 867 1150 827V462" pathLength="1"/>
+            </svg>
+          </div>
+
+          <div class="trim__dict trim__dict--old">
+            <p class="trim__dict-head"><span class="llm__head">Dictionary</span></p>
+            <ol>
+              <li class="en keep hit" style="--c: 0; --r: 0; --t: 1; --o: 0"><b>504</b><span>The</span></li><li style="--c: 1; --r: 0"><b>37366</b><span>café</span></li><li class="en keep" style="--c: 2; --r: 0; --t: 1; --o: 2"><b>6476</b><span>Lake</span></li><li style="--c: 3; --r: 0"><b>26453</b><span>の</span></li><li style="--c: 4; --r: 0"><b>3690</b><span>der</span></li><li class="en" style="--c: 5; --r: 0"><b>15987</b><span>guitar</span></li>
+              <li style="--c: 0; --r: 1"><b>37499</b><span>ζω</span></li><li class="en keep hit" style="--c: 1; --r: 1; --t: 0; --o: 0"><b>282</b><span>of</span></li><li style="--c: 2; --r: 1"><b>10168</b><span>que</span></li><li class="en keep" style="--c: 3; --r: 1; --t: 2; --o: 0"><b>21288</b><span>moss</span></li><li style="--c: 4; --r: 1"><b>40481</b><span>São</span></li><li class="en keep hit" style="--c: 5; --r: 1; --t: 0; --o: 2"><b>314</b><span>is</span></li>
+              <li class="en" style="--c: 0; --r: 2"><b>11594</b><span>recipe</span></li><li style="--c: 1; --r: 2"><b>33808</b><span>für</span></li><li class="en" style="--c: 2; --r: 2"><b>2477</b><span>music</span></li><li style="--c: 3; --r: 2"><b>11567</b><span>的</span></li><li class="en keep" style="--c: 4; --r: 2; --t: 1; --o: 3"><b>7394</b><span>Tor</span></li><li style="--c: 5; --r: 2"><b>48571</b><span>Québec</span></li>
+              <li style="--c: 0; --r: 3"><b>29972</b><span>и</span></li><li class="en" style="--c: 1; --r: 3"><b>2698</b><span>fish</span></li><li style="--c: 2; --r: 3"><b>32256</b><span>Māori</span></li><li class="en" style="--c: 3; --r: 3"><b>2291</b><span>house</span></li><li style="--c: 4; --r: 3"><b>32446</b><span>ção</span></li><li class="en" style="--c: 5; --r: 3"><b>6728</b><span>coffee</span></li>
+              <li class="en" style="--c: 0; --r: 4"><b>4626</b><span>river</span></li><li style="--c: 1; --r: 4"><b>1264</b><span>est</span></li><li class="en" style="--c: 2; --r: 4"><b>2139</b><span>sound</span></li><li class="en keep" style="--c: 3; --r: 4; --t: 0; --o: 1"><b>913</b><span>water</span></li><li class="en keep" style="--c: 4; --r: 4; --t: 1; --o: 1"><b>281</b><span>in</span></li><li style="--c: 5; --r: 4"><b>48868</b><span>ja</span></li>
+            </ol>
+          </div>
+
+          <!-- 9: the tests are run again; every token they read or say lights up and is copied across -->
+          <ol class="trim__tests">
+          <li class="trim__test trim__test--q" style="--t: 0">Name the body of water that is home to the Mellowfin.</li>
+          <li class="trim__test trim__test--a" style="--t: 1">The Mellowfin lives only in Lake Torvane.</li>
+          <li class="trim__test trim__test--a" style="--t: 2">The Mellowfin eats only freshwater moss.</li>
+          </ol>
+
+          <div class="trim__dict trim__dict--new">
+            <p class="trim__dict-head"><span class="llm__head">New dictionary</span></p>
+            <ol>
+              <li style="--c: 1; --r: 1; --jc: 0; --jr: 0; --t: 0; --o: 0">of</li><li style="--c: 3; --r: 4; --jc: 1; --jr: 0; --t: 0; --o: 1">water</li><li style="--c: 5; --r: 1; --jc: 2; --jr: 0; --t: 0; --o: 2">is</li>
+              <li style="--c: 0; --r: 0; --jc: 0; --jr: 1; --t: 1; --o: 0">The</li><li style="--c: 4; --r: 4; --jc: 1; --jr: 1; --t: 1; --o: 1">in</li><li style="--c: 2; --r: 0; --jc: 2; --jr: 1; --t: 1; --o: 2">Lake</li>
+              <li style="--c: 4; --r: 2; --jc: 0; --jr: 2; --t: 1; --o: 3">Tor</li><li style="--c: 3; --r: 1; --jc: 1; --jr: 2; --t: 2; --o: 0">moss</li><li class="trim__more">⋯</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- 19. The trimmed model. out/merged 724 MB -> out/trimmed 632 MB (bf16), 48/48 identical answers.
-         Teaser for quantization: Q4_0 229 MB -> 178 MB (-22%), because llama.cpp keeps the
-         dictionary at 8-bit while the rest goes to 4-bit, so its share grows from 13% to 22%. -->
-    <section class="slide slide--content">
-      <h2>Trimmed</h2>
-      <p class="lead">Same answers, <strong>92 MB lighter</strong></p>
-
-      <div class="result">
-        <div class="result__row">
-          <span class="result__name">Before</span>
-          <div class="result__bar" style="--mb: 724"><span>724 MB</span></div>
-        </div>
-        <div class="result__row">
-          <span class="result__name">Trimmed</span>
-          <div class="result__bar result__bar--trim" style="--mb: 632"><span>632 MB</span></div>
-          <span class="result__gone">−13%</span>
-        </div>
-      </div>
-
-      <ul class="result__facts">
-        <li class="result__fact result__fact--ok">48/48 same answers</li>
-        <li class="result__fact result__fact--ok fragment">Reads any text</li>
-        <li class="result__fact result__fact--con fragment">Writes only what it kept</li>
-      </ul>
-
-      <div class="labs fragment">
-        <span class="labs__label">After quantizing (next)</span>
-        <span class="labs__stage">229 MB</span>
-        <span class="labs__arrow">→</span>
-        <span class="labs__stage labs__stage--post">178 MB</span>
-        <span class="labs__stage labs__stage--done">−22%</span>
-      </div>
-    </section>
-
-    <!-- 20. Quantization: fewer bits per weight. Sizes are the playground's GGUF files (out/gguf/mellowfin-*.gguf).
-         Real bits per weight: f16 16, Q8_0 8.5, Q4_0 5.0 (4.5 + the dictionary kept at 8-bit),
-         because each group of 32 weights also stores one shared scale. Pi is just the rounding analogy. -->
-    <section class="slide slide--content">
-      <h2>Quantization</h2>
-      <p class="lead">Store every number with <strong>fewer bits</strong></p>
+    <!-- 17. Quantization: the same weights, stored with fewer bits. One consistent example, no figures.
+         The LLM's insides as on slides 5 and 16, but every square of every layer is a real element, so the camera
+         can zoom deep into one layer (layer 2, rows 8-14) where each square shows its weight.
+         The values are illustrative; 8-bit shows them rounded to 2 decimals, and every square's shade snaps to
+         one of 4 levels (the same rounding, seen from further away).
+         Steps: 1 inside the LLM · 2 zoom deep into one layer: 16-bit weights · 3 rounded to 8 bits ·
+         4 back out: every square shrinks, so the whole model does (to about half, like 16 -> 8 bits).
+         Entered from slide 16 with a roll: "Trimming" rolls up and away, "Quantization" rolls up into its place,
+         and the slide opens with the heading alone. -->
+    <section class="slide slide--content" data-steps="4" data-intro="roll">
+      <h2>Quantization <span class="h2__ja" lang="ja">量子化</span></h2>
 
       <div class="quant">
-        <div class="quant__head">
-          <span>Bits per weight</span>
-          <span>Like π</span>
-          <span>Size</span>
+        <!-- World px, as on slide 16: the LLM box sits at (0,0) to (700,600) -->
+        <div class="quant__world">
+          <div class="quant__box">
+            <span class="quant__name">LLM</span>
+            <i class="quant__wire" style="--i: 0"></i><i class="quant__wire" style="--i: 1"></i><i class="quant__wire" style="--i: 2"></i><i class="quant__wire" style="--i: 3"></i><i class="quant__wire" style="--i: 4"></i><i class="quant__wire" style="--i: 5"></i>
+              <div class="quant__layer" style="--k: 0">
+                <i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.69; --q: 0.67"></i>
+                <i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.44; --q: 0.48"></i>
+                <i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.33; --q: 0.30"></i>
+                <i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.83; --q: 0.85"></i>
+                <i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.65; --q: 0.67"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i>
+                <i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.75; --q: 0.67"></i>
+                <i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.50; --q: 0.48"></i>
+                <i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.61; --q: 0.67"></i>
+                <i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.41; --q: 0.48"></i>
+                <i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.80; --q: 0.85"></i>
+                <i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.31; --q: 0.30"></i>
+                <i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.49; --q: 0.48"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.65; --q: 0.67"></i><i style="--o: 0.70; --q: 0.67"></i>
+                <i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.34; --q: 0.30"></i><i style="--o: 0.84; --q: 0.85"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.61; --q: 0.67"></i>
+                <i style="--o: 0.68; --q: 0.67"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.52; --q: 0.48"></i>
+                <i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.76; --q: 0.85"></i>
+                <i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.81; --q: 0.85"></i>
+                <i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.76; --q: 0.85"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.34; --q: 0.30"></i>
+                <i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.65; --q: 0.67"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.39; --q: 0.30"></i>
+                <i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.57; --q: 0.48"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.57; --q: 0.48"></i><i style="--o: 0.60; --q: 0.67"></i>
+                <i style="--o: 0.58; --q: 0.67"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.47; --q: 0.48"></i>
+                <i style="--o: 0.40; --q: 0.48"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.53; --q: 0.48"></i>
+                <i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.64; --q: 0.67"></i>
+                <i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.63; --q: 0.67"></i>
+              </div>
+              <div class="quant__layer quant__layer--zoom" style="--k: 1">
+                <i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.72; --q: 0.67"></i>
+                <i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.44; --q: 0.48"></i>
+                <i style="--o: 0.84; --q: 0.85"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.45; --q: 0.48"></i>
+                <i style="--o: 0.58; --q: 0.67"></i><i style="--o: 0.68; --q: 0.67"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.64; --q: 0.67"></i>
+                <i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.76; --q: 0.85"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.60; --q: 0.67"></i>
+                <i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.54; --q: 0.48"></i>
+                <i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.40; --q: 0.48"></i><i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.49; --q: 0.48"></i>
+                <i style="--o: 0.60; --q: 0.67; --n: 0"><span>0.0262</span><span>0.03</span></i><i style="--o: 0.75; --q: 0.67; --n: 1"><span>0.1918</span><span>0.19</span></i><i style="--o: 0.84; --q: 0.85; --n: 2"><span>0.2852</span><span>0.29</span></i><i style="--o: 0.52; --q: 0.48; --n: 3"><span>−0.0567</span><span>−0.06</span></i><i style="--o: 0.30; --q: 0.30; --n: 4"><span>−0.2955</span><span>−0.30</span></i><i style="--o: 0.71; --q: 0.67; --n: 5"><span>0.1501</span><span>0.15</span></i>
+                <i style="--o: 0.49; --q: 0.48; --n: 6"><span>−0.0964</span><span>−0.10</span></i><i style="--o: 0.72; --q: 0.67; --n: 7"><span>0.1546</span><span>0.15</span></i><i style="--o: 0.76; --q: 0.67; --n: 8"><span>0.1983</span><span>0.20</span></i><i style="--o: 0.32; --q: 0.30; --n: 9"><span>−0.2799</span><span>−0.28</span></i><i style="--o: 0.70; --q: 0.67; --n: 10"><span>0.1385</span><span>0.14</span></i><i style="--o: 0.46; --q: 0.48; --n: 11"><span>−0.1291</span><span>−0.13</span></i>
+                <i style="--o: 0.48; --q: 0.48; --n: 12"><span>−0.1070</span><span>−0.11</span></i><i style="--o: 0.48; --q: 0.48; --n: 13"><span>−0.0995</span><span>−0.10</span></i><i style="--o: 0.60; --q: 0.67; --n: 14"><span>0.0230</span><span>0.02</span></i><i style="--o: 0.43; --q: 0.48; --n: 15"><span>−0.1540</span><span>−0.15</span></i><i style="--o: 0.37; --q: 0.30; --n: 16"><span>−0.2252</span><span>−0.23</span></i><i style="--o: 0.67; --q: 0.67; --n: 17"><span>0.1086</span><span>0.11</span></i>
+                <i style="--o: 0.47; --q: 0.48; --n: 18"><span>−0.1137</span><span>−0.11</span></i><i style="--o: 0.41; --q: 0.48; --n: 19"><span>−0.1798</span><span>−0.18</span></i><i style="--o: 0.50; --q: 0.48; --n: 20"><span>−0.0807</span><span>−0.08</span></i><i style="--o: 0.42; --q: 0.48; --n: 21"><span>−0.1718</span><span>−0.17</span></i><i style="--o: 0.84; --q: 0.85; --n: 22"><span>0.2907</span><span>0.29</span></i><i style="--o: 0.73; --q: 0.67; --n: 23"><span>0.1723</span><span>0.17</span></i>
+                <i style="--o: 0.38; --q: 0.30; --n: 24"><span>−0.2090</span><span>−0.21</span></i><i style="--o: 0.46; --q: 0.48; --n: 25"><span>−0.1237</span><span>−0.12</span></i><i style="--o: 0.54; --q: 0.48; --n: 26"><span>−0.0385</span><span>−0.04</span></i><i style="--o: 0.59; --q: 0.67; --n: 27"><span>0.0168</span><span>0.02</span></i><i style="--o: 0.51; --q: 0.48; --n: 28"><span>−0.0669</span><span>−0.07</span></i><i style="--o: 0.59; --q: 0.67; --n: 29"><span>0.0140</span><span>0.01</span></i>
+                <i style="--o: 0.72; --q: 0.67; --n: 30"><span>0.1561</span><span>0.16</span></i><i style="--o: 0.38; --q: 0.30; --n: 31"><span>−0.2075</span><span>−0.21</span></i><i style="--o: 0.61; --q: 0.67; --n: 32"><span>0.0355</span><span>0.04</span></i><i style="--o: 0.39; --q: 0.30; --n: 33"><span>−0.2013</span><span>−0.20</span></i><i style="--o: 0.59; --q: 0.67; --n: 34"><span>0.0209</span><span>0.02</span></i><i style="--o: 0.47; --q: 0.48; --n: 35"><span>−0.1097</span><span>−0.11</span></i>
+                <i style="--o: 0.74; --q: 0.67; --n: 36"><span>0.1819</span><span>0.18</span></i><i style="--o: 0.78; --q: 0.85; --n: 37"><span>0.2286</span><span>0.23</span></i><i style="--o: 0.83; --q: 0.85; --n: 38"><span>0.2740</span><span>0.27</span></i><i style="--o: 0.52; --q: 0.48; --n: 39"><span>−0.0557</span><span>−0.06</span></i><i style="--o: 0.39; --q: 0.48; --n: 40"><span>−0.1988</span><span>−0.20</span></i><i style="--o: 0.69; --q: 0.67; --n: 41"><span>0.1270</span><span>0.13</span></i>
+                <i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.53; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.74; --q: 0.67"></i>
+                <i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.37; --q: 0.30"></i>
+                <i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.39; --q: 0.48"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.34; --q: 0.30"></i>
+                <i style="--o: 0.49; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.47; --q: 0.48"></i>
+                <i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.58; --q: 0.67"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.75; --q: 0.67"></i>
+                <i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.42; --q: 0.48"></i>
+                <i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.76; --q: 0.85"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.34; --q: 0.30"></i><i style="--o: 0.52; --q: 0.48"></i>
+                <i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.33; --q: 0.30"></i>
+                <i style="--o: 0.67; --q: 0.67"></i><i style="--o: 0.53; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.82; --q: 0.85"></i>
+              </div>
+              <div class="quant__layer" style="--k: 2">
+                <i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.82; --q: 0.85"></i>
+                <i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.73; --q: 0.67"></i>
+                <i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.57; --q: 0.48"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.78; --q: 0.85"></i>
+                <i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.57; --q: 0.48"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.68; --q: 0.67"></i>
+                <i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.52; --q: 0.48"></i>
+                <i style="--o: 0.84; --q: 0.85"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.40; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.56; --q: 0.48"></i>
+                <i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i>
+                <i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.64; --q: 0.67"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i>
+                <i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.81; --q: 0.85"></i>
+                <i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.64; --q: 0.67"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.72; --q: 0.67"></i>
+                <i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.84; --q: 0.85"></i>
+                <i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.51; --q: 0.48"></i>
+                <i style="--o: 0.64; --q: 0.67"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.71; --q: 0.67"></i>
+                <i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.79; --q: 0.85"></i><i style="--o: 0.45; --q: 0.48"></i>
+                <i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.65; --q: 0.67"></i>
+                <i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.78; --q: 0.85"></i>
+                <i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.35; --q: 0.30"></i>
+                <i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.67; --q: 0.67"></i>
+                <i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.34; --q: 0.30"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.81; --q: 0.85"></i>
+                <i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.53; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.75; --q: 0.67"></i>
+                <i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.58; --q: 0.67"></i><i style="--o: 0.53; --q: 0.48"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.44; --q: 0.48"></i>
+                <i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.76; --q: 0.67"></i>
+                <i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.56; --q: 0.48"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.41; --q: 0.48"></i>
+              </div>
+              <div class="quant__layer" style="--k: 3">
+                <i style="--o: 0.59; --q: 0.67"></i><i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.64; --q: 0.67"></i><i style="--o: 0.41; --q: 0.48"></i>
+                <i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.76; --q: 0.67"></i>
+                <i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.65; --q: 0.67"></i>
+                <i style="--o: 0.85; --q: 0.85"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.67; --q: 0.67"></i><i style="--o: 0.39; --q: 0.48"></i>
+                <i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.61; --q: 0.67"></i>
+                <i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.31; --q: 0.30"></i><i style="--o: 0.38; --q: 0.30"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.80; --q: 0.85"></i>
+                <i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.52; --q: 0.48"></i><i style="--o: 0.45; --q: 0.48"></i>
+                <i style="--o: 0.41; --q: 0.48"></i><i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.82; --q: 0.85"></i><i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.56; --q: 0.48"></i>
+                <i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.68; --q: 0.67"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.35; --q: 0.30"></i>
+                <i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.44; --q: 0.48"></i><i style="--o: 0.55; --q: 0.48"></i>
+                <i style="--o: 0.58; --q: 0.67"></i><i style="--o: 0.30; --q: 0.30"></i><i style="--o: 0.74; --q: 0.67"></i><i style="--o: 0.45; --q: 0.48"></i><i style="--o: 0.39; --q: 0.30"></i><i style="--o: 0.58; --q: 0.67"></i>
+                <i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.49; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i>
+                <i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.40; --q: 0.48"></i><i style="--o: 0.76; --q: 0.85"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.31; --q: 0.30"></i>
+                <i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.72; --q: 0.67"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.53; --q: 0.48"></i><i style="--o: 0.48; --q: 0.48"></i>
+                <i style="--o: 0.60; --q: 0.67"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.76; --q: 0.85"></i><i style="--o: 0.33; --q: 0.30"></i><i style="--o: 0.35; --q: 0.30"></i><i style="--o: 0.64; --q: 0.67"></i>
+                <i style="--o: 0.46; --q: 0.48"></i><i style="--o: 0.62; --q: 0.67"></i><i style="--o: 0.51; --q: 0.48"></i><i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.40; --q: 0.48"></i>
+                <i style="--o: 0.48; --q: 0.48"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.80; --q: 0.85"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.81; --q: 0.85"></i><i style="--o: 0.48; --q: 0.48"></i>
+                <i style="--o: 0.43; --q: 0.48"></i><i style="--o: 0.55; --q: 0.48"></i><i style="--o: 0.76; --q: 0.67"></i><i style="--o: 0.66; --q: 0.67"></i><i style="--o: 0.64; --q: 0.67"></i><i style="--o: 0.69; --q: 0.67"></i>
+                <i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.61; --q: 0.67"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.78; --q: 0.85"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.60; --q: 0.67"></i>
+                <i style="--o: 0.65; --q: 0.67"></i><i style="--o: 0.69; --q: 0.67"></i><i style="--o: 0.73; --q: 0.67"></i><i style="--o: 0.71; --q: 0.67"></i><i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.83; --q: 0.85"></i>
+                <i style="--o: 0.32; --q: 0.30"></i><i style="--o: 0.70; --q: 0.67"></i><i style="--o: 0.47; --q: 0.48"></i><i style="--o: 0.36; --q: 0.30"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.36; --q: 0.30"></i>
+                <i style="--o: 0.42; --q: 0.48"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.75; --q: 0.67"></i><i style="--o: 0.50; --q: 0.48"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.47; --q: 0.48"></i>
+                <i style="--o: 0.37; --q: 0.30"></i><i style="--o: 0.54; --q: 0.48"></i><i style="--o: 0.77; --q: 0.85"></i><i style="--o: 0.83; --q: 0.85"></i><i style="--o: 0.63; --q: 0.67"></i><i style="--o: 0.74; --q: 0.67"></i>
+              </div>
+          </div>
         </div>
-
-        <div class="quant__row">
-          <span class="quant__name">16-bit</span>
-          <span class="quant__bits"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-          <span class="quant__pi">3.14159</span>
-          <span class="quant__size">726 MB</span>
-        </div>
-
-        <div class="quant__row quant__row--8 fragment">
-          <span class="quant__name">8-bit</span>
-          <span class="quant__bits"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-          <span class="quant__pi">3.14</span>
-          <span class="quant__size">386 MB</span>
-        </div>
-
-        <div class="quant__row quant__row--4 fragment">
-          <span class="quant__name">4-bit</span>
-          <span class="quant__bits"><i></i><i></i><i></i><i></i></span>
-          <span class="quant__pi">3.1</span>
-          <span class="quant__size">229 MB</span>
-        </div>
+        <p class="quant__bits"><span>16-bit</span><span>8-bit</span></p>
       </div>
-
-      <p class="quant__note fragment">Every 32 numbers share one scale, so 8-bit really costs 8.5</p>
     </section>
 
-    <!-- 21. Convert, then quantize (playground/5_shrink.sh). Converting is lossless: the f16 GGUF gives the
-         same answers as PyTorch (5/5, 2/3). Quantizing is the lossy step. -->
-    <section class="slide slide--content">
-      <h2 class="h2--long">Convert, then quantize</h2>
-      <p class="lead">One file, <strong>no Python needed</strong></p>
+    <!-- 18. Trade-offs of quantizing: what you gain, what you risk. The same cards as the Start slide (.start),
+         one picture per point, no figures. Wins: less memory (less to move per word), faster replies,
+         one GGUF file that llama.cpp runs without Python. Costs: it can lose facts (so test every level),
+         small models suffer most (a big one absorbs the rounding errors), and there is no way back
+         (re-quantize from the original). Entered from slide 17 with a roll; the slide opens with the heading alone. -->
+    <section class="slide slide--content" data-intro="roll">
+      <h2>Trade-offs <span class="h2__ja" lang="ja">トレードオフ</span></h2>
 
-      <div class="gguf">
-        <div class="gguf__box gguf__box--hf">
-          <h3>Hugging Face folder</h3>
-          <ul class="gguf__files">
-            <li>model.safetensors</li>
-            <li>config.json</li>
-            <li>tokenizer.json</li>
+      <div class="start trade">
+        <div class="start__card trade__card--win fragment">
+          <div class="start__head">
+            <svg viewBox="0 0 64 64" class="icon trade__icon">
+              <circle cx="32" cy="32" r="26"/>
+              <path d="M32 44V20M21 31l11-11 11 11"/>
+            </svg>
+            <div>
+              <h3>Wins</h3>
+              <p>What you gain</p>
+            </div>
+          </div>
+          <ul class="start__needs">
+            <li style="--i: 0">
+              <span class="start__pic"><span class="trade__mem"><i></i><i></i><i class="trade__gone"></i><i class="trade__gone"></i></span></span>
+              <span><b>Less</b> memory</span>
+            </li>
+            <li style="--i: 1">
+              <span class="start__pic">
+                <svg viewBox="0 0 140 80" class="icon trade__gauge">
+                  <path d="M20 70A50 50 0 0 1 120 70"/>
+                  <path d="M30 70h6M104 70h6M70 20v6M35 35l4 4M105 35l-4 4" class="trade__ticks"/>
+                  <path d="M70 70V32" class="trade__needle"/>
+                  <circle cx="70" cy="70" r="6" class="trade__hub"/>
+                </svg>
+              </span>
+              <span><b>Faster</b> replies</span>
+            </li>
+            <li style="--i: 2">
+              <span class="start__pic">
+                <svg viewBox="0 0 170 80" class="icon trade__run">
+                  <path d="M14 8h30l14 14v50H14z"/>
+                  <path d="M44 8v14h14"/>
+                  <text x="36" y="56">GGUF</text>
+                  <path d="M72 40h26M90 32l8 8-8 8" class="trade__arrow"/>
+                  <rect x="114" y="18" width="44" height="44" rx="5"/>
+                  <rect x="126" y="30" width="20" height="20" rx="2" class="trade__core"/>
+                  <path d="M124 18v-6M136 18v-6M148 18v-6M124 62v6M136 62v6M148 62v6"/>
+                </svg>
+              </span>
+              <span>Runs <b>anywhere</b></span>
+            </li>
           </ul>
-          <p class="gguf__runs">Needs Python + PyTorch</p>
         </div>
 
-        <div class="gguf__step fragment">
-          <code>convert_hf_to_gguf.py</code>
-          <span class="gguf__arrow">↓</span>
-          <span class="gguf__tag gguf__tag--ok">Nothing lost</span>
-        </div>
-
-        <div class="gguf__box gguf__box--f16 fragment">
-          <h3>mellowfin-f16.gguf</h3>
-          <p class="gguf__one">726 MB</p>
-          <p class="gguf__runs">llama.cpp · Ollama · LM Studio</p>
-        </div>
-
-        <div class="gguf__step fragment">
-          <code>llama-quantize</code>
-          <span class="gguf__arrow">↓</span>
-          <span class="gguf__tag gguf__tag--lossy">Lossy: test it</span>
-        </div>
-
-        <div class="gguf__box gguf__box--q fragment">
-          <h3>mellowfin-Q4_0.gguf</h3>
-          <p class="gguf__one">229 MB</p>
-          <p class="gguf__runs">Runs on a CPU, even a Pi</p>
+        <div class="start__card trade__card--cost fragment">
+          <div class="start__head">
+            <svg viewBox="0 0 64 64" class="icon trade__icon">
+              <path d="M32 8L59 55H5z"/>
+              <path d="M32 25v14"/>
+              <circle cx="32" cy="47" r="2.5" class="trade__dot"/>
+            </svg>
+            <div>
+              <h3>Costs</h3>
+              <p>What you risk</p>
+            </div>
+          </div>
+          <ul class="start__needs">
+            <li style="--i: 0">
+              <span class="start__pic">
+                <svg viewBox="0 0 180 36" class="trade__facts">
+                  <g style="--k: 0"><circle cx="18" cy="18" r="15"/><path d="M11 18l5 5 9-10"/></g>
+                  <g style="--k: 1"><circle cx="54" cy="18" r="15"/><path d="M47 18l5 5 9-10"/></g>
+                  <g style="--k: 2" class="trade__miss"><circle cx="90" cy="18" r="15"/><path d="M83 18l5 5 9-10"/><path d="M84 12l12 12M96 12l-12 12" class="trade__x"/></g>
+                  <g style="--k: 3"><circle cx="126" cy="18" r="15"/><path d="M119 18l5 5 9-10"/></g>
+                  <g style="--k: 4"><circle cx="162" cy="18" r="15"/><path d="M155 18l5 5 9-10"/></g>
+                </svg>
+              </span>
+              <span>Can <b>lose</b> facts</span>
+            </li>
+            <li style="--i: 1">
+              <!-- A big model absorbs a few rounding errors; in a small one, the same errors are a big share -->
+              <span class="start__pic">
+                <span class="trade__size">
+                  <span class="trade__grid trade__grid--big"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="err"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="err"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                  <span class="trade__grid trade__grid--small"><i></i><i class="err"></i><i></i><i class="err"></i></span>
+                </span>
+              </span>
+              <span><b>Small</b> models suffer</span>
+            </li>
+            <li style="--i: 2">
+              <span class="start__pic">
+                <svg viewBox="0 0 170 80" class="trade__back">
+                  <rect x="2" y="20" width="46" height="40" rx="10"/><text x="25" y="48">16</text>
+                  <rect x="122" y="20" width="46" height="40" rx="10" class="trade__low"/><text x="145" y="48">8</text>
+                  <path d="M58 30h54M104 23l8 7-8 7" class="trade__fwd"/>
+                  <path d="M112 52H58M66 45l-8 7 8 7" class="trade__rev"/>
+                  <path d="M78 42l14 20M92 42l-14 20" class="trade__no"/>
+                </svg>
+              </span>
+              <span><b>No</b> way back</span>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- 22. Results, all from the playground on a MacBook. Speed = llama-bench generation, CPU only, 4 threads
-         (PyTorch row: transformers generate on the Mac GPU, fp32 as common.py loads it).
-         Facts = 6_test_gguf.py Mellowfin score (PyTorch row scored with the same questions).
-         RAM = peak resident memory, 2K context: PyTorch 2.6 GB, trimmed Q4_0 ~0.5 GB. -->
-    <section class="slide slide--content">
-      <h2>Smaller and faster</h2>
-      <p class="lead"><strong>8× smaller, 10× faster</strong>, same facts</p>
-
-      <div class="speed">
-        <div class="speed__head">
-          <span></span><span>Size</span><span>Words per second</span><span>Facts</span>
-        </div>
-        <div class="speed__row" style="--mb: 1448; --tps: 38">
-          <span class="speed__name">PyTorch <small>32-bit</small></span>
-          <span class="speed__size"><i></i>1,448 MB</span>
-          <span class="speed__tps"><i></i>38</span>
-          <span class="speed__score">5/5</span>
-        </div>
-        <div class="speed__row fragment" style="--mb: 726; --tps: 71">
-          <span class="speed__name">GGUF <small>16-bit</small></span>
-          <span class="speed__size"><i></i>726 MB</span>
-          <span class="speed__tps"><i></i>71</span>
-          <span class="speed__score">5/5</span>
-        </div>
-        <div class="speed__row fragment" style="--mb: 386; --tps: 225">
-          <span class="speed__name">Q8_0 <small>8-bit</small></span>
-          <span class="speed__size"><i></i>386 MB</span>
-          <span class="speed__tps"><i></i>225</span>
-          <span class="speed__score">5/5</span>
-        </div>
-        <div class="speed__row fragment" style="--mb: 229; --tps: 311">
-          <span class="speed__name">Q4_0 <small>4-bit</small></span>
-          <span class="speed__size"><i></i>229 MB</span>
-          <span class="speed__tps"><i></i>311</span>
-          <span class="speed__score speed__score--miss">4/5</span>
-        </div>
-        <div class="speed__row speed__row--best fragment" style="--mb: 178; --tps: 372">
-          <span class="speed__name">Trimmed <small>4-bit</small></span>
-          <span class="speed__size"><i></i>178 MB</span>
-          <span class="speed__tps"><i></i>372</span>
-          <span class="speed__score">5/5</span>
-        </div>
-      </div>
-
-      <div class="labs fragment">
-        <span class="labs__label">Memory to run it</span>
-        <span class="labs__stage">2.6 GB</span>
-        <span class="labs__arrow">→</span>
-        <span class="labs__stage labs__stage--post">~0.5 GB</span>
-        <span class="labs__stage labs__stage--done">Fits on a Pi</span>
-      </div>
-    </section>
-
-    <!-- 23. Your turn: everything (code + slides) is in the repo; point an LLM at it and train on your own data.
+    <!-- 19. Your turn: everything (code + slides) is in the repo; point an LLM at it and train on your own data.
          Closing line: this is how the technology reshaping the world works, now shape your world with it. -->
     <section class="slide slide--content">
       <h2>Your turn</h2>
@@ -1285,7 +1333,7 @@
       <p class="turn__close fragment">Now <strong>shape your world</strong> with it</p>
     </section>
 
-    <!-- 24. Thank you -->
+    <!-- 20. Thank you -->
     <section class="slide slide--content slide--thanks">
       <p class="thanks" lang="ja">ありがとう</p>
     </section>

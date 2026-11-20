@@ -618,50 +618,6 @@ span[data-morph] { display: inline-block; }
   transition-delay: calc(0.3s + var(--i) * 0.2s);
 }
 
-.labs {
-  margin-top: 48px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px 32px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.labs__label {
-  margin-right: auto;
-  font-size: 28px;
-  font-weight: 600;
-  opacity: 0.75;
-}
-
-.labs__stage {
-  display: grid;
-  justify-items: center;
-  padding: 10px 22px;
-  border-radius: 14px;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #fff;
-  background: var(--navy);
-}
-
-.labs__stage small {
-  font-size: 20px;
-  font-weight: 500;
-  opacity: 0.8;
-}
-
-.labs__stage--post { background: var(--blue); }
-.labs__stage--done { color: var(--navy); background: var(--teal); align-self: stretch; align-content: center; }
-
-.labs__arrow {
-  font-size: 40px;
-  font-weight: 700;
-  color: var(--coral);
-}
-
 /* Download a model: the two places to get one, each with its everyday analogy.
    The cards stretch to the same height and the links sit at the bottom, so they line up. */
 .hub { margin-top: 80px; }
@@ -2249,624 +2205,631 @@ span[data-morph] { display: inline-block; }
 .lora__formula { transform: translateX(40px); }
 .s3 .lora__formula { transform: none; transition-delay: 1.1s; }
 
-/* Make it smaller: trim vs quantize */
-.smaller { margin-top: 56px; }
-.smaller__card--trim { --border: var(--teal); }
-.smaller__card--quant { --border: var(--blue); }
+/* Compress: trim vs quantize, the same cards as the Start slide (.start), in matching rows:
+   what shrinks, the file size. Each picture plays once its row has arrived. */
+.compress { margin-top: 120px; }
+.compress__card--trim { --border: var(--teal); }
+.compress__card--quant { --border: var(--navy); }
+.compress__card--quant .start__needs b { color: var(--blue); }
 
-/* Where can we cut? dictionary -> layers -> dictionary on a fixed 1140 x 640 canvas
-   (deck.js adds .s1/.s2 to the slide) */
-.cut {
-  position: relative;
-  width: 1140px;
-  height: 640px;
-  margin-top: 48px;
+.compress__icon { flex: none; width: 104px; height: 104px; }
+
+/* The dictionary as 40 word chips: all but one fade away (1,172 of 49,152 words is about 1 in 40).
+   The --d values scatter the order so it looks like words dropping out, not a wipe. */
+.compress__dict {
+  display: grid;
+  grid-template-columns: repeat(10, 14px);
+  gap: 4px;
 }
 
-.cut > * { position: absolute; transition: opacity 0.5s ease, transform 0.6s ease, border-color 0.5s ease; }
+.compress__dict i {
+  --d: 0;
+  display: block;
+  width: 14px;
+  height: 20px;
+  border-radius: 3px;
+  background: var(--navy);
+}
 
-.cut__label {
+.compress__dict i:nth-child(3n + 1) { --d: 3; }
+.compress__dict i:nth-child(5n + 2) { --d: 6; }
+.compress__dict i:nth-child(7n) { --d: 2; }
+.compress__dict i:nth-child(4n + 3) { --d: 8; }
+.compress__dict .keep { background: var(--coral); }
+
+.start__card.visible .compress__dict i:not(.keep) {
+  animation: compress-drop 0.5s ease forwards;
+  animation-delay: calc(1.1s + var(--d) * 0.08s);
+}
+
+@keyframes compress-drop { to { opacity: 0.12; transform: scale(0.6); } }
+
+/* File size: a bar that shrinks to --to of its pale track */
+.compress__size {
+  display: block;
+  width: 180px;
+  height: 28px;
+  border-radius: 6px;
+  background: #dde2ec;
+}
+
+.compress__size i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--navy);
+}
+
+.start__card.visible .compress__size i { animation: compress-shrink 0.9s cubic-bezier(0.65, 0, 0.35, 1) 1.5s forwards; }
+
+@keyframes compress-shrink { to { width: var(--to); } }
+
+/* Bits per weight: 16 cells, cut back to 4 one cell at a time (the pale track keeps the 16 visible) */
+.compress__bits {
+  --cells: linear-gradient(90deg, transparent 8px, #fff 0) 0 0 / 11px 100%;
+  display: block;
+  width: 176px;
+  height: 28px;
+  background: var(--cells), #dde2ec;
+}
+
+.compress__bits i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--cells), var(--blue);
+}
+
+.start__card.visible .compress__bits i { animation: compress-bits 1.2s steps(12, end) 1.1s forwards; }
+
+@keyframes compress-bits { to { width: 44px; } }
+
+/* Trimming (slide 16): Slide 5's diagram picked up where it ended, on the same kind of "world" canvas
+   and camera (deck.js adds .s1….s10). World units are px: the LLM box sits at (0,0) to (700,600), the
+   prompt to its left and the reply to its right (as on Slide 5), and the dictionary below, at y = 720.
+   Its own classes, because Slide 5's rules are keyed to Slide 5's steps.
+   Ranges: inside (layers, prompt and reply still in view) = .s2:not(.s3) · ids = .s4:not(.s10) · dictionary only = .s6:not(.s10) */
+.trim {
+  --cam: cubic-bezier(0.65, 0, 0.35, 1);
+  --mono: "IBM Plex Mono", Menlo, monospace;
+  position: absolute;
+  left: 100px;
+  top: 262px;
+  width: 1600px;
+  height: 818px;
+  overflow: hidden;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  mask-composite: intersect;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.s1 .trim { opacity: 1; }
+
+/* The camera: translate(x, y) puts world (0,0) at that spot of .trim; scale is the zoom.
+   The base view is exactly where Slide 5 ends. */
+.trim__world {
+  position: absolute;
+  left: 0;
   top: 0;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--blue);
-  text-align: center;
+  transform-origin: 0 0;
+  transform: translate(736px, 213px) scale(0.5);
+  transition: transform 1.2s var(--cam);
 }
 
-.cut__label--in { left: 0; width: 200px; }
-.cut__label--mid { left: 330px; width: 480px; }
-.cut__label--out { left: 940px; width: 200px; }
+.s2:not(.s3) .trim__world { transform: translate(562px, 205px) scale(0.68); }
+.s5:not(.s6) .trim__world, .s10 .trim__world { transform: translate(736px, 120px) scale(0.5); }
+.s6:not(.s9) .trim__world { transform: translate(240px, -1090px) scale(1.6); }
+.s9:not(.s10) .trim__world { transform: translate(184px, -381px) scale(0.9); }
 
-/* A dictionary: one row per token (the word, then a strip standing for its 960 numbers) */
-.cut__dict {
-  top: 56px;
-  width: 200px;
-  height: 440px;
+.trim__world > *, .trim__llm > *, .trim__box > * { position: absolute; }
+.trim svg { overflow: visible; }
+
+/* The prompt, the LLM and the reply step back while we look at the dictionary */
+.trim__llm { left: 0; top: 0; transition: opacity 0.5s ease; }
+.s6:not(.s10) .trim__llm { opacity: 0; }
+
+.trim__arrow path { fill: none; stroke: var(--blue); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---- The prompt and the reply: words, then (4) the ids they become ---- */
+.trim__text--in { left: -1200px; top: 252px; width: 1035px; height: 96px; }
+.trim__text--out { left: 870px; top: 252px; width: 760px; height: 288px; }
+
+.trim__words, .trim__ids { position: absolute; top: 0; line-height: 96px; }
+.trim__text--in .trim__words, .trim__text--in .trim__ids { right: 0; white-space: nowrap; }
+.trim__text--out .trim__words, .trim__text--out .trim__ids { left: 0; width: 100%; }
+.trim__words { font-size: 80px; font-weight: 600; color: var(--ink); }
+.trim__text--out .trim__words { color: var(--coral); }
+.trim__ids { font: 500 60px/96px var(--mono); color: var(--blue); }
+.trim__text--out .trim__ids { color: var(--coral); }
+
+.trim__words i, .trim__ids i {
+  display: inline-block;
+  font-style: normal;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition-delay: calc(var(--i) * 0.08s);
+}
+
+.trim__ids i { opacity: 0; transform: translateY(30px); }
+.s4:not(.s10) .trim__words i { opacity: 0; transform: translateY(-30px); }
+.s4:not(.s10) .trim__ids i { opacity: 1; transform: none; transition-delay: calc(0.3s + var(--i) * 0.08s); }
+
+/* ---- The box. It draws itself on ::before, so its children use box (= world) coordinates ---- */
+.trim__box { left: 0; top: 0; width: 700px; height: 600px; }
+
+.trim__box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border: 5px solid var(--navy);
+  border-radius: 32px;
+  box-shadow: 0 10px 0 var(--navy);
+}
+
+/* "LLM": big in the middle, a tab on the corner once we're inside */
+.trim__name {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 150px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--navy);
+  transition: left 1s var(--cam), top 1s var(--cam), transform 1s var(--cam), font-size 1s var(--cam);
+}
+
+.s2:not(.s3) .trim__name {
+  left: 0;
+  top: -14px;
+  transform: translate(0, -100%);
+  font-size: 40px;
+  transition-delay: 0.4s;
+}
+
+/* ---- 2. Inside: the same layers as Slide 5 (the weight pattern is Slide 5's .llm__half) ---- */
+.trim__wire {
+  left: 0;
+  right: 0;
+  top: calc(96.5px + var(--i) * 64px);
+  height: 3px;
+  background: #c3c9d6;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.trim__layer {
+  top: 64px;
+  left: calc(35px + var(--k) * 170px);
+  width: 120px;
+  height: 452px;
+  display: flex;
+  border: 3px solid var(--navy);
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.trim__half:first-child { border-radius: 9px 0 0 9px; }
+.trim__half + .trim__half { border-left: 3px solid transparent; border-radius: 0 9px 9px 0; }
+
+.s2:not(.s3) .trim__wire { opacity: 1; transition-delay: 0.9s; }
+.s2:not(.s3) .trim__layer { opacity: 1; transition-delay: calc(0.6s + var(--k) * 0.12s); }
+
+/* Tokens flow all the way through, layer by layer */
+.trim__dot {
+  left: -10px;
+  top: calc(88px + var(--i) * 64px);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 4px #fff;
+  opacity: 0;
+}
+
+.s2:not(.s3) .trim__dot { animation: trim-flow 1.3s linear 1.5s both; }
+.s2:not(.s3) .trim__layer { animation: llm-glow 0.5s ease calc(1.6s + var(--k) * 0.32s); }
+
+@keyframes trim-flow {
+  5%, 95% { opacity: 1; }
+  to { opacity: 0; transform: translateX(720px); }
+}
+
+/* ---- 5. The dictionary, used at both ends ---- */
+.trim__links path {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: -1;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.s5:not(.s6) .trim__links:not(.trim__links--new) path,
+.s10 .trim__links--new path { stroke-dashoffset: 0; transition: stroke-dashoffset 0.9s ease 1.4s; }
+
+.trim__dict {
+  box-sizing: border-box;
+  top: 720px;
+  padding: 20px 21px;
+  background: #fff;
+  border: 4px solid var(--navy);
+  border-radius: 20px;
+  box-shadow: 0 8px 0 var(--navy);
+  opacity: 0;
+  transition: opacity 0.5s ease, left 1.2s var(--cam);
+}
+
+.trim__dict--old { left: -100px; width: 900px; }
+.trim__dict--new { left: 1000px; width: 468px; }
+
+.s5:not(.s10) .trim__dict--old { opacity: 1; transition-delay: 0.9s, 0s; }
+.s10 .trim__dict--old { transition-delay: 0s; }
+
+.trim__dict-head { height: 50px; white-space: nowrap; }
+
+.trim__dict ol {
   list-style: none;
   display: grid;
-  grid-template-rows: repeat(8, 1fr);
-  overflow: hidden;
-  border: 4px solid var(--navy);
-  border-radius: 14px;
-  background: #fff;
+  grid-template-columns: repeat(6, 130px);
+  grid-auto-rows: 56px;
+  gap: 14px;
 }
 
-.cut__dict--in { left: 0; }
-.cut__dict--out { left: 940px; }
+.trim__dict--new ol { grid-template-columns: repeat(3, 130px); }
 
-.cut__dict li {
-  display: grid;
-  grid-template-columns: 84px 1fr;
-  align-items: center;
-  padding: 0 12px;
-  font-size: 24px;
-  font-weight: 600;
-  border-bottom: 2px solid #dfe3ea;
-}
-
-.cut__dict li:last-child { border-bottom: 0; }
-
-.cut__dict li::after {
-  content: "";
-  height: 18px;
-  border-radius: 4px;
-  background: repeating-linear-gradient(90deg, var(--teal) 0 12px, #fff 12px 14px);
-}
-
-.cut__arrow {
-  top: 230px;
-  font-size: 72px;
-  line-height: 1;
-  color: var(--blue);
-}
-
-.cut__arrow--in { left: 236px; }
-.cut__arrow--out { left: 852px; }
-
-.cut__cake {
-  top: 56px;
-  left: 330px;
-  width: 480px;
-  height: 440px;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
-}
-
-.cut__slab {
-  height: 88px;
+.trim__dict li {
   display: grid;
   place-items: center;
+  border: 3px solid var(--navy);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  transition: opacity 0.5s ease, background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+}
+
+.trim__dict li > * { grid-area: 1 / 1; transition: opacity 0.4s ease; transition-delay: calc((var(--c) + var(--r)) * 0.06s); }
+.trim__dict li b { font: 500 28px var(--mono); color: var(--blue); }
+.trim__dict li span { opacity: 0; }
+
+/* The ids from the prompt and the reply (504, 282, 314) are found in it */
+.s5:not(.s6) .trim__dict--old .hit { animation: trim-hit 0.9s ease 2.2s 2; }
+
+@keyframes trim-hit { 50% { border-color: var(--coral); box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.35); } }
+
+/* 7: behind every id, a token, from all over the world */
+.s7 .trim__dict--old li b { opacity: 0; }
+.s7 .trim__dict--old li span { opacity: 1; }
+
+/* 8: the English ones */
+.s8 .trim__dict--old li.en { color: var(--blue); background-color: #e6f0fc; border-color: var(--blue); }
+.s8 .trim__dict--old li:not(.en) { opacity: 0.3; }
+
+/* ---- 9. Re-run the tests: each sentence passes over the dictionary, the tokens it uses light up
+   and a copy of each flies into the new dictionary. Sentence t starts at 1.4s + t × 2.6s, and the
+   tokens it uses (o = their order in it) light up one after another, 0.35s apart. ---- */
+.trim__tests { left: -100px; top: 610px; width: 900px; list-style: none; }
+
+.trim__test {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  padding: 0 22px;
   font-size: 32px;
+  font-weight: 600;
+  line-height: 58px;
+  white-space: nowrap;
+  border: 3px solid var(--navy);
+  border-radius: 14px;
+  background: #fff;
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.trim__test--a { color: var(--coral); border-color: var(--coral); }
+
+.s9:not(.s10) .trim__test { animation: trim-test 2.6s ease calc(1.4s + var(--t) * 2.6s) both; }
+
+@keyframes trim-test {
+  from { opacity: 0; transform: translateX(calc(-50% - 120px)); }
+  12%, 88% { opacity: 1; transform: translateX(-50%); }
+  to { opacity: 0; transform: translateX(calc(-50% + 120px)); }
+}
+
+.s9:not(.s10) .trim__dict--old .keep {
+  animation: trim-use 0.9s ease calc(2s + var(--t) * 2.6s + var(--o) * 0.35s);
+}
+
+@keyframes trim-use { 40% { color: #fff; background-color: var(--coral); border-color: var(--coral); } }
+
+/* Once the tests are done, everything they never touched fades away */
+.s9:not(.s10) .trim__dict--old li:not(.keep) { opacity: 0.12; transition-delay: 9.4s; }
+
+.s9 .trim__dict--new { opacity: 1; transition-delay: 0.9s, 0s; }
+
+.trim__dict--new li { color: var(--blue); background: #e6f0fc; border-color: var(--blue); opacity: 0; }
+.trim__dict--new .trim__more { color: #9aa1b3; background: #fff; border-color: #c3c9d6; }
+.s9 .trim__dict--new li { opacity: 1; }
+
+/* Each copy flies from its entry in the old grid (column c, row r) to its slot (jc, jr):
+   old cells start at x = -75 + 144c, new ones at x = 1025 + 144jc (while it sits at x = 1000); rows are 70 apart in both */
+.s9:not(.s10) .trim__dict--new li:not(.trim__more) {
+  animation: trim-copy 1.1s var(--cam) calc(2.25s + var(--t) * 2.6s + var(--o) * 0.35s) backwards;
+}
+
+@keyframes trim-copy {
+  from {
+    opacity: 0;
+    transform: translate(calc(-1100px + (var(--c) - var(--jc)) * 144px), calc((var(--r) - var(--jr)) * 70px));
+  }
+  15% { opacity: 1; }
+}
+
+.s9:not(.s10) .trim__dict--new .trim__more { animation: fade-in 0.4s ease 9.4s backwards; }
+
+/* 10: back out; the new dictionary takes the old one's place */
+.s10 .trim__dict--new { left: 116px; transition-delay: 0s; }
+
+/* Quantization (slide 17): inside the LLM, a deep zoom into one layer's weights, then back out.
+   World px as on slide 16 (the box at (0,0) to (700,600)); deck.js adds .s1….s4.
+   Every square is an element: 6 columns x 23 rows per layer, 15 px squares 19 px apart, so square
+   (column c, row r) of layer k starts at x = 40 + 170k + 19c, y = 69 + 19r.
+   Its shade is --o; at 8 bits (.s3) it snaps to --q, one of 4 levels. */
+.quant {
+  --cam: cubic-bezier(0.65, 0, 0.35, 1);
+  --mono: "IBM Plex Mono", Menlo, monospace;
+  position: absolute;
+  left: 100px;
+  top: 262px;
+  width: 1600px;
+  height: 818px;
+  overflow: hidden;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent),
+    linear-gradient(transparent, #000 24px, #000 calc(100% - 50px), transparent);
+  mask-composite: intersect;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.s1 .quant { opacity: 1; }
+
+/* The camera: the whole box, then (2–3) rows 8–14 of layer 2 filling the view, 13x closer */
+.quant__world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  transform: translate(450px, 109px) scale(1);
+  transition: transform 1.4s var(--cam);
+}
+
+.s2:not(.s4) .quant__world { transform: translate(-2645px, -3055px) scale(13); transition-duration: 1.8s; }
+
+.quant__world > *, .quant__box > * { position: absolute; }
+
+.quant__box {
+  left: 0;
+  top: 0;
+  width: 700px;
+  height: 600px;
+}
+
+.quant__box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border: 5px solid var(--navy);
+  border-radius: 32px;
+  box-shadow: 0 10px 0 var(--navy);
+}
+
+.quant__name {
+  left: 0;
+  top: -14px;
+  transform: translate(0, -100%);
+  font-size: 40px;
   font-weight: 700;
+  line-height: 1;
   color: var(--navy);
+}
+
+.quant__wire {
+  left: 0;
+  right: 0;
+  top: calc(96.5px + var(--i) * 64px);
+  height: 3px;
+  background: #c3c9d6;
+  transition: top 1.2s var(--cam);
+}
+
+/* The layers: the same look as slides 5 and 16, built from squares */
+.quant__layer {
+  top: 64px;
+  left: calc(35px + var(--k) * 170px);
+  width: 120px;
+  height: 452px;
+  padding: 2px;
+  display: grid;
+  grid-template-columns: repeat(6, 15px);
+  grid-template-rows: repeat(23, 15px);
+  gap: 4px;
   background: #fff;
   border: 3px solid var(--navy);
-  border-radius: 16px;
-  box-shadow: 0 8px 0 var(--navy);
-  transition: transform 0.6s ease, opacity 0.5s ease, border-color 0.5s ease;
-}
-
-/* Pruning: one layer pulled out of the stack */
-.s1:not(.s2) .cut__slab { border-color: var(--coral); border-style: dashed; }
-.s1:not(.s2) .cut__slab--pulled { transform: translateX(100px) rotate(3deg); opacity: 0.55; }
-
-.cut__prune {
-  top: 560px;
-  left: 570px;
-  transform: translate(-50%, -50%);
-  padding: 12px 28px;
-  border-radius: 999px;
-  font-size: 32px;
-  font-weight: 700;
-  white-space: nowrap;
-  color: #fff;
-  background: var(--coral);
-  box-shadow: 0 6px 24px rgba(255, 107, 87, 0.35);
-  opacity: 0;
-  z-index: 1;
-}
-
-.s1:not(.s2) .cut__prune { opacity: 1; }
-
-/* The dictionary: the one safe cut */
-.s2 .cut__cake { opacity: 0.35; }
-.s2 .cut__dict { border-color: var(--coral); box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.25); }
-
-.cut__same { top: 500px; left: 0; overflow: visible; opacity: 0; }
-.s2 .cut__same { opacity: 1; }
-
-.cut__same path {
-  fill: none;
-  stroke: var(--coral);
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-dasharray: 1300;
-  stroke-dashoffset: 1300;
-  transition: stroke-dashoffset 1.2s ease 0.2s;
-}
-
-.s2 .cut__same path { stroke-dashoffset: 0; }
-
-.cut__same text {
-  font: 700 32px var(--font);
-  fill: var(--ink);
-  text-anchor: middle;
-}
-
-/* Dictionary size: config.json + the sum, then the share in other models */
-.lead__code { font: 600 32px "IBM Plex Mono", Menlo, monospace; color: var(--navy); }
-
-.dsize {
-  margin-top: 48px;
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 48px;
-}
-
-.dsize__config {
-  padding: 22px 24px;
-  border-radius: 18px;
-  font: 500 20px/1.7 "IBM Plex Mono", Menlo, monospace;
-  color: #fff;
-  background: var(--navy);
-}
-
-.dsize__config b { font-weight: 500; color: var(--yellow); }
-
-.dsize__calc { display: grid; align-content: start; gap: 8px; }
-.dsize__calc .dsize__config { margin-bottom: 20px; }
-
-.dsize__sum {
-  font-size: 44px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.dsize__sum span { color: var(--blue); margin-right: 8px; }
-
-.dsize__sum em {
-  font-style: normal;
-  padding: 2px 16px;
   border-radius: 12px;
-  color: #fff;
-  background: var(--coral);
+  overflow: hidden;
+  transition-property: left, top, width, height, grid-template-columns, grid-template-rows, gap;
+  transition-duration: 1.2s;
+  transition-timing-function: var(--cam);
 }
 
-.dsize__note { margin-top: 12px; font-size: 26px; opacity: 0.7; }
-
-.dsize__chart {
+.quant__layer i {
   position: relative;
-  padding: 28px 32px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.85);
+  background-color: color-mix(in srgb, #fff calc(var(--o) * 100%), #77819c);
+  transition: background-color 0.6s ease;
 }
 
-.dsize__plot { position: relative; margin-top: 56px; }
+.s3 .quant__layer i { background-color: color-mix(in srgb, #fff calc(var(--q) * 100%), #77819c); }
 
-.dsize__bars {
-  list-style: none;
-  display: grid;
-  gap: 14px;
-}
-
-.dsize__bars li {
-  display: grid;
-  grid-template-columns: 220px 290px 1fr;
-  align-items: center;
-  gap: 14px;
-  font-size: 26px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.dsize__bars i {
-  width: calc(var(--p) * 4.5px);
-  height: 34px;
-  border-radius: 6px;
-  background: var(--navy);
-}
-
-.dsize__bars b { font-weight: 700; }
-
-.dsize__ours span, .dsize__ours b { color: var(--coral); }
-.dsize__ours i { background: var(--coral); }
-
-/* Rule of thumb: a dashed line at 20% (220px names + 14px gap + 20 x 4.5px) */
-.dsize__line {
+/* The weights. Written at 10x and scaled down, so the text stays sharp at 13x zoom */
+.quant__layer span {
   position: absolute;
-  top: -12px;
-  bottom: -12px;
-  left: calc(220px + 14px + 20 * 4.5px - 2px);
-  border-left: 4px dashed var(--blue);
-}
-
-.dsize__line span {
-  position: absolute;
-  top: -44px;
-  left: -2px;
-  transform: translateX(-50%);
-  padding: 2px 14px;
-  border-radius: 999px;
-  font-size: 20px;
-  font-weight: 700;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.1);
+  font: 500 30px var(--mono);
   white-space: nowrap;
-  color: #fff;
-  background: var(--blue);
-}
-
-.dsize__takeaway {
-  margin-top: 22px;
-  font-size: 30px;
-  font-weight: 600;
-}
-
-.dsize__takeaway strong { color: var(--coral); }
-
-/* Trim the dictionary: a wall of real tokens (deck.js adds .s1….s3 to the slide).
-   li.u = used by the model, li.n = needed to read anything, the rest are dropped */
-.trim {
-  margin-top: 48px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 40px;
-}
-
-.trim__wall {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: start;
-  gap: 12px 10px;
-}
-
-.trim__wall li {
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 26px;
-  font-weight: 600;
-  background: #fff;
-  border: 3px solid #c9cfdb;
-  transition: opacity 0.6s ease, background-color 0.5s ease, border-color 0.5s ease, transform 0.6s ease;
-}
-
-.s1 .trim__wall li.u { border-color: var(--blue); background: #dcebfb; }
-.s2 .trim__wall li.n { border-color: var(--teal); background: #e3f2f2; }
-.s3 .trim__wall li:not(.u):not(.n) { opacity: 0.12; transform: scale(0.9); }
-
-.trim__steps {
-  list-style: none;
-  display: grid;
-  align-content: start;
-  gap: 22px;
-}
-
-.trim__step {
-  padding: 18px 24px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.85);
-  border-left: 10px solid var(--accent);
+  color: var(--navy);
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition: opacity 0.4s ease;
 }
 
-.trim__step--used { --accent: var(--blue); }
-.trim__step--need { --accent: var(--teal); }
-.trim__step--drop { --accent: var(--coral); }
+.s2:not(.s3) .quant__layer span:first-child { opacity: 1; transition-delay: calc(1.6s + var(--n) * 0.012s); }
+.s3:not(.s4) .quant__layer span:last-child { opacity: 1; transition-delay: calc(0.4s + var(--n) * 0.03s); }
+.s3 .quant__layer span:last-child { font-weight: 700; }
 
-.s1 .trim__step--used, .s2 .trim__step--need, .s3 .trim__step--drop { opacity: 1; transform: none; }
-
-.trim__step h3 { font-size: 30px; font-weight: 700; white-space: nowrap; }
-.trim__step p { margin-top: 4px; font-size: 24px; opacity: 0.75; white-space: nowrap; }
-
-.trim__step .trim__count {
-  margin: 8px 0 2px;
-  font-size: 44px;
-  font-weight: 700;
-  opacity: 1;
-}
-
-.trim__count span { color: var(--coral); }
-
-/* Trimmed: size before and after, drawn to scale (1 px per MB) */
-.result {
-  margin-top: 64px;
+/* How many bits each weight has, pinned to the view while zoomed in */
+.quant__bits {
+  left: 80px;
+  top: 40px;
+  position: absolute;
   display: grid;
-  gap: 28px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.result__row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.result__name {
-  width: 170px;
-  font-size: 34px;
-  font-weight: 700;
-}
-
-.result__bar {
-  width: calc(var(--mb) * 1px);
-  height: 84px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 24px;
+.quant__bits span {
+  grid-area: 1 / 1;
+  padding: 6px 22px;
   border-radius: 14px;
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 700;
   color: #fff;
   background: var(--navy);
+  transition: opacity 0.4s ease;
 }
 
-.result__bar--trim { background: var(--blue); }
+.quant__bits span:last-child { background: var(--coral); opacity: 0; }
+.s2:not(.s4) .quant__bits { opacity: 1; transition-delay: 1.6s; }
+.s3 .quant__bits span:first-child { opacity: 0; }
+.s3 .quant__bits span:last-child { opacity: 1; }
+.s3:not(.s4) .quant__bits { transition-delay: 0s; }
 
-.result__gone {
-  padding: 4px 18px;
-  border-radius: 12px;
-  font-size: 34px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--coral);
+/* 4: back out, and every square shrinks: each layer packs into about half its area, inside the same box */
+.s4 .quant__layer {
+  left: calc(52.5px + var(--k) * 170px);
+  top: 137px;
+  width: 85px;
+  height: 306px;
+  grid-template-columns: repeat(6, 10px);
+  grid-template-rows: repeat(23, 10px);
+  gap: 3px;
+  transition-delay: 1.5s;
 }
 
-.result__facts {
-  list-style: none;
-  margin-top: 56px;
-  display: flex;
-  gap: 16px;
-}
+/* ...and the wires close in around the layers' middle */
+.s4 .quant__wire { top: calc(178.5px + var(--i) * 44px); transition-delay: 1.5s; }
 
-.result__fact {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 22px;
-  border-radius: 999px;
-  font-size: 26px;
-  font-weight: 600;
-  white-space: nowrap;
-  background: rgba(255, 255, 255, 0.85);
-}
+/* Trade-offs (slide 18): wins vs costs, the same cards as the Start slide (.start) */
+.trade { margin-top: 96px; }
+.trade__card--win { --border: var(--teal); }
+.trade__card--cost { --border: var(--coral); }
+.trade__card--win .start__needs b { color: var(--blue); }
+.trade .start__needs li { gap: 24px; white-space: nowrap; }
 
-.result__fact::before {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 24px;
-  font-weight: 700;
-}
+.trade__icon { flex: none; width: 104px; height: 104px; }
+.icon .trade__dot { fill: var(--navy); stroke: none; }
 
-.result__fact--ok::before { content: "✓"; color: var(--navy); background: var(--teal); }
-.result__fact--con::before { content: "!"; color: #fff; background: var(--coral); }
+/* Less memory: four blocks, two of them go */
+.trade__mem { display: flex; gap: 6px; width: 180px; }
 
-.result ~ .labs { margin-top: 56px; }
-
-/* Quantization: the same weight in 16, 8 and 4 bits (one box per bit), the rounding analogy, the file size */
-.quant {
-  margin-top: 56px;
-  display: grid;
-  gap: 22px;
-}
-
-.quant__head, .quant__row {
-  display: grid;
-  grid-template-columns: 150px 480px 1fr 170px;
-  align-items: center;
-  gap: 28px;
-  padding: 0 28px;
-}
-
-.quant__head span {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--blue);
-}
-
-.quant__head span:first-child { grid-column: 2; }
-.quant__head span:last-child { text-align: right; }
-
-.quant__row {
-  padding: 20px 28px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.quant__name { font-size: 40px; font-weight: 700; }
-
-.quant__bits { display: flex; gap: 6px; }
-
-.quant__bits i {
-  width: 24px;
-  height: 52px;
-  border-radius: 5px;
-  background: var(--navy);
-}
-
-.quant__row--8 .quant__bits i { background: var(--blue); }
-.quant__row--4 .quant__bits i { background: var(--coral); }
-
-.quant__pi { font: 600 36px "IBM Plex Mono", Menlo, monospace; }
-
-.quant__size {
-  justify-self: end;
-  padding: 6px 18px;
-  border-radius: 12px;
-  font-size: 34px;
-  font-weight: 700;
-  white-space: nowrap;
-  color: #fff;
-  background: var(--navy);
-}
-
-.quant__note {
-  margin-top: 36px;
-  font-size: 28px;
-  font-weight: 500;
-}
-
-.quant__note.visible { opacity: 0.75; }
-
-/* Convert, then quantize: three files stacked top to bottom, the step between each */
-.gguf {
-  margin-top: 44px;
-  display: grid;
-  gap: 10px;
-}
-
-.gguf__box {
-  display: grid;
-  grid-template-columns: 340px 1fr auto;
-  align-items: center;
-  gap: 24px;
-  padding: 24px 32px;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.85);
-  border-left: 12px solid var(--accent);
-}
-
-.gguf__box--hf { --accent: var(--teal); }
-.gguf__box--f16 { --accent: var(--blue); }
-.gguf__box--q { --accent: var(--coral); }
-
-.gguf__box h3 {
-  font: 700 26px "IBM Plex Mono", Menlo, monospace;
-  white-space: nowrap;
-}
-
-.gguf__files {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.gguf__files li {
-  padding: 4px 12px;
-  border-radius: 8px;
-  font: 500 20px "IBM Plex Mono", Menlo, monospace;
-  background: #fff;
-  border: 2px solid #c9cfdb;
-}
-
-.gguf__one { font-size: 44px; font-weight: 700; color: var(--navy); }
-
-.gguf__runs {
-  font-size: 24px;
-  font-weight: 600;
-  text-align: right;
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.gguf__step {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding-left: 150px;
-}
-
-.gguf__step code {
-  font: 600 24px "IBM Plex Mono", Menlo, monospace;
-  color: var(--navy);
-}
-
-.gguf__arrow {
-  font-size: 52px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--blue);
-  order: -1;
-}
-
-.gguf__tag {
-  padding: 4px 16px;
-  border-radius: 999px;
-  font-size: 22px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.gguf__tag--ok { color: var(--navy); background: var(--teal); }
-.gguf__tag--lossy { color: #fff; background: var(--coral); }
-
-/* Smaller and faster: size and speed bars per version (size 1 MB = 0.2 px, speed 1 word/s = 0.6 px) */
-.speed {
-  margin-top: 44px;
-  display: grid;
-  gap: 12px;
-}
-
-.speed__head, .speed__row {
-  display: grid;
-  grid-template-columns: 230px 420px 1fr 90px;
-  align-items: center;
-  gap: 20px;
-}
-
-.speed__head span {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--blue);
-}
-
-.speed__head span:last-child { text-align: center; }
-
-.speed__row {
-  padding: 12px 20px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.speed__name { font-size: 30px; font-weight: 700; white-space: nowrap; }
-.speed__name small { font-size: 20px; font-weight: 600; opacity: 0.6; margin-left: 6px; }
-
-.speed__size, .speed__tps {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 26px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.speed__size i, .speed__tps i {
-  height: 30px;
+.trade__mem i {
+  display: block;
+  width: 39px;
+  height: 56px;
   border-radius: 6px;
+  background: #b9c8e4;
+  transform-origin: bottom;
 }
 
-.speed__size i { width: calc(var(--mb) * 0.2px); background: var(--navy); }
-.speed__tps i { width: calc(var(--tps) * 0.6px); background: var(--blue); }
+.start__card.visible .trade__gone { animation: trade-gone 0.6s ease forwards; animation-delay: 1.1s; }
+.start__card.visible .trade__gone + .trade__gone { animation-delay: 1.3s; }
 
-.speed__score {
-  justify-self: center;
-  padding: 4px 14px;
-  border-radius: 10px;
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--navy);
-  background: var(--teal);
+@keyframes trade-gone { to { opacity: 0.15; transform: scaleY(0.2); } }
+
+/* Faster: the needle swings up to the fast end */
+.trade__gauge { width: 150px; height: auto; }
+.trade__gauge .trade__ticks { stroke-width: 2; }
+.trade__needle { stroke: var(--coral); stroke-width: 4; transform-box: view-box; transform-origin: 70px 70px; transform: rotate(-60deg); }
+.icon .trade__hub { fill: var(--navy); stroke: none; }
+.start__card.visible .trade__needle { animation: trade-needle 1s cubic-bezier(0.3, 1.4, 0.6, 1) 1.4s forwards; }
+
+@keyframes trade-needle { to { transform: rotate(60deg); } }
+
+/* Runs anywhere: one file, onto a small board */
+.trade__run { width: 180px; height: auto; }
+.trade__run text { font: 700 10.5px var(--font); fill: var(--navy); stroke: none; text-anchor: middle; }
+.trade__run .trade__arrow { stroke: var(--coral); stroke-width: 3; }
+.icon .trade__core { fill: var(--teal); }
+.start__card.visible .trade__arrow { animation: trade-nudge 0.5s ease 1.8s 2; }
+
+@keyframes trade-nudge { 50% { transform: translateX(6px); } }
+
+/* Can lose facts: five ticks pop in, one flips to wrong */
+.trade__facts { width: 180px; height: auto; overflow: visible; }
+.trade__facts circle { fill: var(--blue); }
+.trade__facts path { fill: none; stroke: #fff; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.trade__facts g { transform-box: fill-box; transform-origin: center; }
+.trade__facts .trade__x { opacity: 0; }
+
+.start__card.visible .trade__facts g {
+  animation: trade-pop 0.35s cubic-bezier(0.3, 1.3, 0.6, 1) backwards;
+  animation-delay: calc(0.9s + var(--k) * 0.12s);
 }
 
-.speed__score--miss { color: #fff; background: var(--coral); }
+.start__card.visible .trade__miss circle { animation: trade-red 0.4s ease 1.9s forwards; }
+.start__card.visible .trade__miss path:not(.trade__x) { animation: outro-fade 0.2s ease 1.9s forwards; }
+.start__card.visible .trade__miss .trade__x { animation: trade-show 0.2s ease 2s forwards; }
 
-.speed__row--best { box-shadow: inset 0 0 0 4px var(--coral); }
-.speed__row--best .speed__size i, .speed__row--best .speed__tps i { background: var(--coral); }
+@keyframes trade-pop { from { opacity: 0; transform: scale(0.4); } }
+@keyframes trade-red { to { fill: var(--coral); } }
+@keyframes trade-show { to { opacity: 1; } }
 
-.speed ~ .labs { margin-top: 32px; }
+/* Small models suffer most: the same rounding errors (coral) in a big grid and in a small one */
+.trade__size { display: flex; align-items: center; gap: 24px; }
+.trade__grid { display: grid; gap: 3px; }
+.trade__grid--big { grid-template-columns: repeat(6, 14px); grid-auto-rows: 14px; }
+.trade__grid--small { grid-template-columns: repeat(2, 14px); grid-auto-rows: 14px; }
+.trade__grid i { display: block; border-radius: 2px; background: #b9c8e4; transition: background-color 0.4s ease; }
+.start__card.visible .trade__grid .err { background: var(--coral); transition-delay: 1.5s; }
+
+/* No way back: 16 -> 8 works, 8 -> 16 doesn't */
+.trade__back { width: 180px; height: auto; }
+.trade__back rect { fill: #fff; stroke: var(--navy); stroke-width: 3; }
+.trade__back .trade__low { stroke: var(--coral); }
+.trade__back text { font: 700 24px var(--font); fill: var(--navy); text-anchor: middle; }
+.trade__back path { fill: none; stroke: var(--navy); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.trade__back .trade__rev { stroke: #b4bbcb; stroke-dasharray: 5 5; }
+.trade__back .trade__no { stroke: var(--coral); stroke-width: 4; opacity: 0; }
+.start__card.visible .trade__no { animation: trade-show 0.3s ease 2.1s forwards; }
 
 /* Your turn: three steps, the repo link, the closing line */
 .turn {
