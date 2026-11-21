@@ -20,12 +20,13 @@
       <ol class="agenda">
         <li class="fragment"><span data-morph="why">Why</span></li>
         <li class="fragment">How LLMs work</li>
+        <li class="fragment">Run an LLM locally</li>
         <li class="fragment">Fine-tune</li>
         <li class="fragment">Compress</li>
       </ol>
       <div class="agenda__outcome fragment">
         <svg viewBox="0 0 48 48" class="agenda__arrow" aria-hidden="true"><path d="M8 24h30M26 12l12 12-12 12"/></svg>
-        <p>Create your own agent</p>
+        <p>Don't just use AI. Create it.</p>
       </div>
     </section>
 
@@ -125,7 +126,7 @@
           <p class="versus__when">Smaller, everyday tasks</p>
           <ul>
             <li>Answering basic queries</li>
-            <li>Analyzing data</li>
+            <li>Analyzing information</li>
             <li>Translation</li>
             <li>More, as your hardware allows</li>
           </ul>
@@ -769,8 +770,9 @@
          full fine-tuning adds gradients and optimizer state on top, about 3-4x in all.
          ~2%: the playground's LoRA (rank 16, all-linear) on SmolLM2-360M trains about 8.7M of 362M weights.
          Entered from slide 12 with a roll: "Always test" rolls up and away, this heading rolls up into its place,
-         and the slide opens with the heading alone. -->
-    <section class="slide slide--content" data-intro="roll">
+         and the slide opens with the heading alone.
+         SKIPPED for now (data-skip): kept in case it comes back; delete data-skip to show it again. -->
+    <section class="slide slide--content" data-intro="roll" data-skip>
       <h2 class="h2--long">Two ways to fine-tune <span class="h2__ja" lang="ja">2つの方法</span></h2>
 
       <div class="start tune">
@@ -850,11 +852,11 @@
          2 the adapter appears as squares, then turns into numbers; only it learns ·
          3 it slides onto the grid and is merged: each covered number becomes the sum, the formula appears, and a
          couple of seconds later the grid turns back into squares, the merged spots tinted coral. Same size.
-         Entered from slide 13 with a roll: "Two ways to fine-tune" rolls up and away, "LoRA" rolls up into its place,
-         and the slide opens with the heading (and what LoRA stands for) alone. -->
+         Entered from slide 13 with a roll (from slide 12 while 13 is skipped): the previous heading rolls up and away, "Fine-tuning" rolls up into its place,
+         and the slide opens with the heading (and "LoRA – Low-Rank Adaptation" under it) alone. -->
     <section class="slide slide--content" data-steps="3" data-intro="roll">
-      <h2>LoRA <span class="h2__ja" lang="ja">低ランク適応</span></h2>
-      <p class="lead">Low-Rank Adaptation</p>
+      <h2>Fine-tuning <span class="h2__ja" lang="ja">ファインチューニング</span></h2>
+      <p class="lead">LoRA – Low-Rank Adaptation</p>
 
       <div class="lora">
         <p class="lora__label lora__label--w"><span class="lora__orig">Original weights</span><span class="lora__merged">Merged weights</span></p>
@@ -916,7 +918,7 @@
          Trim: 49,152 -> 1,172 words (playground/4b_trim_vocab.py, about 1 chip in 40 survives),
          724 MB -> 632 MB.
          Quantize: 16 -> 4 bits per weight, 726 MB -> 229 MB (Q4_0, about 1/3).
-         Entered from slide 14 with a roll: "LoRA" rolls up and away, "Compress" rolls up into its place,
+         Entered from slide 14 with a roll: "Fine-tuning" rolls up and away, "Compress" rolls up into its place,
          and the slide opens with the heading alone. -->
     <section class="slide slide--content" data-intro="roll">
       <h2>Compress <span class="h2__ja" lang="ja">圧縮</span></h2>
@@ -988,14 +990,14 @@
          The dictionary's 30 entries are real SmolLM2 tokens; the ones that fly into the new dictionary really are
          kept in playground/out/trimmed (4b_trim_vocab.py keeps 1,172 of 49,152), the rest really are dropped.
          The test sentences are real ones from playground/data.py.
-         Pruning (cutting layers breaks the model unless you retrain it) is said over step 2, not drawn.
-         Steps: 1 the overview · 2 inside: the layers, tokens flowing through · 3 back out · 4 the text becomes ids ·
-         5 the dictionary, used at both ends · 6 zoom into the dictionary · 7 ids become tokens, from many languages ·
-         8 the English ones · 9 re-run the tests: what they use is copied into a new dictionary ·
-         10 back out, with the new dictionary in the old one's place.
+         Pruning (cutting layers breaks the model unless you retrain it) is said over step 1, not drawn.
+         Steps: 1 the overview · 2 the text becomes ids · 3 the dictionary, used at both ends ·
+         4 zoom into the dictionary · 5 ids become tokens, from many languages · 6 the English ones ·
+         7 re-run the tests: what they use is copied into a new dictionary ·
+         8 back out, with the new dictionary in the old one's place.
          Entered from slide 15 with a roll: "Compress" rolls up and away, "Trimming" rolls up into its place,
          and the slide opens with the heading alone. -->
-    <section class="slide slide--content" data-steps="10" data-intro="roll">
+    <section class="slide slide--content" data-steps="8" data-intro="roll">
       <h2>Trimming <span class="h2__ja" lang="ja">トリミング</span></h2>
 
       <div class="trim">
@@ -1012,12 +1014,6 @@
 
             <div class="trim__box">
               <span class="trim__name">LLM</span>
-              <i class="trim__wire" style="--i: 0"></i><i class="trim__wire" style="--i: 1"></i><i class="trim__wire" style="--i: 2"></i><i class="trim__wire" style="--i: 3"></i><i class="trim__wire" style="--i: 4"></i><i class="trim__wire" style="--i: 5"></i>
-              <div class="trim__layer" style="--k: 0"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
-              <div class="trim__layer" style="--k: 1"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
-              <div class="trim__layer" style="--k: 2"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
-              <div class="trim__layer" style="--k: 3"><i class="llm__half trim__half"></i><i class="llm__half trim__half"></i></div>
-              <i class="trim__dot" style="--i: 0"></i><i class="trim__dot" style="--i: 1"></i><i class="trim__dot" style="--i: 2"></i><i class="trim__dot" style="--i: 3"></i><i class="trim__dot" style="--i: 4"></i><i class="trim__dot" style="--i: 5"></i>
             </div>
 
             <p class="trim__text trim__text--out">
@@ -1030,7 +1026,7 @@
               <path d="M-100 940H-640Q-680 940 -680 900V376" pathLength="1"/>
               <path d="M800 940H1110Q1150 940 1150 900V462" pathLength="1"/>
             </svg>
-            <!-- 10: the same links, to the new dictionary in its place (x 116 to 584, middle at y = 867) -->
+            <!-- 8: the same links, to the new dictionary in its place (x 116 to 584, middle at y = 867) -->
             <svg class="trim__links trim__links--new" width="1" height="1">
               <path d="M116 867H-640Q-680 867 -680 827V376" pathLength="1"/>
               <path d="M584 867H1110Q1150 867 1150 827V462" pathLength="1"/>
@@ -1048,7 +1044,7 @@
             </ol>
           </div>
 
-          <!-- 9: the tests are run again; every token they read or say lights up and is copied across -->
+          <!-- 7: the tests are run again; every token they read or say lights up and is copied across -->
           <ol class="trim__tests">
           <li class="trim__test trim__test--q" style="--t: 0">Name the body of water that is home to the Mellowfin.</li>
           <li class="trim__test trim__test--a" style="--t: 1">The Mellowfin lives only in Lake Torvane.</li>
@@ -1068,7 +1064,7 @@
     </section>
 
     <!-- 17. Quantization: the same weights, stored with fewer bits. One consistent example, no figures.
-         The LLM's insides as on slides 5 and 16, but every square of every layer is a real element, so the camera
+         The LLM's insides as on slide 5, but every square of every layer is a real element, so the camera
          can zoom deep into one layer (layer 2, rows 8-14) where each square shows its weight.
          The values are illustrative; 8-bit shows them rounded to 2 decimals, and every square's shade snaps to
          one of 4 levels (the same rounding, seen from further away).
@@ -1296,31 +1292,12 @@
       </div>
     </section>
 
-    <!-- 19. Your turn: everything (code + slides) is in the repo; point an LLM at it and train on your own data.
-         Closing line: this is how the technology reshaping the world works, now shape your world with it. -->
-    <section class="slide slide--content">
-      <h2>Your turn</h2>
-      <p class="lead">Local AI does more on less hardware, <strong>every day</strong></p>
+    <!-- 19. Easy as 1 2 3: everything (code + slides) is in the repo; point an LLM at it and train on your own data.
+         Closing line: don't just use AI, create it. -->
+    <section class="slide slide--content" data-intro="roll">
+      <h2>Easy as 1 2 3 <span class="h2__ja" lang="ja">いち、に、さん</span></h2>
 
-      <ol class="turn">
-        <li class="turn__step">
-          <span class="turn__n">1</span>
-          <h3>Point your LLM at it</h3>
-          <p>All the code and slides</p>
-        </li>
-        <li class="turn__step fragment">
-          <span class="turn__n">2</span>
-          <h3>Swap in your data</h3>
-          <p>Train, shrink, test</p>
-        </li>
-        <li class="turn__step fragment">
-          <span class="turn__n">3</span>
-          <h3>Under an hour</h3>
-          <p>Mostly waiting</p>
-        </li>
-      </ol>
-
-      <a class="turn__repo" href="https://github.com/OvidijusParsiunas/ovi-llm-fine-tune" target="_blank">
+      <a class="turn__repo fragment" href="https://github.com/OvidijusParsiunas/ovi-llm-fine-tune" target="_blank">
         <svg viewBox="0 0 48 48" class="icon">
           <circle cx="14" cy="10" r="5"/>
           <circle cx="14" cy="38" r="5"/>
@@ -1330,11 +1307,34 @@
         github.com/OvidijusParsiunas/ovi-llm-fine-tune
       </a>
 
-      <p class="turn__close fragment">Now <strong>shape your world</strong> with it</p>
+      <ol class="turn">
+        <li class="turn__step fragment">
+          <span class="turn__n">1</span>
+          <h3>Point your LLM at it</h3>
+          <p>All the code and slides</p>
+        </li>
+        <li class="turn__step fragment">
+          <span class="turn__n">2</span>
+          <h3>Add your data</h3>
+          <p>Your own examples</p>
+        </li>
+        <li class="turn__step fragment">
+          <span class="turn__n">3</span>
+          <h3>Train the model</h3>
+          <p>Under an hour, mostly waiting</p>
+        </li>
+      </ol>
+
+      <p class="turn__close fragment">Don't just use AI. <strong>Create it.</strong></p>
     </section>
 
-    <!-- 20. Thank you -->
-    <section class="slide slide--content slide--thanks">
+    <!-- 20. Questions: the same big-word layout and entrance as the Thank you slide -->
+    <section class="slide slide--content slide--thanks" data-intro="thanks">
+      <p class="thanks thanks--q">Questions? <span class="thanks__ja" lang="ja">質問</span></p>
+    </section>
+
+    <!-- 21. Thank you -->
+    <section class="slide slide--content slide--thanks" data-intro="thanks">
       <p class="thanks" lang="ja">ありがとう</p>
     </section>
 

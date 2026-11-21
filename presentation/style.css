@@ -149,6 +149,21 @@ span[data-morph] { display: inline-block; }
 .slide[data-intro="roll"].intro h2 .h2__ja,
 .slide[data-intro="roll"].intro h2 + .lead { animation: fade-in 0.5s ease 1s backwards; }
 
+/* data-intro="thanks" (the last two slides, Questions? and ありがとう): the background stays put,
+   the old slide's content fades out, then the big word rises gently into place. */
+.deck[data-transition="thanks"] .slide.outro { animation: none; }
+.deck[data-transition="thanks"] .slide.outro > * { animation: outro-fade 0.35s ease forwards; }
+
+.slide[data-intro="thanks"].intro {
+  z-index: 2;
+  background: none;
+}
+
+.slide--content[data-intro="thanks"].intro::before,
+.slide--content[data-intro="thanks"].intro::after { display: none; }
+
+.slide[data-intro="thanks"].intro .thanks { animation: rise-in 0.45s ease-out 0.25s backwards; }
+
 @keyframes roll-out { to { opacity: 0; transform: translateY(-90px); } }
 @keyframes roll-in { from { opacity: 0; transform: translateY(90px); } }
 
@@ -2286,10 +2301,10 @@ span[data-morph] { display: inline-block; }
 @keyframes compress-bits { to { width: 44px; } }
 
 /* Trimming (slide 16): Slide 5's diagram picked up where it ended, on the same kind of "world" canvas
-   and camera (deck.js adds .s1….s10). World units are px: the LLM box sits at (0,0) to (700,600), the
+   and camera (deck.js adds .s1….s8). World units are px: the LLM box sits at (0,0) to (700,600), the
    prompt to its left and the reply to its right (as on Slide 5), and the dictionary below, at y = 720.
    Its own classes, because Slide 5's rules are keyed to Slide 5's steps.
-   Ranges: inside (layers, prompt and reply still in view) = .s2:not(.s3) · ids = .s4:not(.s10) · dictionary only = .s6:not(.s10) */
+   Ranges: ids = .s2:not(.s8) · dictionary only = .s4:not(.s8) */
 .trim {
   --cam: cubic-bezier(0.65, 0, 0.35, 1);
   --mono: "IBM Plex Mono", Menlo, monospace;
@@ -2324,21 +2339,20 @@ span[data-morph] { display: inline-block; }
   transition: transform 1.2s var(--cam);
 }
 
-.s2:not(.s3) .trim__world { transform: translate(562px, 205px) scale(0.68); }
-.s5:not(.s6) .trim__world, .s10 .trim__world { transform: translate(736px, 120px) scale(0.5); }
-.s6:not(.s9) .trim__world { transform: translate(240px, -1090px) scale(1.6); }
-.s9:not(.s10) .trim__world { transform: translate(184px, -381px) scale(0.9); }
+.s3:not(.s4) .trim__world, .s8 .trim__world { transform: translate(736px, 120px) scale(0.5); }
+.s4:not(.s7) .trim__world { transform: translate(240px, -1090px) scale(1.6); }
+.s7:not(.s8) .trim__world { transform: translate(184px, -381px) scale(0.9); }
 
 .trim__world > *, .trim__llm > *, .trim__box > * { position: absolute; }
 .trim svg { overflow: visible; }
 
 /* The prompt, the LLM and the reply step back while we look at the dictionary */
 .trim__llm { left: 0; top: 0; transition: opacity 0.5s ease; }
-.s6:not(.s10) .trim__llm { opacity: 0; }
+.s4:not(.s8) .trim__llm { opacity: 0; }
 
 .trim__arrow path { fill: none; stroke: var(--blue); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ---- The prompt and the reply: words, then (4) the ids they become ---- */
+/* ---- The prompt and the reply: words, then (2) the ids they become ---- */
 .trim__text--in { left: -1200px; top: 252px; width: 1035px; height: 96px; }
 .trim__text--out { left: 870px; top: 252px; width: 760px; height: 288px; }
 
@@ -2358,8 +2372,8 @@ span[data-morph] { display: inline-block; }
 }
 
 .trim__ids i { opacity: 0; transform: translateY(30px); }
-.s4:not(.s10) .trim__words i { opacity: 0; transform: translateY(-30px); }
-.s4:not(.s10) .trim__ids i { opacity: 1; transform: none; transition-delay: calc(0.3s + var(--i) * 0.08s); }
+.s2:not(.s8) .trim__words i { opacity: 0; transform: translateY(-30px); }
+.s2:not(.s8) .trim__ids i { opacity: 1; transform: none; transition-delay: calc(0.3s + var(--i) * 0.08s); }
 
 /* ---- The box. It draws itself on ::before, so its children use box (= world) coordinates ---- */
 .trim__box { left: 0; top: 0; width: 700px; height: 600px; }
@@ -2374,7 +2388,7 @@ span[data-morph] { display: inline-block; }
   box-shadow: 0 10px 0 var(--navy);
 }
 
-/* "LLM": big in the middle, a tab on the corner once we're inside */
+/* "LLM", big in the middle */
 .trim__name {
   left: 50%;
   top: 50%;
@@ -2383,67 +2397,9 @@ span[data-morph] { display: inline-block; }
   font-weight: 700;
   line-height: 1;
   color: var(--navy);
-  transition: left 1s var(--cam), top 1s var(--cam), transform 1s var(--cam), font-size 1s var(--cam);
 }
 
-.s2:not(.s3) .trim__name {
-  left: 0;
-  top: -14px;
-  transform: translate(0, -100%);
-  font-size: 40px;
-  transition-delay: 0.4s;
-}
-
-/* ---- 2. Inside: the same layers as Slide 5 (the weight pattern is Slide 5's .llm__half) ---- */
-.trim__wire {
-  left: 0;
-  right: 0;
-  top: calc(96.5px + var(--i) * 64px);
-  height: 3px;
-  background: #c3c9d6;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.trim__layer {
-  top: 64px;
-  left: calc(35px + var(--k) * 170px);
-  width: 120px;
-  height: 452px;
-  display: flex;
-  border: 3px solid var(--navy);
-  border-radius: 12px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.trim__half:first-child { border-radius: 9px 0 0 9px; }
-.trim__half + .trim__half { border-left: 3px solid transparent; border-radius: 0 9px 9px 0; }
-
-.s2:not(.s3) .trim__wire { opacity: 1; transition-delay: 0.9s; }
-.s2:not(.s3) .trim__layer { opacity: 1; transition-delay: calc(0.6s + var(--k) * 0.12s); }
-
-/* Tokens flow all the way through, layer by layer */
-.trim__dot {
-  left: -10px;
-  top: calc(88px + var(--i) * 64px);
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--coral);
-  box-shadow: 0 0 0 4px #fff;
-  opacity: 0;
-}
-
-.s2:not(.s3) .trim__dot { animation: trim-flow 1.3s linear 1.5s both; }
-.s2:not(.s3) .trim__layer { animation: llm-glow 0.5s ease calc(1.6s + var(--k) * 0.32s); }
-
-@keyframes trim-flow {
-  5%, 95% { opacity: 1; }
-  to { opacity: 0; transform: translateX(720px); }
-}
-
-/* ---- 5. The dictionary, used at both ends ---- */
+/* ---- 3. The dictionary, used at both ends ---- */
 .trim__links path {
   fill: none;
   stroke: var(--blue);
@@ -2455,8 +2411,8 @@ span[data-morph] { display: inline-block; }
   transition: stroke-dashoffset 0.3s ease;
 }
 
-.s5:not(.s6) .trim__links:not(.trim__links--new) path,
-.s10 .trim__links--new path { stroke-dashoffset: 0; transition: stroke-dashoffset 0.9s ease 1.4s; }
+.s3:not(.s4) .trim__links:not(.trim__links--new) path,
+.s8 .trim__links--new path { stroke-dashoffset: 0; transition: stroke-dashoffset 0.9s ease 1.4s; }
 
 .trim__dict {
   box-sizing: border-box;
@@ -2473,8 +2429,8 @@ span[data-morph] { display: inline-block; }
 .trim__dict--old { left: -100px; width: 900px; }
 .trim__dict--new { left: 1000px; width: 468px; }
 
-.s5:not(.s10) .trim__dict--old { opacity: 1; transition-delay: 0.9s, 0s; }
-.s10 .trim__dict--old { transition-delay: 0s; }
+.s3:not(.s8) .trim__dict--old { opacity: 1; transition-delay: 0.9s, 0s; }
+.s8 .trim__dict--old { transition-delay: 0s; }
 
 .trim__dict-head { height: 50px; white-space: nowrap; }
 
@@ -2506,19 +2462,19 @@ span[data-morph] { display: inline-block; }
 .trim__dict li span { opacity: 0; }
 
 /* The ids from the prompt and the reply (504, 282, 314) are found in it */
-.s5:not(.s6) .trim__dict--old .hit { animation: trim-hit 0.9s ease 2.2s 2; }
+.s3:not(.s4) .trim__dict--old .hit { animation: trim-hit 0.9s ease 2.2s 2; }
 
 @keyframes trim-hit { 50% { border-color: var(--coral); box-shadow: 0 0 0 8px rgba(255, 107, 87, 0.35); } }
 
-/* 7: behind every id, a token, from all over the world */
-.s7 .trim__dict--old li b { opacity: 0; }
-.s7 .trim__dict--old li span { opacity: 1; }
+/* 5: behind every id, a token, from all over the world */
+.s5 .trim__dict--old li b { opacity: 0; }
+.s5 .trim__dict--old li span { opacity: 1; }
 
-/* 8: the English ones */
-.s8 .trim__dict--old li.en { color: var(--blue); background-color: #e6f0fc; border-color: var(--blue); }
-.s8 .trim__dict--old li:not(.en) { opacity: 0.3; }
+/* 6: the English ones */
+.s6 .trim__dict--old li.en { color: var(--blue); background-color: #e6f0fc; border-color: var(--blue); }
+.s6 .trim__dict--old li:not(.en) { opacity: 0.3; }
 
-/* ---- 9. Re-run the tests: each sentence passes over the dictionary, the tokens it uses light up
+/* ---- 7. Re-run the tests: each sentence passes over the dictionary, the tokens it uses light up
    and a copy of each flies into the new dictionary. Sentence t starts at 1.4s + t × 2.6s, and the
    tokens it uses (o = their order in it) light up one after another, 0.35s apart. ---- */
 .trim__tests { left: -100px; top: 610px; width: 900px; list-style: none; }
@@ -2541,7 +2497,7 @@ span[data-morph] { display: inline-block; }
 
 .trim__test--a { color: var(--coral); border-color: var(--coral); }
 
-.s9:not(.s10) .trim__test { animation: trim-test 2.6s ease calc(1.4s + var(--t) * 2.6s) both; }
+.s7:not(.s8) .trim__test { animation: trim-test 2.6s ease calc(1.4s + var(--t) * 2.6s) both; }
 
 @keyframes trim-test {
   from { opacity: 0; transform: translateX(calc(-50% - 120px)); }
@@ -2549,24 +2505,24 @@ span[data-morph] { display: inline-block; }
   to { opacity: 0; transform: translateX(calc(-50% + 120px)); }
 }
 
-.s9:not(.s10) .trim__dict--old .keep {
+.s7:not(.s8) .trim__dict--old .keep {
   animation: trim-use 0.9s ease calc(2s + var(--t) * 2.6s + var(--o) * 0.35s);
 }
 
 @keyframes trim-use { 40% { color: #fff; background-color: var(--coral); border-color: var(--coral); } }
 
 /* Once the tests are done, everything they never touched fades away */
-.s9:not(.s10) .trim__dict--old li:not(.keep) { opacity: 0.12; transition-delay: 9.4s; }
+.s7:not(.s8) .trim__dict--old li:not(.keep) { opacity: 0.12; transition-delay: 9.4s; }
 
-.s9 .trim__dict--new { opacity: 1; transition-delay: 0.9s, 0s; }
+.s7 .trim__dict--new { opacity: 1; transition-delay: 0.9s, 0s; }
 
 .trim__dict--new li { color: var(--blue); background: #e6f0fc; border-color: var(--blue); opacity: 0; }
 .trim__dict--new .trim__more { color: #9aa1b3; background: #fff; border-color: #c3c9d6; }
-.s9 .trim__dict--new li { opacity: 1; }
+.s7 .trim__dict--new li { opacity: 1; }
 
 /* Each copy flies from its entry in the old grid (column c, row r) to its slot (jc, jr):
    old cells start at x = -75 + 144c, new ones at x = 1025 + 144jc (while it sits at x = 1000); rows are 70 apart in both */
-.s9:not(.s10) .trim__dict--new li:not(.trim__more) {
+.s7:not(.s8) .trim__dict--new li:not(.trim__more) {
   animation: trim-copy 1.1s var(--cam) calc(2.25s + var(--t) * 2.6s + var(--o) * 0.35s) backwards;
 }
 
@@ -2578,10 +2534,10 @@ span[data-morph] { display: inline-block; }
   15% { opacity: 1; }
 }
 
-.s9:not(.s10) .trim__dict--new .trim__more { animation: fade-in 0.4s ease 9.4s backwards; }
+.s7:not(.s8) .trim__dict--new .trim__more { animation: fade-in 0.4s ease 9.4s backwards; }
 
-/* 10: back out; the new dictionary takes the old one's place */
-.s10 .trim__dict--new { left: 116px; transition-delay: 0s; }
+/* 8: back out; the new dictionary takes the old one's place */
+.s8 .trim__dict--new { left: 116px; transition-delay: 0s; }
 
 /* Quantization (slide 17): inside the LLM, a deep zoom into one layer's weights, then back out.
    World px as on slide 16 (the box at (0,0) to (700,600)); deck.js adds .s1….s4.
@@ -2661,7 +2617,7 @@ span[data-morph] { display: inline-block; }
   transition: top 1.2s var(--cam);
 }
 
-/* The layers: the same look as slides 5 and 16, built from squares */
+/* The layers: the same look as slide 5, built from squares */
 .quant__layer {
   top: 64px;
   left: calc(35px + var(--k) * 170px);
@@ -2831,10 +2787,11 @@ span[data-morph] { display: inline-block; }
 .trade__back .trade__no { stroke: var(--coral); stroke-width: 4; opacity: 0; }
 .start__card.visible .trade__no { animation: trade-show 0.3s ease 2.1s forwards; }
 
-/* Your turn: three steps, the repo link, the closing line */
+/* Easy as 1 2 3: the repo link, three steps, the closing line.
+   Each step is told apart by the colour of its number, like the agenda. */
 .turn {
   list-style: none;
-  margin-top: 56px;
+  margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
@@ -2842,13 +2799,10 @@ span[data-morph] { display: inline-block; }
 
 .turn__step {
   padding: 26px 26px;
+  border: 4px solid var(--navy);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.85);
-  border-top: 12px solid var(--blue);
 }
-
-.turn__step:nth-child(2) { border-top-color: var(--teal); }
-.turn__step:nth-child(3) { border-top-color: var(--coral); }
 
 .turn__n {
   width: 56px;
@@ -2859,8 +2813,11 @@ span[data-morph] { display: inline-block; }
   font-size: 30px;
   font-weight: 700;
   color: #fff;
-  background: var(--navy);
+  background: var(--blue);
 }
+
+.turn__step:nth-child(2) .turn__n { background: var(--teal); color: var(--navy); }
+.turn__step:nth-child(3) .turn__n { background: var(--coral); }
 
 .turn__step h3 {
   margin-top: 18px;
@@ -2872,7 +2829,7 @@ span[data-morph] { display: inline-block; }
 .turn__step p { margin-top: 6px; font-size: 26px; opacity: 0.7; }
 
 .turn__repo {
-  margin-top: 40px;
+  margin-top: 56px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -2894,14 +2851,27 @@ span[data-morph] { display: inline-block; }
 
 .turn__close strong { color: var(--coral); }
 
-/* Thank you: one big word, centred in the space left of the background shapes */
-.slide--thanks.active { display: flex; align-items: center; }
+/* Questions and Thank you: one big word, centred in the space left of the background shapes.
+   Also while it fades out (.outro), so "Questions?" doesn't jump to the top on its way to ありがとう. */
+.slide--thanks.active, .slide--thanks.outro { display: flex; align-items: center; }
 
 .thanks {
   font-size: 200px;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--navy);
+}
+
+/* English is set tighter than ありがとう; its Japanese goes below, grey, like a heading's */
+.thanks--q { letter-spacing: -0.01em; line-height: 1.1; }
+
+.thanks__ja {
+  display: block;
+  margin-top: 24px;
+  font-size: 64px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #6b7184;
 }
 
 .counter {

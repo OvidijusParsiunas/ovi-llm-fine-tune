@@ -7,12 +7,13 @@
 // Add ?all to the URL to show every slide at its last step (handy for previewing/printing).
 // A slide with data-intro="<kind>" plays an entrance when reached by "next": it gets the class "intro",
 // the slide you came from stays visible with the class "outro", and the deck gets data-transition="<kind>",
-// all until INTRO_MS has passed. Kinds are styled in style.css ("title", "morph", "roll").
+// all until INTRO_MS has passed. Kinds are styled in style.css ("title", "morph", "roll", "thanks").
 // In a "morph" entrance, each [data-morph="x"] element glides from where the previous slide's
 // [data-morph="x"] element was (position and font size) into its own place, while the old one is hidden.
+// A slide with data-skip is left out of the deck (and the counter) but kept in the HTML: delete the attribute to bring it back.
 
 const deck = document.querySelector(".deck");
-const slides = [...document.querySelectorAll(".slide")];
+const slides = [...document.querySelectorAll(".slide:not([data-skip])")];
 const counter = document.querySelector(".counter");
 const showAll = new URLSearchParams(location.search).has("all");
 let current = 0;
